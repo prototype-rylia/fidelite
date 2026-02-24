@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Fidélité</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body class="bg-stone-100 min-h-screen flex items-center justify-center p-4 relative">
+
+  <div id="auth" class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
+    <h2 id="auth-title" class="text-2xl font-black text-center mb-6">Connexion</h2>
+
+    <div id="firstname-field" class="hidden mb-4">
+      <input id="firstname" type="text" placeholder="Prénom"
+        class="w-full p-3 bg-stone-100 rounded-xl">
+    </div>
+
+    <input id="email" type="email" placeholder="Email"
+      class="w-full p-3 bg-stone-100 rounded-xl mb-4">
+
+    <input id="password" type="password" placeholder="Mot de passe"
+      class="w-full p-3 bg-stone-100 rounded-xl mb-4">
+
+    <button onclick="handleAuth()" id="auth-btn"
+      class="w-full bg-orange-600 text-white p-3 rounded-xl font-bold">
+      Se connecter
+    </button>
+
+    <button onclick="toggleMode()" id="toggle-btn"
+      class="text-sm text-stone-400 mt-4 w-full">
+      Créer un compte
+    </button>
+
+    <p id="auth-msg" class="text-center text-red-500 mt-4 hidden"></p>
+  </div>
+
+  <div id="client-dashboard" class="hidden bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center">
+
+    <h2 class="text-2xl font-black mb-1">
+      Bonjour <span id="client-name" class="text-orange-600"></span>
+    </h2>
+
+    <div id="client-rank" class="inline-block bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
+      Chargement du rang...
+    </div>
+
+    <div class="mb-4">
+      <span class="text-6xl font-black text-stone-800" id="client-points">0</span>
+      <span class="block text-lg font-bold text-stone-500 mt-1">points disponibles</span>
+    </div>
+
+    <div id="qrcode" class="flex justify-center mb-4"></div>
+    <p id="client-code" class="font-mono text-2xl mb-2"></p>
+
+    <div class="mt-6 mb-2 w-full px-6">
+      <div id="timeline-container" class="relative w-full h-16">
+        </div>
+      <p id="next-tier-text" class="mt-4 text-sm font-bold text-stone-600 text-center"></p>
+    </div>
+
+    <div class="mt-8 text-left w-full">
+      <h3 class="text-lg font-bold text-stone-800 mb-3 border-b-2 border-stone-100 pb-2">Vos Paliers</h3>
+      <ul id="client-rewards" class="space-y-3">
+        </ul>
+    </div>
+
+    <div class="mt-8 text-left w-full">
+      <h3 class="text-lg font-bold text-stone-800 mb-3 border-b-2 border-stone-100 pb-2">Historique récent</h3>
+      <ul id="client-history" class="space-y-2 max-h-64 overflow-y-auto">
+      </ul>
+    </div>
+
+    <button onclick="logout()" class="mt-8 text-sm text-red-500">
+      Déconnexion
+    </button>
+  </div>
+
+  <div id="admin-dashboard" class="hidden bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
+
+    <h2 class="text-2xl font-black text-center mb-6 text-orange-600">
+      ADMIN
+    </h2>
+
+    <div id="admin-search-section">
+      <input id="target-code" type="text" placeholder="Code client"
+        class="w-full p-3 bg-stone-100 rounded-xl mb-4 text-center uppercase font-mono text-xl">
+      <button onclick="searchClient()" 
+        class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold mb-4">
+        Chercher le client
+      </button>
+
+      <button onclick="showLeaderboard()" class="w-full bg-orange-100 text-orange-700 p-3 rounded-xl font-bold flex items-center justify-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+        Voir le classement général
+      </button>
+    </div>
+
+    <div id="admin-action-section" class="hidden">
+      
+      <div class="bg-orange-100 p-4 rounded-2xl mb-6 text-center border border-orange-200 mt-2">
+        <p class="text-sm text-orange-800 font-medium mb-1">Client trouvé : <span id="admin-client-name" class="font-bold text-lg"></span></p>
+        <p class="text-4xl font-black text-orange-600 mt-1" id="admin-client-points">0 <span class="text-lg font-bold">pts</span></p>
+      </div>
+
+      <div class="bg-stone-50 p-4 rounded-2xl mb-4 border border-stone-200">
+        <h3 class="font-bold text-stone-700 mb-3 text-center">Ajouter des points</h3>
+        <input id="order-amount" type="number" placeholder="Montant addition (€)"
+          class="w-full p-3 bg-white border border-stone-200 rounded-xl mb-3 text-center">
+        <button onclick="addPoints()" 
+          class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold">
+          Valider l'ajout
+        </button>
+      </div>
+
+      <div class="bg-orange-50 p-4 rounded-2xl mb-4 border border-orange-200">
+        <h3 class="font-bold text-orange-800 mb-3 text-center">Utiliser une récompense</h3>
+        
+        <div id="admin-rewards-list" class="space-y-2">
+        </div>
+      </div>
+
+      <button onclick="resetAdminView()" class="w-full bg-stone-200 text-stone-700 p-3 rounded-xl font-bold mt-2">
+        Rechercher un autre client
+      </button>
+
+    </div>
+
+    <div id="admin-leaderboard-section" class="hidden">
+      <h3 class="font-black text-stone-800 text-xl mb-4 text-center">Classement Fidélité</h3>
+      <div class="bg-stone-50 rounded-2xl p-2 border border-stone-200 overflow-hidden mb-4">
+        <ul id="leaderboard-list" class="divide-y divide-stone-200 max-h-96 overflow-y-auto">
+          </ul>
+      </div>
+      <button onclick="resetAdminView()" class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold">
+        Retour
+      </button>
+    </div>
+
+    <p id="admin-msg" class="text-center mt-6 hidden"></p>
+
+    <button onclick="logout()" class="mt-6 text-sm text-red-500 w-full">
+      Déconnexion
+    </button>
+
+  </div>
+
+  <script>
+    // ================= FIREBASE CONFIG =================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDf8Oh-d4baOxu3XoPV2rnLeLJZQ5tZDYY",
+      authDomain: "rylia-fidelite-9a015.firebaseapp.com",
+      projectId: "rylia-fidelite-9a015"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let signupMode = false;
+    let currentClientCode = ""; 
+
+    // ================= PALIERS DE RÉCOMPENSES =================
+    const REWARD_TIERS = [
+      { points: 40, title: "Gain 1", desc: "(ex: Boisson offerte)" },
+      { points: 80, title: "Gain 2", desc: "(ex: Dessert offert)" },
+      { points: 150, title: "Gain 3", desc: "(ex: Plat au choix)" },
+      { points: 200, title: "Gain 4", desc: "(ex: Menu complet)" },
+      { points: 260, title: "Gain 5", desc: "(ex: Repas pour 2)" }
+    ];
+
+    // ================= TOGGLE =================
+    function toggleMode(){
+      signupMode = !signupMode;
+      document.getElementById("firstname-field").classList.toggle("hidden", !signupMode);
+      document.getElementById("auth-title").innerText = signupMode ? "Créer un compte" : "Connexion";
+      document.getElementById("auth-btn").innerText = signupMode ? "S'inscrire" : "Se connecter";
+      document.getElementById("toggle-btn").innerText = signupMode ? "Déjà membre ?" : "Créer un compte";
+    }
+
+    // ================= AUTH =================
+    async function handleAuth(){
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const firstname = document.getElementById("firstname").value.trim();
+
+      if(!email || !password){
+        showAuthMsg("Email et mot de passe requis");
+        return;
+      }
+
+      try{
+        if(signupMode){
+          const res = await auth.createUserWithEmailAndPassword(email,password);
+          const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
+
+          await db.collection("profiles").doc(res.user.uid).set({
+            first_name: firstname || "Client",
+            email: email,
+            points: 0,
+            short_code: shortCode,
+            role: "membre",
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          await auth.signInWithEmailAndPassword(email,password);
+        }
+      } catch(err){
+        showAuthMsg(err.message);
+      }
+    }
+
+    function showAuthMsg(msg){
+      const m = document.getElementById("auth-msg");
+      m.innerText = msg;
+      m.className = "text-center mt-4 text-red-500";
+      m.classList.remove("hidden");
+    }
+
+    // ================= ROLE DETECTION =================
+    auth.onAuthStateChanged(async user => {
+      if(!user){
+        showAuth();
+        return;
+      }
+
+      const doc = await db.collection("profiles").doc(user.uid).get();
+      if(!doc.exists){
+        logout();
+        return;
+      }
+
+      const data = doc.data();
+      if(data.role === "admin"){
+        showAdmin();
+      } else {
+        showClient(data, user.uid);
+      }
+    });
+
+    // ================= SHOW CLIENT =================
+    async function showClient(data, uid){
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("admin-dashboard").classList.add("hidden");
+      document.getElementById("client-dashboard").classList.remove("hidden");
+
+      document.getElementById("client-name").innerText = data.first_name;
+      document.getElementById("client-points").innerText = data.points;
+      document.getElementById("client-code").innerText = data.short_code;
+
+      // Calcul du rang
+      calculateRank(data.points);
+
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML="";
+      new QRCode(qrContainer,{
+        text: data.short_code,
+        width: 150,
+        height: 150
+      });
+
+      // --- Chargement de la barre de progression ---
+      const timelineContainer = document.getElementById("timeline-container");
+      
+      const currentPoints = Math.min(data.points, 260); 
+
+      const VISUAL_STEPS = [
+        { points: 40, visualPercent: 0 },
+        { points: 80, visualPercent: 25 },
+        { points: 150, visualPercent: 50 },
+        { points: 200, visualPercent: 75 },
+        { points: 260, visualPercent: 100 }
+      ];
+
+      let progressPercent = 0;
+      if (currentPoints < 40) {
+        progressPercent = 0;
+      } else if (currentPoints >= 260) {
+        progressPercent = 100;
+      } else {
+        for (let i = 0; i < VISUAL_STEPS.length - 1; i++) {
+          const start = VISUAL_STEPS[i];
+          const end = VISUAL_STEPS[i+1];
+          
+          if (currentPoints >= start.points && currentPoints < end.points) {
+            const rangePoints = end.points - start.points;
+            const rangeVisual = end.visualPercent - start.visualPercent;
+            const pointsInSegment = currentPoints - start.points;
+            
+            progressPercent = start.visualPercent + ((pointsInSegment / rangePoints) * rangeVisual);
+            break;
+          }
+        }
+      }
+
+      timelineContainer.innerHTML = `
+        <div class="absolute top-11 left-0 right-0 h-1.5 bg-stone-200 rounded-full -translate-y-1/2"></div>
+        <div class="absolute top-11 left-0 h-1.5 bg-orange-500 rounded-full -translate-y-1/2 transition-all duration-1000 ease-out" style="width: 0%" id="progress-line"></div>
+      `;
+
+      setTimeout(() => {
+        document.getElementById("progress-line").style.width = `${progressPercent}%`;
+      }, 100);
+
+      let nextTierPoints = null;
+
+      REWARD_TIERS.forEach((tier, index) => {
+        const isUnlocked = data.points >= tier.points;
+        if (!isUnlocked && nextTierPoints === null) {
+          nextTierPoints = tier.points;
+        }
+
+        const visualPosition = index * 25;
+
+        const nodeDiv = document.createElement("div");
+        nodeDiv.className = "absolute top-0 flex flex-col items-center w-12";
+        nodeDiv.style.left = `calc(${visualPosition}% - 24px)`;
+
+        const iconSvg = isUnlocked 
+          ? `<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"></path></svg>`
+          : `<svg class="w-4 h-4 text-stone-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
+
+        const circleColor = isUnlocked ? "bg-orange-500 border-2 border-orange-500 shadow-md" : "bg-white border-2 border-stone-200";
+        const textColor = isUnlocked ? "text-orange-600" : "text-stone-400";
+
+        nodeDiv.innerHTML = `
+          <span class="text-xs font-black mb-2 leading-none ${textColor}">${tier.points}</span>
+          <div class="w-10 h-10 ${circleColor} rounded-full flex items-center justify-center z-10 transition-colors duration-500">
+            ${iconSvg}
+          </div>
+        `;
+        timelineContainer.appendChild(nodeDiv);
+      });
+
+      const nextTierText = document.getElementById("next-tier-text");
+      if (nextTierPoints) {
+        const pointsNeeded = nextTierPoints - data.points;
+        nextTierText.innerText = `Plus que ${pointsNeeded} points pour déverrouiller le prochain palier.`;
+      } else {
+        nextTierText.innerText = "Félicitations, vous avez débloqué tous les paliers !";
+      }
+
+      // --- Chargement de la liste textuelle des cadeaux adaptées pour mobile ---
+      const rewardsContainer = document.getElementById("client-rewards");
+      rewardsContainer.innerHTML = "";
+
+      REWARD_TIERS.forEach(tier => {
+        const isUnlocked = data.points >= tier.points;
+        const li = document.createElement("li");
+        
+        if (isUnlocked) {
+          const unlockedSvg = `<svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"></path></svg>`;
+          
+          li.className = "flex justify-between items-center bg-orange-50 border border-orange-200 p-3 rounded-xl";
+          li.innerHTML = `
+            <div class="flex items-start">
+              ${unlockedSvg}
+              <div class="flex flex-col text-left">
+                <span class="text-sm font-bold text-orange-700">${tier.title}</span>
+                <span class="text-xs font-medium text-orange-600/80">${tier.desc}</span>
+              </div>
+            </div>
+            <span class="text-xs font-black text-white bg-orange-500 px-3 py-1 rounded-full shadow-sm whitespace-nowrap ml-2">Débloqué !</span>
+          `;
+        } else {
+          const lockedSvg = `<svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
+          
+          li.className = "flex justify-between items-center bg-stone-50 border border-stone-200 p-3 rounded-xl opacity-80";
+          li.innerHTML = `
+            <div class="flex items-start">
+              ${lockedSvg}
+              <div class="flex flex-col text-left">
+                <span class="text-sm font-medium text-stone-500">${tier.title}</span>
+                <span class="text-xs font-medium text-stone-400">${tier.desc}</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-stone-400 whitespace-nowrap ml-2">${data.points}/${tier.points} points</span>
+          `;
+        }
+        rewardsContainer.appendChild(li);
+      });
+
+      // --- Chargement de l'historique Client ---
+      const historyContainer = document.getElementById("client-history");
+      historyContainer.innerHTML = '<p class="text-sm text-stone-400 text-center">Chargement...</p>';
+
+      try {
+        const snapshot = await db.collection("profiles").doc(uid).collection("transactions")
+          .orderBy("date", "desc")
+          .limit(10)
+          .get();
+
+        historyContainer.innerHTML = "";
+
+        if(snapshot.empty){
+          historyContainer.innerHTML = '<p class="text-sm text-stone-400 text-center">Aucun point cumulé pour le moment.</p>';
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const tx = doc.data();
+          const dateObj = tx.date ? tx.date.toDate() : new Date();
+          const dateStr = dateObj.toLocaleDateString("fr-FR", {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+
+          const isPositive = tx.points_added > 0;
+          const pointColor = isPositive ? "text-orange-600" : "text-stone-500";
+          const pointSign = isPositive ? "+" : "";
+
+          let libelle = tx.description;
+          if (!libelle) {
+            libelle = isPositive ? `Commande de ${tx.amount_euros}€` : "Récompense utilisée";
+          }
+
+          const li = document.createElement("li");
+          li.className = "flex justify-between items-center bg-stone-50 p-3 rounded-xl";
+          
+          li.innerHTML = `
+            <div class="flex flex-col text-left">
+              <span class="text-sm font-bold text-stone-700">${libelle}</span>
+              <span class="text-xs font-medium text-stone-400">${dateStr}</span>
+            </div>
+            <span class="text-sm font-black ${pointColor} whitespace-nowrap ml-2">${pointSign} ${tx.points_added} pts</span>
+          `;
+          historyContainer.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        historyContainer.innerHTML = '<p class="text-sm text-red-500 text-center">Erreur de chargement de l\'historique.</p>';
+      }
+    }
+
+    // AJOUT : Fonction calcul rang client
+    async function calculateRank(points) {
+      const snap = await db.collection("profiles")
+        .where("role", "==", "membre")
+        .where("points", ">", points)
+        .get();
+      const rank = snap.size + 1;
+      document.getElementById("client-rank").innerText = `#${rank}${rank === 1 ? 'er' : 'ème'} des clients les plus fidèles`;
+    }
+
+    // ================= SHOW ADMIN =================
+    function showAdmin(){
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("client-dashboard").classList.add("hidden");
+      document.getElementById("admin-dashboard").classList.remove("hidden");
+      resetAdminView();
+    }
+
+    // AJOUT : Fonction afficher classement Admin
+    async function showLeaderboard() {
+      document.getElementById("admin-search-section").classList.add("hidden");
+      document.getElementById("admin-leaderboard-section").classList.remove("hidden");
+      const list = document.getElementById("leaderboard-list");
+      list.innerHTML = '<p class="text-center p-4 text-stone-400">Chargement...</p>';
+
+      const snap = await db.collection("profiles")
+        .where("role", "==", "membre")
+        .orderBy("points", "desc")
+        .limit(50)
+        .get();
+
+      list.innerHTML = "";
+      let rank = 1;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const li = document.createElement("li");
+        li.className = "flex justify-between items-center p-3";
+        li.innerHTML = `
+          <div class="flex items-center">
+            <span class="w-8 font-black text-stone-400">#${rank}</span>
+            <span class="font-bold text-stone-800">${d.first_name}</span>
+          </div>
+          <span class="text-orange-600 font-black">${d.points} pts</span>
+        `;
+        list.appendChild(li);
+        rank++;
+      });
+    }
+
+    // ================= ADMIN : CHERCHER CLIENT =================
+    async function searchClient(keepMessage = false) {
+      const code = document.getElementById("target-code").value.trim().toUpperCase();
+      
+      if(!code) {
+        showAdminMsg("Veuillez saisir un code client", "red");
+        return;
+      }
+
+      try {
+        const snapshot = await db.collection("profiles")
+          .where("short_code","==",code)
+          .limit(1)
+          .get();
+
+        if(snapshot.empty) throw new Error("Client introuvable ou code incorrect");
+
+        const userDoc = snapshot.docs[0];
+        const userData = userDoc.data();
+        currentClientCode = code; 
+
+        document.getElementById("admin-client-name").innerText = userData.first_name;
+        document.getElementById("admin-client-points").innerHTML = `${userData.points} <span class="text-lg font-bold">pts</span>`;
+
+        // Générer les boutons de récompenses
+        renderAdminRewards(userData.points);
+
+        document.getElementById("admin-search-section").classList.add("hidden");
+        document.getElementById("admin-action-section").classList.remove("hidden");
+        
+        if(!keepMessage) {
+          document.getElementById("admin-msg").classList.add("hidden");
+        }
+
+      } catch(err) {
+        showAdminMsg(err.message, "red");
+      }
+    }
+
+    // ================= ADMIN : GÉNÉRER LES BOUTONS CADEAUX =================
+    function renderAdminRewards(currentPoints) {
+      const container = document.getElementById("admin-rewards-list");
+      container.innerHTML = "";
+
+      const availableRewards = REWARD_TIERS.filter(tier => tier.points <= currentPoints);
+
+      if (availableRewards.length === 0) {
+        container.innerHTML = `<p class="text-sm text-center text-orange-700/70 italic p-2">Le client n'a pas encore assez de points pour une récompense.</p>`;
+        return;
+      }
+
+      availableRewards.forEach(tier => {
+        const btn = document.createElement("button");
+        btn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white p-3 rounded-xl font-bold flex justify-between items-center transition-colors mb-2";
+        btn.onclick = () => deductReward(tier.points, tier.title);
+        
+        btn.innerHTML = `
+          <span class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"></path></svg>
+            Utiliser ${tier.title}
+          </span>
+          <span class="bg-orange-800/30 px-2 py-1 rounded text-xs">-${tier.points} pts</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // ================= ADMIN : RESET VUE =================
+    function resetAdminView() {
+      currentClientCode = "";
+      document.getElementById("target-code").value = "";
+      document.getElementById("order-amount").value = "";
+      
+      document.getElementById("admin-action-section").classList.add("hidden");
+      document.getElementById("admin-leaderboard-section").classList.add("hidden"); // AJOUT : cacher leaderboard
+      document.getElementById("admin-search-section").classList.remove("hidden");
+      
+      // On cache le message de confirmation quand on revient à l'écran de recherche
+      document.getElementById("admin-msg").classList.add("hidden");
+    }
+
+    // ================= ADD POINTS =================
+    async function addPoints(){
+      const amount = parseFloat(document.getElementById("order-amount").value);
+
+      if(!currentClientCode || !amount || amount <= 0){
+        showAdminMsg("Montant invalide", "red");
+        return;
+      }
+
+      try {
+        const snapshot = await db.collection("profiles")
+          .where("short_code","==",currentClientCode)
+          .limit(1)
+          .get();
+
+        if(snapshot.empty) throw new Error("Erreur : Client introuvable");
+
+        const userDoc = snapshot.docs[0];
+        const pointsToAdd = Math.round(amount * 2);
+
+        const libelle = `Commande de ${amount.toFixed(2).replace('.', ',')}€`;
+
+        await db.collection("profiles").doc(userDoc.id).update({
+          points: firebase.firestore.FieldValue.increment(pointsToAdd),
+          last_transaction: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db.collection("profiles").doc(userDoc.id).collection("transactions").add({
+          amount_euros: amount,
+          points_added: pointsToAdd,
+          description: libelle,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Message de confirmation sans limite de temps
+        showAdminMsg(`+ ${pointsToAdd} points`, "green");
+        document.getElementById("order-amount").value = "";
+        
+        // On rafraichit la vue mais en gardant le message visible (keepMessage = true)
+        searchClient(true); 
+
+      } catch(err) {
+        showAdminMsg(err.message, "red");
+      }
+    }
+
+    // ================= DEDUCT REWARD =================
+    async function deductReward(pointsToDeduct, rewardTitle){
+      if(!currentClientCode || !pointsToDeduct || pointsToDeduct <= 0){
+        showAdminMsg("Erreur lors de la sélection de la récompense", "red");
+        return;
+      }
+
+      if(!confirm(`Valider l'utilisation de la récompense : ${rewardTitle} (-${pointsToDeduct} pts) ?`)) {
+        return;
+      }
+
+      try {
+        const snapshot = await db.collection("profiles")
+          .where("short_code","==",currentClientCode)
+          .limit(1)
+          .get();
+
+        if(snapshot.empty) throw new Error("Erreur : Client introuvable");
+
+        const userDoc = snapshot.docs[0];
+        const userData = userDoc.data();
+
+        if(userData.points < pointsToDeduct) {
+            throw new Error(`Le client n'a pas assez de points !`);
+        }
+
+        const libelle = `Consommation : ${rewardTitle}`;
+
+        await db.collection("profiles").doc(userDoc.id).update({
+          points: firebase.firestore.FieldValue.increment(-pointsToDeduct),
+          last_transaction: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await db.collection("profiles").doc(userDoc.id).collection("transactions").add({
+          amount_euros: 0,
+          points_added: -pointsToDeduct,
+          description: libelle,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Message de confirmation sans limite de temps
+        showAdminMsg(`- ${pointsToDeduct} points`, "stone");
+
+        // On rafraichit la vue mais en gardant le message visible (keepMessage = true)
+        searchClient(true);
+
+      } catch(err) {
+        showAdminMsg(err.message, "red");
+      }
+    }
+
+    // ================= MESSAGES ADMIN (SANS DISPARITION AUTO) =================
+    function showAdminMsg(msg, color){
+      const m = document.getElementById("admin-msg");
+      m.innerText = msg;
+      
+      let colorClasses = "";
+      if (color === "green") {
+        colorClasses = "bg-green-100 text-green-700 border-green-300";
+      } else if (color === "red") {
+        colorClasses = "bg-red-100 text-red-700 border-red-300";
+      } else if (color === "stone") {
+        colorClasses = "bg-stone-200 text-stone-700 border-stone-400";
+      }
+
+      m.className = `text-center mt-6 p-4 rounded-xl text-3xl font-black border-2 shadow-lg transition-all duration-300 ${colorClasses}`;
+      m.classList.remove("hidden");
+    }
+
+    // ================= UTIL =================
+    function logout(){
+      auth.signOut();
+    }
+
+    function showAuth(){
+      document.getElementById("auth").classList.remove("hidden");
+      document.getElementById("client-dashboard").classList.add("hidden");
+      document.getElementById("admin-dashboard").classList.add("hidden");
+    }
+
+    // FONCTION PAGE LÉGALE
+      function openLegalPage() {
+          const legalWindow = window.open("", "_blank");
+          legalWindow.document.write(`
+              <html>
+              <head>
+                  <title>CGU & Mentions Légales</title>
+                  <style>
+                      body { 
+                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+                          line-height: 1.6; 
+                          padding: 50px; 
+                          color: #2d2d2d; 
+                          max-width: 750px; 
+                          margin: auto; 
+                      }
+                      h1 { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                      h2 { font-size: 1.2rem; font-weight: 700; margin-top: 30px; }
+                      h3 { font-size: 1rem; font-weight: 700; color: #555; }
+                      p, li { font-size: 0.95rem; color: #444; }
+                      ul { padding-left: 20px; }
+                      hr { border: 0; border-top: 1px solid #eee; margin: 40px 0; }
+                  </style>
+              </head>
+              <body>
+                  <h1>Mentions Légales & CGU</h1>
+
+                  <section>
+                      <h2>I. ÉDITION ET HÉBERGEMENT</h2>
+                      <p><strong>Éditeur :</strong> Ce site est édité par l'établissement <strong>[NOM DU RESTAURANT]</strong>, [FORME JURIDIQUE] au capital de [MONTANT] €, situé à [ADRESSE COMPLÈTE]. SIRET : [NUMÉRO].</p>
+                      <p><strong>Hébergement :</strong> Plateforme GitHub Pages (GitHub Inc.). Données de fidélité stockées sur Google Firebase (Google Cloud Platform).</p>
+                      <p><strong>Conception technique :</strong> Rylia | contact@rylia.fr
+                  </section>
+
+                  <section>
+                      <h2>II. CONDITIONS GÉNÉRALES D'UTILISATION</h2>
+                      
+                      <h3>1. Objet du programme</h3>
+                      <p>Le service propose un programme de fidélité numérique permettant de cumuler des points lors de chaque achat pour obtenir des récompenses.</p>
+
+                      <h3>2. Barème de points</h3>
+                      <p>Le cumul des points est défini comme suit : <strong>1€ dépensé = 2 points de fidélité</strong>. Les points sont crédités manuellement par l'établissement lors de la transaction.</p>
+
+                      <h3>3. Paliers de récompenses</h3>
+                      <p>Les points cumulés donnent accès à des avantages selon les paliers suivants : 40, 80, 150, 200 et 260 points. L'utilisation d'une récompense déduit automatiquement les points correspondants. Les points ne sont ni remboursables, ni échangeables contre de l'argent liquide.</p>
+
+                      <h3>4. Fraude et Inactivité</h3>
+                      <p>L'établissement se réserve le droit de suspendre un compte en cas de fraude ou après une période d'inactivité prolongée (24 mois).</p>
+                  </section>
+
+                  <section>
+                      <h2>III. PROTECTION DES DONNÉES (RGPD)</h2>
+                      <p>Nous collectons uniquement les données nécessaires à la gestion de votre fidélité :</p>
+                      <ul>
+                          <li>Prénom et adresse e-mail (identifiant).</li>
+                          <li>Historique des points et des passages.</li>
+                      </ul>
+                      <p>Vos données sont conservées tant que votre compte est actif. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données en contactant : [E-MAIL DU RESTAURANT].</p>
+                  </section>
+
+                  <section>
+                      <h2>IV. MÉDIATION DE LA CONSOMMATION</h2>
+                      <p>Conformément aux articles L.616-1 et R.616-1 du code de la consommation, en cas de litige non résolu directement avec l'établissement, le client peut recourir gratuitement au médiateur de la consommation saisi par le restaurant :</p>
+                      <p>[NOM DU MÉDIATEUR DE L'ÉTABLISSEMENT]<br>Adresse : [ADRESSE DU MÉDIATEUR]<br>Site internet : [SITE DU MÉDIATEUR]</p>
+                  </section>
+
+                  <hr>
+                  <p style="font-size: 0.8rem; color: #999;">Dernière mise à jour : 24/02/2026</p>
+              </body>
+              </html>
+          `);
+      }
+  </script>
+
+<footer class="absolute bottom-4 w-full text-center">
+  <button onclick="openLegalPage()" class="text-xs text-stone-400 underline decoration-stone-300 hover:text-stone-800 transition-colors">
+      Mentions Légales, CGU & RGPD
+  </button>
+</footer>
+
+</body>
+</html>
