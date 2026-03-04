@@ -14,32 +14,48 @@
 
 <body class="bg-stone-100 min-h-screen flex items-center justify-center p-4 relative">
 
-  <div id="auth" class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
-    <h2 id="auth-title" class="text-2xl font-black text-center mb-6">Connexion</h2>
+<div id="auth" class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
+  <h2 id="auth-title" class="text-2xl font-black text-center mb-6">Connexion</h2>
 
-    <div id="firstname-field" class="hidden mb-4">
-      <input id="firstname" type="text" placeholder="Prénom"
-        class="w-full p-3 bg-stone-100 rounded-xl">
-    </div>
-
-    <input id="email" type="email" placeholder="Email"
-      class="w-full p-3 bg-stone-100 rounded-xl mb-4">
-
-    <input id="password" type="password" placeholder="Mot de passe"
-      class="w-full p-3 bg-stone-100 rounded-xl mb-4">
-
-    <button onclick="handleAuth()" id="auth-btn"
-      class="w-full bg-orange-600 text-white p-3 rounded-xl font-bold">
-      Se connecter
-    </button>
-
-    <button onclick="toggleMode()" id="toggle-btn"
-      class="text-sm text-stone-400 mt-4 w-full">
-      Créer un compte
-    </button>
-
-    <p id="auth-msg" class="text-center text-red-500 mt-4 hidden"></p>
+  <div id="firstname-field" class="hidden mb-4">
+    <input id="firstname" type="text" placeholder="Prénom"
+      class="w-full p-3 bg-stone-100 rounded-xl">
   </div>
+
+  <input id="email" type="email" placeholder="Email"
+    class="w-full p-3 bg-stone-100 rounded-xl mb-4">
+
+  <div id="confirm-email-field" class="hidden mb-4">
+    <input id="confirm-email" type="email" placeholder="Confirmer l'Email"
+      class="w-full p-3 bg-stone-100 rounded-xl">
+  </div>
+
+  <input id="password" type="password" placeholder="Mot de passe"
+    class="w-full p-3 bg-stone-100 rounded-xl mb-4">
+
+  <div id="confirm-password-field" class="hidden mb-4">
+    <input id="confirm-password" type="password" placeholder="Confirmer le mot de passe"
+      class="w-full p-3 bg-stone-100 rounded-xl">
+  </div>
+
+  <div id="forgot-password-container" class="text-right mb-4">
+    <button onclick="resetPassword()" class="text-sm text-orange-600 hover:underline">
+      Mot de passe oublié ?
+    </button>
+  </div>
+
+  <button onclick="handleAuth()" id="auth-btn"
+    class="w-full bg-orange-600 text-white p-3 rounded-xl font-bold">
+    Se connecter
+  </button>
+
+  <button onclick="toggleMode()" id="toggle-btn"
+    class="text-sm text-stone-400 mt-4 w-full">
+    Créer un compte
+  </button>
+
+  <p id="auth-msg" class="text-center text-red-500 mt-4 hidden"></p>
+</div>
 
   <div id="client-dashboard" class="hidden bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center">
 
@@ -176,45 +192,70 @@
     ];
 
     // ================= TOGGLE =================
-    function toggleMode(){
+     function toggleMode(){
       signupMode = !signupMode;
       document.getElementById("firstname-field").classList.toggle("hidden", !signupMode);
+      document.getElementById("confirm-email-field").classList.toggle("hidden", !signupMode);
+      document.getElementById("confirm-password-field").classList.toggle("hidden", !signupMode);
+      
+      // NOUVEAU : Cacher le bouton "Mot de passe oublié" en mode inscription
+      document.getElementById("forgot-password-container").classList.toggle("hidden", signupMode);
+      
       document.getElementById("auth-title").innerText = signupMode ? "Créer un compte" : "Connexion";
       document.getElementById("auth-btn").innerText = signupMode ? "S'inscrire" : "Se connecter";
       document.getElementById("toggle-btn").innerText = signupMode ? "Déjà membre ?" : "Créer un compte";
     }
 
     // ================= AUTH =================
-    async function handleAuth(){
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const firstname = document.getElementById("firstname").value.trim();
+async function handleAuth(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const firstname = document.getElementById("firstname").value.trim();
+  
+  // Récupération des nouveaux champs
+  const confirmEmail = document.getElementById("confirm-email").value.trim();
+  const confirmPassword = document.getElementById("confirm-password").value.trim();
 
-      if(!email || !password){
-        showAuthMsg("Email et mot de passe requis");
+  if(!email || !password){
+    showAuthMsg("Email et mot de passe requis");
+    return;
+  }
+
+  try{
+    if(signupMode){
+      // --- VERIFICATIONS ---
+      if(email !== confirmEmail) {
+        showAuthMsg("Les adresses email ne correspondent pas");
         return;
       }
-
-      try{
-        if(signupMode){
-          const res = await auth.createUserWithEmailAndPassword(email,password);
-          const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
-
-          await db.collection("profiles").doc(res.user.uid).set({
-            first_name: firstname || "Client",
-            email: email,
-            points: 0,
-            short_code: shortCode,
-            role: "membre",
-            created_at: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        } else {
-          await auth.signInWithEmailAndPassword(email,password);
-        }
-      } catch(err){
-        showAuthMsg(err.message);
+      if(password !== confirmPassword) {
+        showAuthMsg("Les mots de passe ne correspondent pas");
+        return;
       }
+      if(password.length < 6) {
+        showAuthMsg("Le mot de passe doit faire au moins 6 caractères");
+        return;
+      }
+      // ---------------------
+
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
+
+      await db.collection("profiles").doc(res.user.uid).set({
+        first_name: firstname || "Client",
+        email: email,
+        points: 0,
+        short_code: shortCode,
+        role: "membre",
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
     }
+  } catch(err){
+    showAuthMsg(err.message);
+  }
+}
 
     function showAuthMsg(msg){
       const m = document.getElementById("auth-msg");
@@ -690,6 +731,28 @@
       document.getElementById("client-dashboard").classList.add("hidden");
       document.getElementById("admin-dashboard").classList.add("hidden");
     }
+
+
+    // ======== RESET MOT DE PASSE ========= //
+    async function resetPassword() {
+  const email = document.getElementById("email").value.trim();
+  
+  // On vérifie que l'utilisateur a bien tapé un email
+  if (!email) {
+    showAuthMsg("Veuillez saisir votre email dans le champ ci-dessus, puis cliquez sur 'Mot de passe oublié ?'");
+    return;
+  }
+
+  try {
+    // Demande à Firebase d'envoyer l'email
+    await auth.sendPasswordResetEmail(email);
+    // On réutilise ta fonction d'erreur pour afficher un message de succès (tu peux changer la couleur si besoin)
+    showAuthMsg("Un lien de réinitialisation a été envoyé à " + email); 
+  } catch (err) {
+    // Si l'email n'existe pas ou s'il y a une erreur
+    showAuthMsg("Erreur : " + err.message);
+  }
+}
 
     // FONCTION PAGE LÉGALE
       function openLegalPage() {
