@@ -25,8 +25,8 @@
   <input id="email" type="email" placeholder="Email"
     class="w-full p-3 bg-stone-100 rounded-xl mb-4">
 
-  <div id="confirm-email-field" class="hidden mb-4">
-    <input id="confirm-email" type="email" placeholder="Confirmer l'Email"
+  <div id="phone-field" class="hidden mb-4">
+    <input id="phone" type="tel" placeholder="Numéro de téléphone" maxlength="14"
       class="w-full p-3 bg-stone-100 rounded-xl">
   </div>
 
@@ -93,9 +93,34 @@
       </ul>
     </div>
 
-    <button onclick="logout()" class="mt-8 text-sm text-red-500">
+    <button onclick="logout()" class="mt-4 text-sm text-red-500">
       Déconnexion
     </button>
+
+    <button id="show-delete-btn" onclick="showDeleteSection()" 
+      class="w-full mt-8 bg-red-100 text-red-600 p-3 rounded-xl font-bold hover:bg-red-200 transition">
+      Supprimer mon compte
+    </button>
+
+    <div id="delete-confirm-section" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+      <p class="text-sm text-red-700 font-bold mb-3">Veuillez confirmer vos identifiants pour supprimer définitivement votre compte :</p>
+      
+      <input id="delete-email" type="email" placeholder="Votre email" 
+        class="w-full p-3 mb-2 bg-white border border-red-200 rounded-xl text-sm">
+      <input id="delete-password" type="password" placeholder="Votre mot de passe" 
+        class="w-full p-3 mb-3 bg-white border border-red-200 rounded-xl text-sm">
+      
+      <div class="flex gap-2">
+        <button onclick="cancelDelete()" 
+          class="flex-1 bg-stone-200 text-stone-700 p-3 rounded-xl font-bold hover:bg-stone-300 transition">
+          Annuler
+        </button>
+        <button onclick="confirmDeleteAccount()" 
+          class="flex-1 bg-red-600 text-white p-3 rounded-xl font-bold hover:bg-red-700 transition">
+          Confirmer
+        </button>
+      </div>
+    </div>
   </div>
 
   <div id="admin-dashboard" class="hidden bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
@@ -104,8 +129,8 @@
       ADMIN
     </h2>
 
-    <div id="admin-search-section">
-      <input id="target-code" type="text" placeholder="Code client"
+      <div id="admin-search-section">
+      <input id="target-code" type="text" placeholder="Code client" maxlength="6"
         class="w-full p-3 bg-stone-100 rounded-xl mb-4 text-center uppercase font-mono text-xl">
       <button onclick="searchClient()" 
         class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold mb-4">
@@ -182,6 +207,69 @@
     let signupMode = false;
     let currentClientCode = ""; 
 
+    // ================= TRADUCTION DES ERREURS =================
+    function getErrorMessage(errorCode) {
+      switch (errorCode) {
+        case 'auth/invalid-email':
+          return "L'adresse e-mail n'est pas valide.";
+        case 'auth/user-disabled':
+          return "Ce compte a été désactivé par l'administrateur.";
+        case 'auth/user-not-found':
+        case 'auth/invalid-credential':
+        case 'auth/wrong-password':
+          return "L'adresse e-mail ou le mot de passe est incorrect.";
+        case 'auth/email-already-in-use':
+          return "Un compte existe déjà avec cette adresse e-mail.";
+        case 'auth/weak-password':
+          return "Votre mot de passe est trop faible (6 caractères minimum).";
+        case 'auth/network-request-failed':
+          return "Problème de connexion internet. Vérifiez votre réseau.";
+        case 'auth/requires-recent-login':
+          return "Sécurité : Veuillez vous déconnecter puis vous reconnecter pour faire cela.";
+        default:
+          return "Une erreur inattendue est survenue. Veuillez réessayer.";
+      }
+    }
+
+    // ================= FORMATAGE TÉLÉPHONE =================
+        document.addEventListener("DOMContentLoaded", () => {
+          const phoneInput = document.getElementById("phone");
+          
+          // Si l'élément existe bien
+          if(phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+              // 1. On supprime tout ce qui n'est pas un chiffre
+              let cleaned = e.target.value.replace(/\D/g, '');
+              
+              // 2. On limite à 10 chiffres
+              cleaned = cleaned.substring(0, 10);
+              
+              // 3. On groupe par 2 et on ajoute un espace entre chaque groupe
+              let formatted = cleaned.match(/.{1,2}/g)?.join(' ') || '';
+              
+              // 4. On met à jour l'affichage
+              e.target.value = formatted;
+            });
+          }
+
+          // ================= FORMATAGE CODE ADMIN =================
+          const adminCodeInput = document.getElementById("target-code"); 
+          
+          if(adminCodeInput) {
+            adminCodeInput.addEventListener('input', function (e) {
+              // 1. On supprime tous les espaces (et autres caractères invisibles)
+              let cleaned = e.target.value.replace(/\s/g, '');
+              
+              // 2. On passe tout en majuscules automatiquement
+              cleaned = cleaned.toUpperCase();
+              
+              // 3. On met à jour l'affichage
+              e.target.value = cleaned;
+            });
+          }
+        });
+
+
     // ================= PALIERS DE RÉCOMPENSES =================
     const REWARD_TIERS = [
       { points: 40, title: "Gain 1", desc: "(ex: Boisson offerte)" },
@@ -195,7 +283,7 @@
      function toggleMode(){
       signupMode = !signupMode;
       document.getElementById("firstname-field").classList.toggle("hidden", !signupMode);
-      document.getElementById("confirm-email-field").classList.toggle("hidden", !signupMode);
+      document.getElementById("phone-field").classList.toggle("hidden", !signupMode);
       document.getElementById("confirm-password-field").classList.toggle("hidden", !signupMode);
       
       // NOUVEAU : Cacher le bouton "Mot de passe oublié" en mode inscription
@@ -212,8 +300,8 @@ async function handleAuth(){
   const password = document.getElementById("password").value.trim();
   const firstname = document.getElementById("firstname").value.trim();
   
-  // Récupération des nouveaux champs
-  const confirmEmail = document.getElementById("confirm-email").value.trim();
+  // Nouveau champ téléphone au lieu de confirm-email
+  const phone = document.getElementById("phone").value.trim();
   const confirmPassword = document.getElementById("confirm-password").value.trim();
 
   if(!email || !password){
@@ -224,10 +312,19 @@ async function handleAuth(){
   try{
     if(signupMode){
       // --- VERIFICATIONS ---
-      if(email !== confirmEmail) {
-        showAuthMsg("Les adresses email ne correspondent pas");
+      // phone //
+      const phoneClean = phone.replace(/\s/g, ''); // On retire les espaces pour compter les chiffres
+
+      if(!phoneClean) {
+        showAuthMsg("Le numéro de téléphone est requis");
         return;
       }
+      if(phoneClean.length !== 10) {
+        showAuthMsg("Le numéro de téléphone doit contenir exactement 10 chiffres");
+        return;
+      }
+
+      // password //
       if(password !== confirmPassword) {
         showAuthMsg("Les mots de passe ne correspondent pas");
         return;
@@ -244,6 +341,7 @@ async function handleAuth(){
       await db.collection("profiles").doc(res.user.uid).set({
         first_name: firstname || "Client",
         email: email,
+        phone: phone,
         points: 0,
         short_code: shortCode,
         role: "membre",
@@ -252,9 +350,10 @@ async function handleAuth(){
     } else {
       await auth.signInWithEmailAndPassword(email, password);
     }
-  } catch(err){
-    showAuthMsg(err.message);
-  }
+    } catch (err) {
+          // On utilise notre nouvelle fonction avec err.code
+          showAuthMsg(getErrorMessage(err.code)); 
+    }
 }
 
     function showAuthMsg(msg){
@@ -753,6 +852,57 @@ async function handleAuth(){
     showAuthMsg("Erreur : " + err.message);
   }
 }
+
+// ================= SUPPRESSION DE COMPTE =================
+    
+    // 1. Affiche le formulaire de suppression
+    function showDeleteSection() {
+      document.getElementById("show-delete-btn").classList.add("hidden");
+      document.getElementById("delete-confirm-section").classList.remove("hidden");
+    }
+
+    // 2. Annule et cache le formulaire
+    function cancelDelete() {
+      document.getElementById("delete-confirm-section").classList.add("hidden");
+      document.getElementById("show-delete-btn").classList.remove("hidden");
+      document.getElementById("delete-email").value = "";
+      document.getElementById("delete-password").value = "";
+    }
+
+    // 3. Valide les identifiants et supprime le compte
+    async function confirmDeleteAccount() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const email = document.getElementById("delete-email").value.trim();
+      const password = document.getElementById("delete-password").value.trim();
+
+      if (!email || !password) {
+        alert("Veuillez remplir votre email et votre mot de passe.");
+        return;
+      }
+
+      // On prépare les identifiants pour Firebase
+      const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+
+      try {
+        // Étape A : On ré-authentifie l'utilisateur pour des raisons de sécurité
+        await user.reauthenticateWithCredential(credential);
+        
+        // Étape B : Si le mot de passe est bon, on supprime ses données Firestore
+        await db.collection("profiles").doc(user.uid).delete();
+        
+        // Étape C : On supprime son compte de connexion
+        await user.delete();
+        
+        alert("Votre compte a été supprimé avec succès.");
+        // Le système détectera la déconnexion et renverra vers l'accueil tout seul !
+        
+      } catch (error) {
+        console.error("Erreur de suppression :", error);
+        alert(getErrorMessage(error.code)); 
+      }
+    }
 
     // FONCTION PAGE LÉGALE
       function openLegalPage() {
