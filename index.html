@@ -123,75 +123,6 @@
     </div>
   </div>
 
-  <div id="admin-dashboard" class="hidden bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
-
-    <h2 class="text-2xl font-black text-center mb-6 text-orange-600">
-      ADMIN
-    </h2>
-
-      <div id="admin-search-section">
-      <input id="target-code" type="text" placeholder="Code client" maxlength="6"
-        class="w-full p-3 bg-stone-100 rounded-xl mb-4 text-center uppercase font-mono text-xl">
-      <button onclick="searchClient()" 
-        class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold mb-4">
-        Chercher le client
-      </button>
-
-      <button onclick="showLeaderboard()" class="w-full bg-orange-100 text-orange-700 p-3 rounded-xl font-bold flex items-center justify-center">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-        Voir le classement général
-      </button>
-    </div>
-
-    <div id="admin-action-section" class="hidden">
-      
-      <div class="bg-orange-100 p-4 rounded-2xl mb-6 text-center border border-orange-200 mt-2">
-        <p class="text-sm text-orange-800 font-medium mb-1">Client trouvé : <span id="admin-client-name" class="font-bold text-lg"></span></p>
-        <p class="text-4xl font-black text-orange-600 mt-1" id="admin-client-points">0 <span class="text-lg font-bold">pts</span></p>
-      </div>
-
-      <div class="bg-stone-50 p-4 rounded-2xl mb-4 border border-stone-200">
-        <h3 class="font-bold text-stone-700 mb-3 text-center">Ajouter des points</h3>
-        <input id="order-amount" type="number" placeholder="Montant addition (€)"
-          class="w-full p-3 bg-white border border-stone-200 rounded-xl mb-3 text-center">
-        <button onclick="addPoints()" 
-          class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold">
-          Valider l'ajout
-        </button>
-      </div>
-
-      <div class="bg-orange-50 p-4 rounded-2xl mb-4 border border-orange-200">
-        <h3 class="font-bold text-orange-800 mb-3 text-center">Utiliser une récompense</h3>
-        
-        <div id="admin-rewards-list" class="space-y-2">
-        </div>
-      </div>
-
-      <button onclick="resetAdminView()" class="w-full bg-stone-200 text-stone-700 p-3 rounded-xl font-bold mt-2">
-        Rechercher un autre client
-      </button>
-
-    </div>
-
-    <div id="admin-leaderboard-section" class="hidden">
-      <h3 class="font-black text-stone-800 text-xl mb-4 text-center">Classement Fidélité</h3>
-      <div class="bg-stone-50 rounded-2xl p-2 border border-stone-200 overflow-hidden mb-4">
-        <ul id="leaderboard-list" class="divide-y divide-stone-200 max-h-96 overflow-y-auto">
-          </ul>
-      </div>
-      <button onclick="resetAdminView()" class="w-full bg-stone-800 text-white p-3 rounded-xl font-bold">
-        Retour
-      </button>
-    </div>
-
-    <p id="admin-msg" class="text-center mt-6 hidden"></p>
-
-    <button onclick="logout()" class="mt-6 text-sm text-red-500 w-full">
-      Déconnexion
-    </button>
-
-  </div>
-
   <script>
     // ================= FIREBASE CONFIG =================
     const firebaseConfig = {
@@ -204,8 +135,14 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // ================= CLIENT CONFIG =================
+    // 👇 Modifier cette valeur pour chaque commerçant
+    const CLIENT_ID = "rylia";
+    // Raccourci vers la collection du client dans Firestore
+    // Structure : clients/{CLIENT_ID}/profiles/{uid}
+    const profiles = db.collection("clients").doc(CLIENT_ID).collection("profiles");
+
     let signupMode = false;
-    let currentClientCode = ""; 
 
     // ================= TRADUCTION DES ERREURS =================
     function getErrorMessage(errorCode) {
@@ -249,22 +186,6 @@
               
               // 4. On met à jour l'affichage
               e.target.value = formatted;
-            });
-          }
-
-          // ================= FORMATAGE CODE ADMIN =================
-          const adminCodeInput = document.getElementById("target-code"); 
-          
-          if(adminCodeInput) {
-            adminCodeInput.addEventListener('input', function (e) {
-              // 1. On supprime tous les espaces (et autres caractères invisibles)
-              let cleaned = e.target.value.replace(/\s/g, '');
-              
-              // 2. On passe tout en majuscules automatiquement
-              cleaned = cleaned.toUpperCase();
-              
-              // 3. On met à jour l'affichage
-              e.target.value = cleaned;
             });
           }
         });
@@ -338,7 +259,7 @@ async function handleAuth(){
       const res = await auth.createUserWithEmailAndPassword(email, password);
       const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
 
-      await db.collection("profiles").doc(res.user.uid).set({
+      await profiles.doc(res.user.uid).set({
         first_name: firstname || "Client",
         email: email,
         phone: phone,
@@ -370,7 +291,7 @@ async function handleAuth(){
         return;
       }
 
-      const doc = await db.collection("profiles").doc(user.uid).get();
+      const doc = await profiles.doc(user.uid).get();
       if(!doc.exists){
         logout();
         return;
@@ -378,7 +299,7 @@ async function handleAuth(){
 
       const data = doc.data();
       if(data.role === "admin"){
-        showAdmin();
+        window.location.href = "admin.html";
       } else {
         showClient(data, user.uid);
       }
@@ -387,7 +308,6 @@ async function handleAuth(){
     // ================= SHOW CLIENT =================
     async function showClient(data, uid){
       document.getElementById("auth").classList.add("hidden");
-      document.getElementById("admin-dashboard").classList.add("hidden");
       document.getElementById("client-dashboard").classList.remove("hidden");
 
       document.getElementById("client-name").innerText = data.first_name;
@@ -531,7 +451,7 @@ async function handleAuth(){
       historyContainer.innerHTML = '<p class="text-sm text-stone-400 text-center">Chargement...</p>';
 
       try {
-        const snapshot = await db.collection("profiles").doc(uid).collection("transactions")
+        const snapshot = await profiles.doc(uid).collection("transactions")
           .orderBy("date", "desc")
           .limit(10)
           .get();
@@ -577,247 +497,12 @@ async function handleAuth(){
 
     // AJOUT : Fonction calcul rang client
     async function calculateRank(points) {
-      const snap = await db.collection("profiles")
+      const snap = await profiles
         .where("role", "==", "membre")
         .where("points", ">", points)
         .get();
       const rank = snap.size + 1;
       document.getElementById("client-rank").innerText = `#${rank}${rank === 1 ? 'er' : 'ème'} des clients les plus fidèles`;
-    }
-
-    // ================= SHOW ADMIN =================
-    function showAdmin(){
-      document.getElementById("auth").classList.add("hidden");
-      document.getElementById("client-dashboard").classList.add("hidden");
-      document.getElementById("admin-dashboard").classList.remove("hidden");
-      resetAdminView();
-    }
-
-    // AJOUT : Fonction afficher classement Admin
-    async function showLeaderboard() {
-      document.getElementById("admin-search-section").classList.add("hidden");
-      document.getElementById("admin-leaderboard-section").classList.remove("hidden");
-      const list = document.getElementById("leaderboard-list");
-      list.innerHTML = '<p class="text-center p-4 text-stone-400">Chargement...</p>';
-
-      const snap = await db.collection("profiles")
-        .where("role", "==", "membre")
-        .orderBy("points", "desc")
-        .limit(50)
-        .get();
-
-      list.innerHTML = "";
-      let rank = 1;
-      snap.forEach(doc => {
-        const d = doc.data();
-        const li = document.createElement("li");
-        li.className = "flex justify-between items-center p-3";
-        li.innerHTML = `
-          <div class="flex items-center">
-            <span class="w-8 font-black text-stone-400">#${rank}</span>
-            <span class="font-bold text-stone-800">${d.first_name}</span>
-          </div>
-          <span class="text-orange-600 font-black">${d.points} pts</span>
-        `;
-        list.appendChild(li);
-        rank++;
-      });
-    }
-
-    // ================= ADMIN : CHERCHER CLIENT =================
-    async function searchClient(keepMessage = false) {
-      const code = document.getElementById("target-code").value.trim().toUpperCase();
-      
-      if(!code) {
-        showAdminMsg("Veuillez saisir un code client", "red");
-        return;
-      }
-
-      try {
-        const snapshot = await db.collection("profiles")
-          .where("short_code","==",code)
-          .limit(1)
-          .get();
-
-        if(snapshot.empty) throw new Error("Client introuvable ou code incorrect");
-
-        const userDoc = snapshot.docs[0];
-        const userData = userDoc.data();
-        currentClientCode = code; 
-
-        document.getElementById("admin-client-name").innerText = userData.first_name;
-        document.getElementById("admin-client-points").innerHTML = `${userData.points} <span class="text-lg font-bold">pts</span>`;
-
-        // Générer les boutons de récompenses
-        renderAdminRewards(userData.points);
-
-        document.getElementById("admin-search-section").classList.add("hidden");
-        document.getElementById("admin-action-section").classList.remove("hidden");
-        
-        if(!keepMessage) {
-          document.getElementById("admin-msg").classList.add("hidden");
-        }
-
-      } catch(err) {
-        showAdminMsg(err.message, "red");
-      }
-    }
-
-    // ================= ADMIN : GÉNÉRER LES BOUTONS CADEAUX =================
-    function renderAdminRewards(currentPoints) {
-      const container = document.getElementById("admin-rewards-list");
-      container.innerHTML = "";
-
-      const availableRewards = REWARD_TIERS.filter(tier => tier.points <= currentPoints);
-
-      if (availableRewards.length === 0) {
-        container.innerHTML = `<p class="text-sm text-center text-orange-700/70 italic p-2">Le client n'a pas encore assez de points pour une récompense.</p>`;
-        return;
-      }
-
-      availableRewards.forEach(tier => {
-        const btn = document.createElement("button");
-        btn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white p-3 rounded-xl font-bold flex justify-between items-center transition-colors mb-2";
-        btn.onclick = () => deductReward(tier.points, tier.title);
-        
-        btn.innerHTML = `
-          <span class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"></path></svg>
-            Utiliser ${tier.title}
-          </span>
-          <span class="bg-orange-800/30 px-2 py-1 rounded text-xs">-${tier.points} pts</span>
-        `;
-        container.appendChild(btn);
-      });
-    }
-
-    // ================= ADMIN : RESET VUE =================
-    function resetAdminView() {
-      currentClientCode = "";
-      document.getElementById("target-code").value = "";
-      document.getElementById("order-amount").value = "";
-      
-      document.getElementById("admin-action-section").classList.add("hidden");
-      document.getElementById("admin-leaderboard-section").classList.add("hidden"); // AJOUT : cacher leaderboard
-      document.getElementById("admin-search-section").classList.remove("hidden");
-      
-      // On cache le message de confirmation quand on revient à l'écran de recherche
-      document.getElementById("admin-msg").classList.add("hidden");
-    }
-
-    // ================= ADD POINTS =================
-    async function addPoints(){
-      const amount = parseFloat(document.getElementById("order-amount").value);
-
-      if(!currentClientCode || !amount || amount <= 0){
-        showAdminMsg("Montant invalide", "red");
-        return;
-      }
-
-      try {
-        const snapshot = await db.collection("profiles")
-          .where("short_code","==",currentClientCode)
-          .limit(1)
-          .get();
-
-        if(snapshot.empty) throw new Error("Erreur : Client introuvable");
-
-        const userDoc = snapshot.docs[0];
-        const pointsToAdd = Math.round(amount * 2);
-
-        const libelle = `Commande de ${amount.toFixed(2).replace('.', ',')}€`;
-
-        await db.collection("profiles").doc(userDoc.id).update({
-          points: firebase.firestore.FieldValue.increment(pointsToAdd),
-          last_transaction: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        await db.collection("profiles").doc(userDoc.id).collection("transactions").add({
-          amount_euros: amount,
-          points_added: pointsToAdd,
-          description: libelle,
-          date: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // Message de confirmation sans limite de temps
-        showAdminMsg(`+ ${pointsToAdd} points`, "green");
-        document.getElementById("order-amount").value = "";
-        
-        // On rafraichit la vue mais en gardant le message visible (keepMessage = true)
-        searchClient(true); 
-
-      } catch(err) {
-        showAdminMsg(err.message, "red");
-      }
-    }
-
-    // ================= DEDUCT REWARD =================
-    async function deductReward(pointsToDeduct, rewardTitle){
-      if(!currentClientCode || !pointsToDeduct || pointsToDeduct <= 0){
-        showAdminMsg("Erreur lors de la sélection de la récompense", "red");
-        return;
-      }
-
-      if(!confirm(`Valider l'utilisation de la récompense : ${rewardTitle} (-${pointsToDeduct} pts) ?`)) {
-        return;
-      }
-
-      try {
-        const snapshot = await db.collection("profiles")
-          .where("short_code","==",currentClientCode)
-          .limit(1)
-          .get();
-
-        if(snapshot.empty) throw new Error("Erreur : Client introuvable");
-
-        const userDoc = snapshot.docs[0];
-        const userData = userDoc.data();
-
-        if(userData.points < pointsToDeduct) {
-            throw new Error(`Le client n'a pas assez de points !`);
-        }
-
-        const libelle = `Consommation : ${rewardTitle}`;
-
-        await db.collection("profiles").doc(userDoc.id).update({
-          points: firebase.firestore.FieldValue.increment(-pointsToDeduct),
-          last_transaction: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        await db.collection("profiles").doc(userDoc.id).collection("transactions").add({
-          amount_euros: 0,
-          points_added: -pointsToDeduct,
-          description: libelle,
-          date: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // Message de confirmation sans limite de temps
-        showAdminMsg(`- ${pointsToDeduct} points`, "stone");
-
-        // On rafraichit la vue mais en gardant le message visible (keepMessage = true)
-        searchClient(true);
-
-      } catch(err) {
-        showAdminMsg(err.message, "red");
-      }
-    }
-
-    // ================= MESSAGES ADMIN (SANS DISPARITION AUTO) =================
-    function showAdminMsg(msg, color){
-      const m = document.getElementById("admin-msg");
-      m.innerText = msg;
-      
-      let colorClasses = "";
-      if (color === "green") {
-        colorClasses = "bg-green-100 text-green-700 border-green-300";
-      } else if (color === "red") {
-        colorClasses = "bg-red-100 text-red-700 border-red-300";
-      } else if (color === "stone") {
-        colorClasses = "bg-stone-200 text-stone-700 border-stone-400";
-      }
-
-      m.className = `text-center mt-6 p-4 rounded-xl text-3xl font-black border-2 shadow-lg transition-all duration-300 ${colorClasses}`;
-      m.classList.remove("hidden");
     }
 
     // ================= UTIL =================
@@ -828,7 +513,6 @@ async function handleAuth(){
     function showAuth(){
       document.getElementById("auth").classList.remove("hidden");
       document.getElementById("client-dashboard").classList.add("hidden");
-      document.getElementById("admin-dashboard").classList.add("hidden");
     }
 
 
@@ -890,7 +574,7 @@ async function handleAuth(){
         await user.reauthenticateWithCredential(credential);
         
         // Étape B : Si le mot de passe est bon, on supprime ses données Firestore
-        await db.collection("profiles").doc(user.uid).delete();
+        await profiles.doc(user.uid).delete();
         
         // Étape C : On supprime son compte de connexion
         await user.delete();
