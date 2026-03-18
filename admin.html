@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rylia — Dashboard Fidélité</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:      #FF8C00;
+      --primary-soft: #FFF4E5;
+      --dark:         #111827;
+      --gray:         #6B7280;
+      --gray-light:   #F9FAFB;
+      --border:       #E5E7EB;
+      --white:        #FFFFFF;
+      --success:      #10B981;
+      --success-soft: #ECFDF5;
+      --danger:       #EF4444;
+      --danger-soft:  #FEF2F2;
+      --radius:       12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--gray-light);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ---- Topbar ---- */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand { display: flex; align-items: center; gap: 10px; }
+
+    .topbar-logo {
+      width: 34px; height: 34px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .topbar-logo svg { width: 18px; height: 18px; fill: white; }
+    .topbar-name { font-size: 16px; font-weight: 700; color: var(--dark); }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .user-badge {
+      font-size: 13px; color: var(--gray);
+      background: var(--gray-light);
+      padding: 5px 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-logout {
+      font-size: 13px; font-weight: 600; color: var(--gray);
+      background: none; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 6px 14px;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .btn-logout:hover { color: var(--dark); border-color: #9CA3AF; }
+
+    /* ---- Layout ---- */
+    .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+    .page-header { margin-bottom: 28px; }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--dark); }
+    .page-subtitle { font-size: 14px; color: var(--gray); margin-top: 4px; }
+
+    /* ---- KPI ---- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+    }
+
+    .kpi-card.accent { border-left: 3px solid var(--primary); }
+
+    .kpi-label {
+      font-size: 12px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+
+    .kpi-value { font-size: 32px; font-weight: 700; color: var(--dark); line-height: 1; }
+
+    /* ---- Toolbar ---- */
+    .toolbar {
+      display: flex; gap: 12px; margin-bottom: 16px;
+      flex-wrap: wrap; align-items: center;
+    }
+
+    .search-wrap { position: relative; flex: 1; min-width: 200px; }
+
+    .search-wrap svg {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: #9CA3AF; pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%; padding: 9px 14px 9px 36px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; outline: none; font-family: inherit;
+      color: var(--dark); transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,140,0,0.1);
+    }
+    .search-input::placeholder { color: #C4C9D4; }
+
+    .filter-select {
+      padding: 9px 14px; border: 1.5px solid var(--border);
+      border-radius: var(--radius); font-size: 14px;
+      color: var(--dark); background: var(--white);
+      outline: none; cursor: pointer; font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .filter-select:focus { border-color: var(--primary); }
+
+    /* ---- Table ---- */
+    .table-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead { background: var(--gray-light); border-bottom: 1px solid var(--border); }
+
+    th {
+      padding: 12px 16px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--gray); text-align: left; white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 16px; font-size: 14px; color: var(--dark);
+      border-bottom: 1px solid var(--border); vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr { cursor: pointer; transition: background 0.15s; }
+    tbody tr:hover { background: #FFFBF5; }
+
+    .cell-person strong { display: block; font-weight: 600; font-size: 14px; }
+    .cell-person span   { display: block; font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+    .badge-points {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+      background: var(--primary-soft); color: var(--primary); white-space: nowrap;
+    }
+
+    .badge-points.zero { background: var(--gray-light); color: var(--gray); }
+
+    .code {
+      font-family: 'Courier New', monospace; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; background: var(--gray-light);
+      padding: 3px 8px; border-radius: 6px;
+    }
+
+    .cell-date { font-size: 13px; color: var(--gray); white-space: nowrap; }
+
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      font-size: 12px; font-weight: 700; background: var(--gray-light); color: var(--gray);
+    }
+
+    .rank-badge.gold   { background: #FEF3C7; color: #D97706; }
+    .rank-badge.silver { background: #F1F5F9; color: #64748B; }
+    .rank-badge.bronze { background: #FEF2E7; color: #B45309; }
+
+    .tier-bar {
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .tier-track {
+      flex: 1; height: 5px; background: var(--border);
+      border-radius: 99px; overflow: hidden; min-width: 60px;
+    }
+
+    .tier-fill {
+      height: 100%; background: var(--primary); border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .tier-label { font-size: 11px; color: var(--gray); white-space: nowrap; }
+
+    /* ---- Bouton gérer ---- */
+    .btn-manage {
+      background: none; border: 1.5px solid var(--border);
+      border-radius: 7px; padding: 5px 12px; cursor: pointer;
+      color: var(--gray); font-size: 12px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      line-height: 1; transition: all 0.15s; font-family: inherit;
+    }
+    .btn-manage:hover {
+      background: var(--primary-soft); color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* ---- Compteur ---- */
+    .result-count {
+      font-size: 13px; color: var(--gray);
+      padding: 10px 16px; border-top: 1px solid var(--border);
+      text-align: right;
+    }
+
+    /* ---- États vide / loading ---- */
+    .table-state { padding: 60px 20px; text-align: center; color: var(--gray); }
+    .table-state p { font-size: 14px; }
+
+    .loading-spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border); border-top-color: var(--primary);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Modale gestion client ---- */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(3px);
+      z-index: 500; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+
+    .modal-box {
+      background: var(--white); border-radius: 16px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      overflow: hidden; animation: modalIn 0.2s ease;
+    }
+
+    @keyframes modalIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+
+    .modal-client-info {}
+
+    .modal-client-name { font-size: 18px; font-weight: 700; color: var(--dark); }
+    .modal-client-email { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+    .modal-points-pill {
+      background: var(--primary-soft); color: var(--primary);
+      border-radius: 99px; padding: 6px 14px;
+      font-size: 22px; font-weight: 800; white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .modal-points-pill span { font-size: 13px; font-weight: 600; }
+
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--gray); padding: 4px; border-radius: 6px;
+      display: flex; align-items: center;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { color: var(--dark); background: var(--gray-light); }
+
+    .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+    .modal-section {
+      background: var(--gray-light); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+
+    .modal-section-title {
+      font-size: 12px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+    }
+
+    .points-input-row { display: flex; gap: 8px; }
+
+    .points-input {
+      flex: 1; padding: 9px 14px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 14px; outline: none; font-family: inherit;
+      color: var(--dark); transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+    .points-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,140,0,0.1);
+    }
+    .points-input::placeholder { color: #C4C9D4; }
+
+    .btn-add-points {
+      padding: 9px 18px; background: var(--dark); color: var(--white);
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-add-points:hover { background: #1F2937; }
+    .btn-add-points:disabled { background: var(--border); cursor: not-allowed; }
+
+    .rewards-grid { display: flex; flex-direction: column; gap: 8px; }
+
+    .btn-reward {
+      width: 100%; padding: 10px 14px; background: var(--white);
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--dark);
+    }
+    .btn-reward:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+    .btn-reward:disabled { opacity: 0.45; cursor: not-allowed; background: var(--gray-light); }
+
+    .reward-pts-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      background: var(--danger-soft); color: var(--danger); border-radius: 20px;
+    }
+
+    .no-rewards {
+      font-size: 13px; color: var(--gray); text-align: center;
+      padding: 8px; font-style: italic;
+    }
+
+    /* ---- Message feedback modal ---- */
+    .modal-feedback {
+      font-size: 13px; padding: 10px 14px; border-radius: 8px;
+      display: none; margin-top: 4px;
+    }
+    .modal-feedback.show { display: block; }
+    .modal-feedback.success { background: var(--success-soft); color: #047857; border-left: 3px solid var(--success); }
+    .modal-feedback.error   { background: var(--danger-soft);  color: #991b1b; border-left: 3px solid var(--danger); }
+
+    .modal-footer {
+      padding: 14px 24px 20px;
+      display: flex; justify-content: flex-end;
+    }
+
+    .btn-close-modal {
+      padding: 9px 20px; background: none; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--gray);
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .btn-close-modal:hover { border-color: #9CA3AF; color: var(--dark); }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--dark); color: white;
+      padding: 10px 20px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      z-index: 600; transition: transform 0.3s ease; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      .topbar { padding: 0 16px; }
+      .page   { padding: 20px 16px; }
+      .page-title { font-size: 18px; }
+      .user-badge { display: none; }
+      .modal-header { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <img src="logo-rylia-transparent.png" width="8%" alt="Rylia">
+    <span class="topbar-name">Rylia</span>
+  </div>
+  <div class="topbar-right">
+    <span class="user-badge" id="user-email">—</span>
+    <button class="btn-logout" onclick="handleLogout()">Déconnexion</button>
+  </div>
+</header>
+
+<!-- Page -->
+<main class="page">
+
+  <div class="page-header">
+    <h1 class="page-title">Dashboard Fidélité</h1>
+    <p class="page-subtitle" id="page-subtitle">Gestion des membres</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Total membres</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Points en circulation</div>
+      <div class="kpi-value" id="kpi-points">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Moyenne des points</div>
+      <div class="kpi-value" id="kpi-tiers">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Top client</div>
+      <div class="kpi-value" id="kpi-top" style="font-size:18px; padding-top: 4px;">—</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" class="search-input" id="search-input"
+             placeholder="Rechercher un prénom, email ou code…"
+             oninput="applyFilters()">
+    </div>
+    <select class="filter-select" id="filter-tier" onchange="applyFilters()">
+      <option value="">Tous les paliers</option>
+      <option value="0">Aucun palier</option>
+      <option value="40">Palier 1 (40+ pts)</option>
+      <option value="80">Palier 2 (80+ pts)</option>
+      <option value="150">Palier 3 (150+ pts)</option>
+      <option value="200">Palier 4 (200+ pts)</option>
+      <option value="260">Palier 5 (260+ pts)</option>
+    </select>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Membre</th>
+            <th>Code</th>
+            <th>Points</th>
+            <th>Progression</th>
+            <th>Dernière activité</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr>
+            <td colspan="7">
+              <div class="table-state">
+                <div class="loading-spinner"></div>
+                <p>Chargement des membres…</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="result-count" id="result-count" style="display:none"></div>
+  </div>
+
+</main>
+
+<!-- Modale gestion client -->
+<div class="modal-backdrop" id="client-modal" onclick="handleModalBackdropClick(event)">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <div class="modal-client-info">
+        <div class="modal-client-name" id="modal-name">—</div>
+        <div class="modal-client-email" id="modal-email">—</div>
+        <div style="margin-top: 6px; font-size: 12px; color: var(--gray);">
+          Code : <span class="code" id="modal-code">—</span>
+        </div>
+      </div>
+      <div class="modal-points-pill" id="modal-points">— <span>pts</span></div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Section ajout de points -->
+      <div class="modal-section">
+        <div class="modal-section-title">Ajouter des points</div>
+        <div class="points-input-row">
+          <input type="number" class="points-input" id="modal-amount"
+                 placeholder="Montant de l'addition (€)" min="0" step="0.01">
+          <button class="btn-add-points" id="btn-add" onclick="addPoints()">Valider</button>
+        </div>
+      </div>
+
+      <!-- Section récompenses -->
+      <div class="modal-section">
+        <div class="modal-section-title">Utiliser une récompense</div>
+        <div class="rewards-grid" id="modal-rewards">
+          <p class="no-rewards">Sélectionnez un client pour voir ses récompenses.</p>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="modal-feedback" id="modal-feedback"></div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-close-modal" onclick="closeModal()">Fermer</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ================= CONFIG =================
+  // 👇 Modifier cette valeur pour chaque commerçant
+  const CLIENT_ID = "rylia";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDf8Oh-d4baOxu3XoPV2rnLeLJZQ5tZDYY",
+    authDomain: "rylia-fidelite-9a015.firebaseapp.com",
+    projectId: "rylia-fidelite-9a015"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  // Raccourci identique à index.html
+  const profiles = db.collection("clients").doc(CLIENT_ID).collection("profiles");
+
+  // ================= PALIERS =================
+  const REWARD_TIERS = [
+    { points: 40,  title: "Gain 1", desc: "ex: Boisson offerte" },
+    { points: 80,  title: "Gain 2", desc: "ex: Dessert offert"  },
+    { points: 150, title: "Gain 3", desc: "ex: Plat au choix"   },
+    { points: 200, title: "Gain 4", desc: "ex: Menu complet"    },
+    { points: 260, title: "Gain 5", desc: "ex: Repas pour 2"    }
+  ];
+
+  const MAX_POINTS = 260;
+
+  // ================= STATE =================
+  let allMembers = [];
+  let currentMember = null; // { id, ...data }
+
+  // ================= AUTH GUARD =================
+  auth.onAuthStateChanged(async user => {
+    if (!user) { window.location.href = "index.html"; return; }
+
+    const doc = await profiles.doc(user.uid).get();
+    if (!doc.exists || doc.data().role !== "admin") {
+      auth.signOut();
+      window.location.href = "index.html";
+      return;
+    }
+
+    document.getElementById("user-email").textContent = user.email;
+    document.getElementById("page-subtitle").textContent = `Programme de fidélité — ${CLIENT_ID}`;
+    loadMembers();
+  });
+
+  // ================= CHARGEMENT TEMPS RÉEL =================
+  function loadMembers() {
+    profiles
+      .where("role", "==", "membre")
+      .orderBy("points", "desc")
+      .onSnapshot(snapshot => {
+        allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateKPIs();
+        applyFilters();
+      }, err => {
+        console.error("Firestore :", err);
+        showEmpty("Erreur de chargement des données.");
+      });
+  }
+
+  // ================= KPIs =================
+  function updateKPIs() {
+    const total     = allMembers.length;
+    const totalPts  = allMembers.reduce((sum, m) => sum + (m.points || 0), 0);
+    const avgPts    = total > 0 ? Math.round(totalPts / total) : 0;
+    const top       = allMembers[0]; // déjà trié par points desc
+
+    document.getElementById("kpi-total").textContent  = total;
+    document.getElementById("kpi-points").textContent = totalPts.toLocaleString("fr-FR");
+    document.getElementById("kpi-tiers").textContent  = avgPts;
+    document.getElementById("kpi-top").textContent    = top
+      ? `${top.first_name} (${top.points} pts)`
+      : "—";
+  }
+
+  // ================= FILTRAGE =================
+  function applyFilters() {
+    const search    = document.getElementById("search-input").value.toLowerCase().trim();
+    const tierMin   = parseInt(document.getElementById("filter-tier").value) || null;
+
+    const filtered = allMembers.filter(m => {
+      const matchSearch = !search
+        || (m.first_name  || "").toLowerCase().includes(search)
+        || (m.email       || "").toLowerCase().includes(search)
+        || (m.short_code  || "").toLowerCase().includes(search);
+      const pts = m.points || 0;
+      const matchTier = tierMin === null
+        ? true
+        : tierMin === 0
+          ? pts < 40
+          : pts >= tierMin;
+      return matchSearch && matchTier;
+    });
+
+    renderTable(filtered);
+  }
+
+  // ================= RENDU TABLEAU =================
+  function renderTable(rows) {
+    const tbody   = document.getElementById("table-body");
+    const countEl = document.getElementById("result-count");
+
+    if (rows.length === 0) {
+      showEmpty("Aucun membre trouvé.");
+      countEl.style.display = "none";
+      return;
+    }
+
+    tbody.innerHTML = rows.map((m, i) => {
+      const pts      = m.points || 0;
+      const progress = Math.min(Math.round((pts / MAX_POINTS) * 100), 100);
+      const nextTier = REWARD_TIERS.find(t => pts < t.points);
+      const tierLabel = nextTier
+        ? `${pts} / ${nextTier.points} pts`
+        : `${pts} pts ✓`;
+
+      // Rang (position dans le classement global)
+      const globalRank = allMembers.findIndex(x => x.id === m.id) + 1;
+      let rankClass = "";
+      if      (globalRank === 1) rankClass = "gold";
+      else if (globalRank === 2) rankClass = "silver";
+      else if (globalRank === 3) rankClass = "bronze";
+
+      const lastActivity = m.last_transaction
+        ? formatDate(m.last_transaction)
+        : (m.created_at ? formatDate(m.created_at) : "—");
+
+      return `
+        <tr onclick="openModal('${m.id}')">
+          <td><span class="rank-badge ${rankClass}">${globalRank}</span></td>
+          <td class="cell-person">
+            <strong>${escHtml(m.first_name || "—")}</strong>
+            <span>${escHtml(m.email || "—")}</span>
+          </td>
+          <td><span class="code">${escHtml(m.short_code || "—")}</span></td>
+          <td>
+            <span class="badge-points ${pts === 0 ? 'zero' : ''}">
+              ${pts} pts
+            </span>
+          </td>
+          <td>
+            <div class="tier-bar">
+              <div class="tier-track">
+                <div class="tier-fill" style="width: ${progress}%"></div>
+              </div>
+              <span class="tier-label">${tierLabel}</span>
+            </div>
+          </td>
+          <td class="cell-date">${lastActivity}</td>
+          <td>
+            <button class="btn-manage" onclick="event.stopPropagation(); openModal('${m.id}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              Gérer
+            </button>
+          </td>
+        </tr>`;
+    }).join("");
+
+    countEl.style.display = "block";
+    countEl.textContent = `${rows.length} membre${rows.length > 1 ? "s" : ""}`;
+  }
+
+  function showEmpty(msg) {
+    document.getElementById("table-body").innerHTML = `
+      <tr><td colspan="7">
+        <div class="table-state"><p>${msg}</p></div>
+      </td></tr>`;
+  }
+
+  // ================= MODALE CLIENT =================
+  function openModal(memberId) {
+    const member = allMembers.find(m => m.id === memberId);
+    if (!member) return;
+
+    currentMember = member;
+
+    document.getElementById("modal-name").textContent   = member.first_name || "—";
+    document.getElementById("modal-email").textContent  = member.email || "—";
+    document.getElementById("modal-code").textContent   = member.short_code || "—";
+    document.getElementById("modal-amount").value       = "";
+    hideFeedback();
+    refreshModalPoints(member.points || 0);
+
+    document.getElementById("client-modal").classList.add("show");
+  }
+
+  function refreshModalPoints(pts) {
+    document.getElementById("modal-points").innerHTML = `${pts} <span>pts</span>`;
+    renderModalRewards(pts);
+  }
+
+  function renderModalRewards(pts) {
+    const container = document.getElementById("modal-rewards");
+    const available = REWARD_TIERS.filter(t => t.points <= pts);
+
+    if (available.length === 0) {
+      container.innerHTML = `<p class="no-rewards">Pas encore assez de points pour une récompense.</p>`;
+      return;
+    }
+
+    container.innerHTML = available.map(tier => `
+      <button class="btn-reward" onclick="deductReward(${tier.points}, '${tier.title}')">
+        <span>
+          <strong>${tier.title}</strong>
+          <span style="color: var(--gray); font-size: 12px; margin-left: 6px;">${tier.desc}</span>
+        </span>
+        <span class="reward-pts-badge">−${tier.points} pts</span>
+      </button>
+    `).join("");
+  }
+
+  function closeModal() {
+    document.getElementById("client-modal").classList.remove("show");
+    currentMember = null;
+    document.getElementById("modal-amount").value = "";
+    hideFeedback();
+  }
+
+  function handleModalBackdropClick(e) {
+    if (e.target === document.getElementById("client-modal")) closeModal();
+  }
+
+  // ================= AJOUTER DES POINTS =================
+  async function addPoints() {
+    if (!currentMember) return;
+    const amount = parseFloat(document.getElementById("modal-amount").value);
+
+    if (!amount || amount <= 0) {
+      showFeedback("Veuillez saisir un montant valide.", "error");
+      return;
+    }
+
+    const btn = document.getElementById("btn-add");
+    btn.disabled = true;
+
+    try {
+      const pointsToAdd = Math.round(amount * 2);
+      const libelle = `Commande de ${amount.toFixed(2).replace(".", ",")}€`;
+
+      await profiles.doc(currentMember.id).update({
+        points: firebase.firestore.FieldValue.increment(pointsToAdd),
+        last_transaction: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      await profiles.doc(currentMember.id).collection("transactions").add({
+        amount_euros: amount,
+        points_added: pointsToAdd,
+        description: libelle,
+        date: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Mettre à jour l'état local + UI
+      currentMember.points = (currentMember.points || 0) + pointsToAdd;
+      refreshModalPoints(currentMember.points);
+      document.getElementById("modal-amount").value = "";
+      showFeedback(`✓ +${pointsToAdd} points ajoutés`, "success");
+      showToast(`+${pointsToAdd} pts — ${currentMember.first_name}`);
+
+    } catch (err) {
+      console.error(err);
+      showFeedback("Erreur lors de l'ajout des points.", "error");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ================= DÉDUIRE UNE RÉCOMPENSE =================
+  async function deductReward(pointsToDeduct, rewardTitle) {
+    if (!currentMember) return;
+
+    if (!confirm(`Valider l'utilisation de "${rewardTitle}" pour ${currentMember.first_name} (−${pointsToDeduct} pts) ?`)) return;
+
+    const pts = currentMember.points || 0;
+    if (pts < pointsToDeduct) {
+      showFeedback("Le client n'a pas assez de points.", "error");
+      return;
+    }
+
+    try {
+      const libelle = `Consommation : ${rewardTitle}`;
+
+      await profiles.doc(currentMember.id).update({
+        points: firebase.firestore.FieldValue.increment(-pointsToDeduct),
+        last_transaction: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      await profiles.doc(currentMember.id).collection("transactions").add({
+        amount_euros: 0,
+        points_added: -pointsToDeduct,
+        description: libelle,
+        date: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      currentMember.points = pts - pointsToDeduct;
+      refreshModalPoints(currentMember.points);
+      showFeedback(`✓ ${rewardTitle} utilisée (−${pointsToDeduct} pts)`, "success");
+      showToast(`${rewardTitle} utilisée — ${currentMember.first_name}`);
+
+    } catch (err) {
+      console.error(err);
+      showFeedback("Erreur lors de l'utilisation de la récompense.", "error");
+    }
+  }
+
+  // ================= FEEDBACK MODAL =================
+  function showFeedback(msg, type) {
+    const el = document.getElementById("modal-feedback");
+    el.textContent = msg;
+    el.className = `modal-feedback show ${type}`;
+  }
+
+  function hideFeedback() {
+    document.getElementById("modal-feedback").className = "modal-feedback";
+  }
+
+  // ================= TOAST =================
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+  }
+
+  // ================= LOGOUT =================
+  async function handleLogout() {
+    await auth.signOut();
+    window.location.href = "index.html";
+  }
+
+  // ================= HELPERS =================
+  function formatDate(ts) {
+    if (!ts) return "—";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("fr-FR", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+</script>
+</body>
+</html>
