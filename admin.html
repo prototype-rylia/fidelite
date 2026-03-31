@@ -342,6 +342,30 @@
     .btn-reward:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
     .btn-reward:disabled { opacity: 0.45; cursor: not-allowed; background: var(--gray-light); }
 
+    .btn-reward.special-reward {
+      background: linear-gradient(135deg, #FFF4E5 0%, #FFE5CC 100%);
+      border: 2px solid #FF8C00;
+      position: relative;
+    }
+    .btn-reward.special-reward::before {
+      content: "⭐ ÉVÉNEMENT";
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      background: #FF8C00;
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .btn-reward.special-reward:hover {
+      background: linear-gradient(135deg, #FFE5CC 0%, #FFD9B3 100%);
+      border-color: #E67E00;
+      transform: translateY(-1px);
+    }
+
     .reward-pts-badge {
       font-size: 11px; font-weight: 700; padding: 2px 8px;
       background: var(--danger-soft); color: var(--danger); border-radius: 20px;
@@ -384,6 +408,165 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
+    /* ---- Onglets ---- */
+    .tabs-nav {
+      display: flex; gap: 4px; margin-bottom: 28px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 12px 24px; font-size: 14px; font-weight: 600;
+      background: none; border: none; color: var(--gray);
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+    }
+
+    .tab-btn:hover { color: var(--dark); }
+
+    .tab-btn.active {
+      color: var(--primary); border-bottom-color: var(--primary);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ---- Événements ---- */
+    .event-form-card {
+      background: linear-gradient(135deg, #FFF4E5 0%, #FFE5CC 100%);
+      border: 2px solid #FFB366; border-radius: var(--radius);
+      padding: 28px; margin-bottom: 28px;
+    }
+
+    .event-form-title {
+      font-size: 18px; font-weight: 700; color: var(--dark);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--dark); margin-bottom: 6px;
+    }
+
+    .form-input, .form-file {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; outline: none; font-family: inherit;
+      background: var(--white); transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,140,0,0.1);
+    }
+
+    .form-hint {
+      font-size: 12px; color: var(--gray); margin-top: 4px;
+    }
+
+    .btn-create-event {
+      width: 100%; padding: 13px; background: var(--primary);
+      color: white; border: none; border-radius: var(--radius);
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+
+    .btn-create-event:hover {
+      background: #E67E00; transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,140,0,0.3);
+    }
+
+    .btn-create-event:disabled {
+      background: var(--gray); cursor: not-allowed; transform: none;
+    }
+
+    .events-list-title {
+      font-size: 18px; font-weight: 700; color: var(--dark);
+      margin-bottom: 16px;
+    }
+
+    .event-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      margin-bottom: 16px; display: flex; gap: 16px;
+      transition: all 0.2s;
+    }
+
+    .event-card:hover {
+      border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .event-card.expired {
+      background: var(--gray-light); opacity: 0.7;
+    }
+
+    .event-image {
+      width: 100px; height: 100px; object-fit: cover;
+      border-radius: 8px; flex-shrink: 0;
+    }
+
+    .event-image-placeholder {
+      width: 100px; height: 100px; background: linear-gradient(135deg, #FFE5CC, #FFC999);
+      border-radius: 8px; flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center; font-size: 36px;
+    }
+
+    .event-info {
+      flex: 1; display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .event-title {
+      font-size: 16px; font-weight: 700; color: var(--dark);
+    }
+
+    .event-title.expired { color: var(--gray); }
+
+    .event-date {
+      font-size: 13px; color: var(--gray);
+    }
+
+    .event-countdown {
+      font-size: 13px; font-weight: 600; color: var(--primary);
+    }
+
+    .event-status {
+      display: inline-block; padding: 4px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .event-status.active {
+      background: var(--success-soft); color: var(--success);
+    }
+
+    .event-status.expired {
+      background: var(--danger-soft); color: var(--danger);
+    }
+
+    .event-actions {
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-delete-event {
+      padding: 7px 14px; background: var(--danger-soft);
+      color: var(--danger); border: none; border-radius: 7px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+
+    .btn-delete-event:hover {
+      background: var(--danger); color: white;
+    }
+
+    .events-empty {
+      text-align: center; padding: 60px 20px; color: var(--gray);
+    }
+
+    .events-empty p { font-size: 14px; }
+
     /* ---- Responsive ---- */
     @media (max-width: 600px) {
       .topbar { padding: 0 16px; }
@@ -391,6 +574,8 @@
       .page-title { font-size: 18px; }
       .user-badge { display: none; }
       .modal-header { flex-wrap: wrap; }
+      .event-card { flex-direction: column; }
+      .event-image, .event-image-placeholder { width: 100%; height: 160px; }
     }
   </style>
 </head>
@@ -416,6 +601,19 @@
     <p class="page-subtitle" id="page-subtitle">Gestion des membres</p>
   </div>
 
+  <!-- Onglets -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('members')">
+      👥 Membres
+    </button>
+    <button class="tab-btn" onclick="switchTab('events')">
+      📅 Événements
+    </button>
+  </div>
+
+  <!-- CONTENU MEMBRES -->
+  <div class="tab-content active" id="tab-members">
+  
   <!-- KPIs -->
   <div class="kpi-grid">
     <div class="kpi-card accent">
@@ -486,6 +684,112 @@
     </div>
     <div class="result-count" id="result-count" style="display:none"></div>
   </div>
+
+  </div>
+  <!-- FIN CONTENU MEMBRES -->
+
+  <!-- CONTENU ÉVÉNEMENTS -->
+  <div class="tab-content" id="tab-events">
+    
+    <!-- Formulaire création événement -->
+    <div class="event-form-card">
+      <h2 class="event-form-title">
+        <span>➕</span> Créer un événement
+      </h2>
+
+      <div class="form-group">
+        <label class="form-label">Nom de l'événement</label>
+        <input type="text" id="event-title" class="form-input" 
+          placeholder="Ex: Soldes d'été, Fête de la musique...">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Date et heure de fin</label>
+        <input type="datetime-local" id="event-deadline" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Options de l'événement</label>
+        <div style="background: white; padding: 16px; border-radius: 8px; border: 1.5px solid var(--border);">
+          
+          <label style="display: flex; align-items: start; gap: 10px; margin-bottom: 12px; cursor: pointer;">
+            <input type="checkbox" id="option-double-points" 
+              style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
+            <div>
+              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
+                🎯 Points x2 sur les commandes
+              </div>
+              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
+                Les clients gagnent le double de points sur leurs achats pendant l'événement
+              </div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: start; gap: 10px; margin-bottom: 12px; cursor: pointer;">
+            <input type="checkbox" id="option-bonus-existing" 
+              style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
+            <div>
+              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
+                💰 Bonus sur les points existants
+              </div>
+              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
+                Ajoute un bonus aux points déjà accumulés par les clients
+              </div>
+              <div style="margin-top: 8px; display: none;" id="bonus-amount-container">
+                <input type="number" id="bonus-amount" placeholder="Nombre de points bonus" 
+                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+              </div>
+            </div>
+          </label>
+
+          <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="option-special-reward" 
+              style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
+            <div>
+              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
+                🎁 Récompense spéciale temporaire
+              </div>
+              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
+                Ajoute une récompense exclusive disponible uniquement pendant l'événement
+              </div>
+              <div style="margin-top: 8px; display: none;" id="reward-details-container">
+                <input type="text" id="reward-name" placeholder="Nom de la récompense" 
+                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; margin-bottom: 6px;">
+                <input type="number" id="reward-points" placeholder="Points nécessaires" 
+                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+              </div>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <button class="btn-create-event" onclick="createNewEvent()">
+        🚀 Publier l'événement
+      </button>
+    </div>
+
+    <script>
+      // Afficher/masquer les champs conditionnels
+      document.getElementById('option-bonus-existing').addEventListener('change', function(e) {
+        document.getElementById('bonus-amount-container').style.display = e.target.checked ? 'block' : 'none';
+      });
+
+      document.getElementById('option-special-reward').addEventListener('change', function(e) {
+        document.getElementById('reward-details-container').style.display = e.target.checked ? 'block' : 'none';
+      });
+    </script>
+
+    <!-- Liste des événements -->
+    <h2 class="events-list-title">📋 Tous les événements</h2>
+    <div id="events-list">
+      <div class="events-empty">
+        <p>Chargement...</p>
+      </div>
+    </div>
+
+  </div>
+  <!-- FIN CONTENU ÉVÉNEMENTS -->
 
 </main>
 
@@ -559,6 +863,7 @@
 
   // Raccourci identique à index.html
   const profiles = db.collection("clients").doc(CLIENT_ID).collection("profiles");
+  const events = db.collection("clients").doc(CLIENT_ID).collection("events");
 
   // ================= PALIERS =================
   const REWARD_TIERS = [
@@ -739,9 +1044,29 @@
     renderModalRewards(pts);
   }
 
-  function renderModalRewards(pts) {
+  async function renderModalRewards(pts) {
     const container = document.getElementById("modal-rewards");
-    const available = REWARD_TIERS.filter(t => t.points <= pts);
+    
+    // Récupérer les paliers standards
+    let available = REWARD_TIERS.filter(t => t.points <= pts);
+
+    // Ajouter la récompense spéciale si événement actif
+    const activeEvent = await getActiveEvent();
+    if (activeEvent && activeEvent.options && activeEvent.options.specialReward) {
+      const specialReward = {
+        points: activeEvent.options.rewardPoints,
+        title: `🎁 ${activeEvent.options.rewardName}`,
+        desc: `Récompense spéciale - ${activeEvent.title}`,
+        isSpecial: true
+      };
+      
+      // Ajouter seulement si le client a assez de points
+      if (pts >= specialReward.points) {
+        available.push(specialReward);
+        // Trier par points
+        available.sort((a, b) => a.points - b.points);
+      }
+    }
 
     if (available.length === 0) {
       container.innerHTML = `<p class="no-rewards">Pas encore assez de points pour une récompense.</p>`;
@@ -749,7 +1074,7 @@
     }
 
     container.innerHTML = available.map(tier => `
-      <button class="btn-reward" onclick="deductReward(${tier.points}, '${tier.title}')">
+      <button class="btn-reward ${tier.isSpecial ? 'special-reward' : ''}" onclick="deductReward(${tier.points}, '${tier.title.replace(/🎁 /, '')}')">
         <span>
           <strong>${tier.title}</strong>
           <span style="color: var(--gray); font-size: 12px; margin-left: 6px;">${tier.desc}</span>
@@ -770,6 +1095,47 @@
     if (e.target === document.getElementById("client-modal")) closeModal();
   }
 
+  // ================= VÉRIFIER ÉVÉNEMENT ACTIF =================
+  let activeEventCache = null;
+  let lastEventCheck = 0;
+
+  async function getActiveEvent() {
+    // Cache de 30 secondes pour éviter trop de requêtes
+    const now = Date.now();
+    if (activeEventCache && (now - lastEventCheck) < 30000) {
+      return activeEventCache;
+    }
+
+    try {
+      const currentDate = new Date();
+      const snapshot = await events.where("active", "==", true).get();
+
+      if (snapshot.empty) {
+        activeEventCache = null;
+        lastEventCheck = now;
+        return null;
+      }
+
+      // Trouver l'événement actif dont la deadline n'est pas dépassée
+      let activeEvent = null;
+      snapshot.forEach(doc => {
+        const event = doc.data();
+        const deadline = event.deadline.toDate();
+        if (deadline > currentDate) {
+          activeEvent = { id: doc.id, ...event };
+        }
+      });
+
+      activeEventCache = activeEvent;
+      lastEventCheck = now;
+      return activeEvent;
+
+    } catch (err) {
+      console.error("Erreur vérification événement:", err);
+      return null;
+    }
+  }
+
   // ================= AJOUTER DES POINTS =================
   async function addPoints() {
     if (!currentMember) return;
@@ -784,8 +1150,17 @@
     btn.disabled = true;
 
     try {
-      const pointsToAdd = Math.round(amount * 2);
-      const libelle = `Commande de ${amount.toFixed(2).replace(".", ",")}€`;
+      // Vérifier s'il y a un événement actif avec Points x2
+      const activeEvent = await getActiveEvent();
+      const multiplier = (activeEvent && activeEvent.options && activeEvent.options.doublePoints) ? 4 : 2;
+      
+      const pointsToAdd = Math.round(amount * multiplier);
+      let libelle = `Commande de ${amount.toFixed(2).replace(".", ",")}€`;
+      
+      // Ajouter une indication si Points x2 actif
+      if (multiplier === 4) {
+        libelle += ` (x2 - ${activeEvent.title})`;
+      }
 
       await profiles.doc(currentMember.id).update({
         points: firebase.firestore.FieldValue.increment(pointsToAdd),
@@ -803,7 +1178,12 @@
       currentMember.points = (currentMember.points || 0) + pointsToAdd;
       refreshModalPoints(currentMember.points);
       document.getElementById("modal-amount").value = "";
-      showFeedback(`✓ +${pointsToAdd} points ajoutés`, "success");
+      
+      const successMsg = multiplier === 4 
+        ? `✓ +${pointsToAdd} points ajoutés (🎯 x2 actif !)` 
+        : `✓ +${pointsToAdd} points ajoutés`;
+      
+      showFeedback(successMsg, "success");
       showToast(`+${pointsToAdd} pts — ${currentMember.first_name}`);
 
     } catch (err) {
@@ -877,6 +1257,253 @@
   async function handleLogout() {
     await auth.signOut();
     window.location.href = "index.html";
+  }
+
+  // ================= ONGLETS =================
+  function switchTab(tabName) {
+    // Retirer active de tous les boutons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    // Cacher tous les contenus
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+
+    // Activer le bon onglet
+    if (tabName === 'members') {
+      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+      document.getElementById('tab-members').classList.add('active');
+      document.getElementById('page-subtitle').textContent = 'Gestion des membres';
+    } else if (tabName === 'events') {
+      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.getElementById('tab-events').classList.add('active');
+      document.getElementById('page-subtitle').textContent = 'Gestion des événements';
+      loadEventsList(); // Charger les événements à l'affichage
+    }
+  }
+
+  // ================= CRÉER UN ÉVÉNEMENT =================
+  async function createNewEvent() {
+    const title = document.getElementById("event-title").value.trim();
+    const deadline = document.getElementById("event-deadline").value;
+
+    if (!title || !deadline) {
+      alert("⚠️ Veuillez remplir le nom et la date de l'événement.");
+      return;
+    }
+
+    // Vérifier que la date est dans le futur
+    const deadlineDate = new Date(deadline);
+    if (deadlineDate <= new Date()) {
+      alert("⚠️ La date de fin doit être dans le futur.");
+      return;
+    }
+
+    // Récupérer les options
+    const options = {
+      doublePoints: document.getElementById("option-double-points").checked,
+      bonusExisting: document.getElementById("option-bonus-existing").checked,
+      bonusAmount: document.getElementById("option-bonus-existing").checked 
+        ? parseInt(document.getElementById("bonus-amount").value) || 0 
+        : 0,
+      specialReward: document.getElementById("option-special-reward").checked,
+      rewardName: document.getElementById("option-special-reward").checked 
+        ? document.getElementById("reward-name").value.trim() 
+        : "",
+      rewardPoints: document.getElementById("option-special-reward").checked 
+        ? parseInt(document.getElementById("reward-points").value) || 0 
+        : 0
+    };
+
+    // Validation des options
+    if (options.bonusExisting && options.bonusAmount <= 0) {
+      alert("⚠️ Veuillez indiquer le nombre de points bonus.");
+      return;
+    }
+
+    if (options.specialReward && (!options.rewardName || options.rewardPoints <= 0)) {
+      alert("⚠️ Veuillez remplir les détails de la récompense spéciale.");
+      return;
+    }
+
+    const btn = document.querySelector('.btn-create-event');
+    btn.disabled = true;
+    btn.textContent = "⏳ Création en cours...";
+
+    try {
+      // Créer l'événement dans Firestore avec les options
+      await events.add({
+        title,
+        deadline: deadlineDate,
+        imageUrl: "",
+        active: true,
+        options: options,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Réinitialiser le formulaire
+      document.getElementById("event-title").value = "";
+      document.getElementById("event-deadline").value = "";
+      document.getElementById("option-double-points").checked = false;
+      document.getElementById("option-bonus-existing").checked = false;
+      document.getElementById("bonus-amount").value = "";
+      document.getElementById("option-special-reward").checked = false;
+      document.getElementById("reward-name").value = "";
+      document.getElementById("reward-points").value = "";
+      document.getElementById("bonus-amount-container").style.display = "none";
+      document.getElementById("reward-details-container").style.display = "none";
+
+      showToast(`✅ Événement "${title}" créé !`);
+      loadEventsList();
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Erreur lors de la création de l'événement : " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🚀 Publier l'événement";
+    }
+  }
+
+  // ================= CHARGER LA LISTE DES ÉVÉNEMENTS =================
+  async function loadEventsList() {
+    try {
+      // Récupérer tous les événements (sans orderBy pour éviter l'index)
+      const snapshot = await events.get();
+      const listContainer = document.getElementById("events-list");
+      
+      if (snapshot.empty) {
+        listContainer.innerHTML = `
+          <div class="events-empty">
+            <p>Aucun événement pour le moment</p>
+            <p style="font-size: 12px; margin-top: 8px; color: #9CA3AF;">
+              Créez votre premier événement ci-dessus
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      // Récupérer et trier les événements côté client
+      const allEvents = [];
+      snapshot.forEach((doc) => {
+        const event = doc.data();
+        allEvents.push({
+          id: doc.id,
+          ...event,
+          deadlineDate: event.deadline.toDate()
+        });
+      });
+
+      // Trier par date (plus récent en premier)
+      allEvents.sort((a, b) => b.deadlineDate - a.deadlineDate);
+
+      listContainer.innerHTML = "";
+
+      allEvents.forEach((event) => {
+        const eventId = event.id;
+        const deadline = event.deadlineDate;
+        const now = new Date();
+        const isExpired = deadline < now;
+
+        // Calcul du temps restant
+        let timeLeft = "";
+        if (!isExpired) {
+          const diff = deadline - now;
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          
+          if (days > 0) {
+            timeLeft = `⏰ ${days}j ${hours}h restantes`;
+          } else if (hours > 0) {
+            timeLeft = `⏰ ${hours}h restantes`;
+          } else {
+            timeLeft = `⏰ Moins d'1h`;
+          }
+        }
+
+        const card = document.createElement("div");
+        card.className = `event-card ${isExpired ? 'expired' : ''}`;
+        
+        // Générer les badges d'options
+        let optionsBadges = '';
+        if (event.options) {
+          if (event.options.doublePoints) {
+            optionsBadges += '<span style="display: inline-block; background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎯 Points x2</span>';
+          }
+          if (event.options.bonusExisting) {
+            optionsBadges += `<span style="display: inline-block; background: #F59E0B; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">💰 +${event.options.bonusAmount} pts bonus</span>`;
+          }
+          if (event.options.specialReward) {
+            optionsBadges += `<span style="display: inline-block; background: #8B5CF6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎁 ${escHtml(event.options.rewardName)}</span>`;
+          }
+        }
+        
+        card.innerHTML = `
+          ${event.imageUrl ? `
+            <img src="${event.imageUrl}" class="event-image" alt="${escHtml(event.title)}">
+          ` : `
+            <div class="event-image-placeholder">📅</div>
+          `}
+          
+          <div class="event-info">
+            <h3 class="event-title ${isExpired ? 'expired' : ''}">${escHtml(event.title)}</h3>
+            
+            <div class="event-date">
+              📆 Fin le ${deadline.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              })} à ${deadline.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </div>
+            
+            ${!isExpired ? `<div class="event-countdown">${timeLeft}</div>` : ''}
+            
+            ${optionsBadges ? `<div style="margin-top: 8px;">${optionsBadges}</div>` : ''}
+            
+            <div style="margin-top: auto; display: flex; align-items: center; gap: 8px;">
+              <span class="event-status ${isExpired ? 'expired' : 'active'}">
+                ${isExpired ? '❌ Expiré' : '✅ Actif'}
+              </span>
+              <button class="btn-delete-event" onclick="deleteEventItem('${eventId}')">
+                🗑️ Supprimer
+              </button>
+            </div>
+          </div>
+        `;
+        
+        listContainer.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("events-list").innerHTML = `
+        <div class="events-empty">
+          <p>❌ Erreur de chargement</p>
+        </div>
+      `;
+    }
+  }
+
+  // ================= SUPPRIMER UN ÉVÉNEMENT =================
+  async function deleteEventItem(eventId) {
+    if (!confirm("⚠️ Voulez-vous vraiment supprimer cet événement ?\n\nCette action est irréversible.")) {
+      return;
+    }
+
+    try {
+      await events.doc(eventId).delete();
+      showToast("✅ Événement supprimé");
+      loadEventsList();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Erreur lors de la suppression : " + err.message);
+    }
   }
 
   // ================= HELPERS =================
