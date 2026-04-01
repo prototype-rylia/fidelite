@@ -432,14 +432,15 @@
 
     /* ---- Événements ---- */
     .event-form-card {
-      background: linear-gradient(135deg, #FFF4E5 0%, #FFE5CC 100%);
-      border: 2px solid #FFB366; border-radius: var(--radius);
+      background: var(--white);
+      border: 1px solid var(--border); border-radius: var(--radius);
       padding: 28px; margin-bottom: 28px;
     }
 
     .event-form-title {
       font-size: 18px; font-weight: 700; color: var(--dark);
       margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border);
     }
 
     .form-group {
@@ -468,15 +469,15 @@
     }
 
     .btn-create-event {
-      width: 100%; padding: 13px; background: var(--primary);
+      width: 100%; padding: 13px; background: var(--dark);
       color: white; border: none; border-radius: var(--radius);
       font-size: 15px; font-weight: 700; cursor: pointer;
       transition: all 0.2s; font-family: inherit;
     }
 
     .btn-create-event:hover {
-      background: #E67E00; transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255,140,0,0.3);
+      background: #1F2937; transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .btn-create-event:disabled {
@@ -704,13 +705,20 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label">Description de l'événement</label>
+        <textarea id="event-description" class="form-input" rows="3"
+          placeholder="Ex: Profitez de nos offres exceptionnelles pendant tout le week-end !"
+          style="resize: vertical; min-height: 70px;"></textarea>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">Date et heure de fin</label>
         <input type="datetime-local" id="event-deadline" class="form-input">
       </div>
 
       <div class="form-group">
         <label class="form-label">Options de l'événement</label>
-        <div style="background: white; padding: 16px; border-radius: 8px; border: 1.5px solid var(--border);">
+        <div style="background: var(--gray-light); padding: 16px; border-radius: 8px; border: 1.5px solid var(--border);">
           
           <label style="display: flex; align-items: start; gap: 10px; margin-bottom: 12px; cursor: pointer;">
             <input type="checkbox" id="option-double-points" 
@@ -721,23 +729,6 @@
               </div>
               <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
                 Les clients gagnent le double de points sur leurs achats pendant l'événement
-              </div>
-            </div>
-          </label>
-
-          <label style="display: flex; align-items: start; gap: 10px; margin-bottom: 12px; cursor: pointer;">
-            <input type="checkbox" id="option-bonus-existing" 
-              style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
-            <div>
-              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
-                💰 Bonus sur les points existants
-              </div>
-              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
-                Ajoute un bonus aux points déjà accumulés par les clients
-              </div>
-              <div style="margin-top: 8px; display: none;" id="bonus-amount-container">
-                <input type="number" id="bonus-amount" placeholder="Nombre de points bonus" 
-                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
               </div>
             </div>
           </label>
@@ -771,10 +762,6 @@
 
     <script>
       // Afficher/masquer les champs conditionnels
-      document.getElementById('option-bonus-existing').addEventListener('change', function(e) {
-        document.getElementById('bonus-amount-container').style.display = e.target.checked ? 'block' : 'none';
-      });
-
       document.getElementById('option-special-reward').addEventListener('change', function(e) {
         document.getElementById('reward-details-container').style.display = e.target.checked ? 'block' : 'none';
       });
@@ -1287,6 +1274,7 @@
   // ================= CRÉER UN ÉVÉNEMENT =================
   async function createNewEvent() {
     const title = document.getElementById("event-title").value.trim();
+    const description = document.getElementById("event-description").value.trim();
     const deadline = document.getElementById("event-deadline").value;
 
     if (!title || !deadline) {
@@ -1304,10 +1292,8 @@
     // Récupérer les options
     const options = {
       doublePoints: document.getElementById("option-double-points").checked,
-      bonusExisting: document.getElementById("option-bonus-existing").checked,
-      bonusAmount: document.getElementById("option-bonus-existing").checked 
-        ? parseInt(document.getElementById("bonus-amount").value) || 0 
-        : 0,
+      bonusExisting: false,
+      bonusAmount: 0,
       specialReward: document.getElementById("option-special-reward").checked,
       rewardName: document.getElementById("option-special-reward").checked 
         ? document.getElementById("reward-name").value.trim() 
@@ -1318,11 +1304,6 @@
     };
 
     // Validation des options
-    if (options.bonusExisting && options.bonusAmount <= 0) {
-      alert("⚠️ Veuillez indiquer le nombre de points bonus.");
-      return;
-    }
-
     if (options.specialReward && (!options.rewardName || options.rewardPoints <= 0)) {
       alert("⚠️ Veuillez remplir les détails de la récompense spéciale.");
       return;
@@ -1336,6 +1317,7 @@
       // Créer l'événement dans Firestore avec les options
       await events.add({
         title,
+        description: description,
         deadline: deadlineDate,
         imageUrl: "",
         active: true,
@@ -1345,14 +1327,12 @@
 
       // Réinitialiser le formulaire
       document.getElementById("event-title").value = "";
+      document.getElementById("event-description").value = "";
       document.getElementById("event-deadline").value = "";
       document.getElementById("option-double-points").checked = false;
-      document.getElementById("option-bonus-existing").checked = false;
-      document.getElementById("bonus-amount").value = "";
       document.getElementById("option-special-reward").checked = false;
       document.getElementById("reward-name").value = "";
       document.getElementById("reward-points").value = "";
-      document.getElementById("bonus-amount-container").style.display = "none";
       document.getElementById("reward-details-container").style.display = "none";
 
       showToast(`✅ Événement "${title}" créé !`);
@@ -1433,9 +1413,6 @@
           if (event.options.doublePoints) {
             optionsBadges += '<span style="display: inline-block; background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎯 Points x2</span>';
           }
-          if (event.options.bonusExisting) {
-            optionsBadges += `<span style="display: inline-block; background: #F59E0B; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">💰 +${event.options.bonusAmount} pts bonus</span>`;
-          }
           if (event.options.specialReward) {
             optionsBadges += `<span style="display: inline-block; background: #8B5CF6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎁 ${escHtml(event.options.rewardName)}</span>`;
           }
@@ -1450,6 +1427,7 @@
           
           <div class="event-info">
             <h3 class="event-title ${isExpired ? 'expired' : ''}">${escHtml(event.title)}</h3>
+            ${event.description ? `<p style="font-size: 13px; color: var(--gray); margin-top: 2px; line-height: 1.4;">${escHtml(event.description)}</p>` : ''}
             
             <div class="event-date">
               📆 Fin le ${deadline.toLocaleDateString('fr-FR', {
