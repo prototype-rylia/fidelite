@@ -296,6 +296,105 @@
     .profile-feedback.show { display: block; }
     .profile-feedback.success { background: #ECFDF5; color: #047857; }
     .profile-feedback.error { background: #FEF2F2; color: #991b1b; }
+
+    /* --- CONFETTI CANVAS --- */
+    #confetti-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* --- POPUP ÉVÉNEMENT --- */
+    .event-popup-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 8000;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .event-popup-overlay.show {
+      display: flex;
+      animation: popupFadeIn 0.3s ease;
+    }
+
+    @keyframes popupFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .event-popup {
+      background: white;
+      border-radius: 20px;
+      width: 100%; max-width: 360px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+      animation: popupSlideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes popupSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .event-popup-header {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+      padding: 28px 24px 24px;
+      text-align: center; color: white;
+    }
+
+    .event-popup-emoji {
+      font-size: 48px; margin-bottom: 12px;
+      animation: popupBounce 0.6s ease 0.3s both;
+    }
+
+    @keyframes popupBounce {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .event-popup-title {
+      font-size: 22px; font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .event-popup-countdown {
+      font-size: 13px; font-weight: 600; opacity: 0.85;
+    }
+
+    .event-popup-body {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .event-popup-desc {
+      font-size: 15px; color: #444;
+      line-height: 1.5; margin-bottom: 16px;
+    }
+
+    .event-popup-options {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 20px;
+    }
+
+    .event-popup-badge {
+      display: inline-block;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+      background: #FFF4E5; color: #FF6B00;
+      border: 1.5px solid #FFD9A8;
+    }
+
+    .event-popup-close {
+      width: 100%; padding: 14px;
+      background: #FF6B00; color: white; border: none;
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .event-popup-close:hover { background: #E56000; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -304,6 +403,25 @@
 </head>
 
 <body class="bg-stone-100 min-h-screen flex items-center justify-center p-4 relative">
+
+<!-- CONFETTI -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- POPUP ÉVÉNEMENT -->
+<div class="event-popup-overlay" id="event-popup-overlay" onclick="closeEventPopup(event)">
+  <div class="event-popup">
+    <div class="event-popup-header">
+      <div class="event-popup-emoji">🎉</div>
+      <div class="event-popup-title" id="popup-event-title">—</div>
+      <div class="event-popup-countdown" id="popup-event-countdown"></div>
+    </div>
+    <div class="event-popup-body">
+      <p class="event-popup-desc" id="popup-event-desc"></p>
+      <div class="event-popup-options" id="popup-event-options"></div>
+      <button class="event-popup-close" onclick="closeEventPopup()">C'est parti ! 🚀</button>
+    </div>
+  </div>
+</div>
 
 <div id="auth" class="login-container">
   <div class="login-card">
@@ -1188,6 +1306,7 @@ async function handleAuth(){
         // Afficher le premier événement
         if (futureEvents.length > 0) {
           displayEventBanner(futureEvents[0]);
+          showEventPopup(futureEvents[0]);
         }
         
       } catch (err) {
@@ -1213,9 +1332,6 @@ async function handleAuth(){
       if (event.options) {
         if (event.options.doublePoints) {
           optionsEl.innerHTML += '<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎯 Points x2 sur vos achats</span>';
-        }
-        if (event.options.bonusExisting) {
-          optionsEl.innerHTML += `<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">💰 +${event.options.bonusAmount} points bonus</span>`;
         }
         if (event.options.specialReward) {
           optionsEl.innerHTML += `<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎁 ${event.options.rewardName}</span>`;
@@ -1255,6 +1371,118 @@ async function handleAuth(){
       updateCountdown();
       // Mise à jour toutes les minutes (pas besoin de chaque seconde)
       countdownInterval = setInterval(updateCountdown, 60000);
+    }
+
+    // ================= CONFETTI + POPUP ÉVÉNEMENT =================
+    let eventPopupShown = false;
+
+    function showEventPopup(event) {
+      // Ne montrer qu'une seule fois par session
+      if (eventPopupShown) return;
+      eventPopupShown = true;
+
+      // Remplir le popup
+      document.getElementById("popup-event-title").textContent = event.title;
+      document.getElementById("popup-event-desc").textContent = event.description || "Un événement spécial est en cours !";
+
+      // Countdown
+      const deadline = event.deadlineDate || event.deadline.toDate();
+      const diff = deadline - new Date();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let countdownText = "";
+      if (days > 0) countdownText = `⏰ Plus que ${days}j ${hours}h`;
+      else if (hours > 0) countdownText = `⏰ Plus que ${hours}h`;
+      else countdownText = "⏰ Dernières heures !";
+      document.getElementById("popup-event-countdown").textContent = countdownText;
+
+      // Options badges
+      const optionsEl = document.getElementById("popup-event-options");
+      optionsEl.innerHTML = "";
+      if (event.options) {
+        if (event.options.doublePoints) {
+          optionsEl.innerHTML += '<span class="event-popup-badge">🎯 Points x2</span>';
+        }
+        if (event.options.specialReward) {
+          optionsEl.innerHTML += `<span class="event-popup-badge">🎁 ${event.options.rewardName}</span>`;
+        }
+      }
+
+      // Afficher popup avec léger délai
+      setTimeout(() => {
+        document.getElementById("event-popup-overlay").classList.add("show");
+        launchConfetti();
+      }, 400);
+    }
+
+    function closeEventPopup(e) {
+      if (e && e.target !== document.getElementById("event-popup-overlay")) return;
+      document.getElementById("event-popup-overlay").classList.remove("show");
+    }
+
+    // --- CONFETTI ANIMATION (canvas) ---
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#FF6B00", "#FF8C00", "#FFB347", "#FFD700", "#FF4500", "#FF6347", "#FFA500", "#FFEC8B"];
+      const confettiCount = 120;
+      const pieces = [];
+
+      for (let i = 0; i < confettiCount; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          w: Math.random() * 10 + 5,
+          h: Math.random() * 6 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 8,
+          speedX: (Math.random() - 0.5) * 3,
+          speedY: Math.random() * 3 + 2,
+          opacity: 1
+        });
+      }
+
+      let frame = 0;
+      const maxFrames = 180; // ~3 secondes
+
+      function animate() {
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Fade out dans les dernières frames
+        const fadeStart = maxFrames - 40;
+
+        pieces.forEach(p => {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.rotation += p.rotSpeed;
+          p.speedY += 0.04; // gravité
+
+          if (frame > fadeStart) {
+            p.opacity = Math.max(0, 1 - (frame - fadeStart) / 40);
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+
+        if (frame < maxFrames) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animate();
     }
 
     // FONCTION PAGE LÉGALE
