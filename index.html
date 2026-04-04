@@ -6,7 +6,2400 @@
   <title>Restaurant Fidélité</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <style<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Fidélité</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <style>
+    /* --- STYLES LOGIN RYLIA (identique à login.html) --- */
+    .login-container { width: 100%; max-width: 400px; padding: 20px; }
+
+    .login-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border-top: 4px solid #FF6B00;
+      text-align: center;
+    }
+
+    .brand-name {
+      font-weight: 800;
+      font-size: 2.2rem;
+      color: #FF6B00;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .login-subtitle {
+      color: #444;
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+    }
+
+    .login-form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .login-form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+
+    .login-form-input {
+      width: 100%;
+      padding: 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+      color: #1a1a1a;
+      box-sizing: border-box;
+    }
+
+    .login-form-input:focus {
+      outline: none;
+      border-color: #FF6B00;
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+    }
+
+    .login-form-input::placeholder { color: #aaa; }
+
+    .login-btn-submit {
+      width: 100%;
+      background-color: #FF6B00;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      margin-top: 10px;
+      font-family: inherit;
+    }
+
+    .login-btn-submit:hover { background-color: #E56000; }
+    .login-btn-submit:active { transform: scale(0.98); }
+
+    .login-forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #444;
+      text-decoration: none;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: color 0.3s;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+      margin-left: auto;
+    }
+
+    .login-forgot-link:hover { color: #FF6B00; }
+
+    .login-toggle-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #444;
+      text-decoration: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: color 0.3s;
+      background: none;
+      border: none;
+      font-family: inherit;
+    }
+
+    .login-toggle-link:hover { color: #FF6B00; }
+
+    .login-error-msg {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 15px;
+      font-weight: 600;
+      display: none;
+      background: #ffe6e6;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .login-error-msg.show { display: block; }
+
+    /* --- MENU PROFIL (panneau latéral mobile) --- */
+    .profile-icon-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #FFF4E5;
+      border: 2px solid #FF6B00;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      transition: all 0.2s;
+    }
+    .profile-icon-btn:hover { background: #FFE5CC; transform: scale(1.05); }
+    .profile-icon-btn svg { width: 22px; height: 22px; color: #FF6B00; }
+
+    .profile-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      z-index: 900;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .profile-overlay.show { display: block; opacity: 1; }
+
+    .profile-panel {
+      position: fixed; top: 0; right: -100%; bottom: 0;
+      width: 100%; max-width: 360px;
+      background: #fff;
+      z-index: 950;
+      transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.15);
+    }
+    .profile-panel.show { right: 0; }
+
+    .profile-panel-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .profile-panel-header h3 {
+      font-size: 18px; font-weight: 800; color: #1a1a1a;
+    }
+    .profile-panel-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #f3f4f6; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .profile-panel-close:hover { background: #e5e7eb; }
+
+    .profile-panel-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .profile-user-card {
+      background: #FFF9F0; border: 1.5px solid #FFD9A8;
+      border-radius: 12px; padding: 16px; text-align: center;
+    }
+    .profile-user-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #FF6B00; color: white;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800; margin-bottom: 8px;
+    }
+    .profile-user-name { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+    .profile-user-email { font-size: 13px; color: #6B7280; margin-top: 2px; }
+
+    .profile-menu-item {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%; padding: 14px 16px;
+      background: #f9fafb; border: 1.5px solid #E5E7EB;
+      border-radius: 10px; cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      color: #1a1a1a; transition: all 0.15s;
+      text-align: left;
+    }
+    .profile-menu-item:hover {
+      background: #FFF4E5; border-color: #FF6B00; color: #FF6B00;
+    }
+    .profile-menu-item svg { flex-shrink: 0; width: 20px; height: 20px; color: #6B7280; }
+    .profile-menu-item:hover svg { color: #FF6B00; }
+
+    .profile-menu-item.danger {
+      color: #dc2626; background: #FEF2F2; border-color: #FECACA;
+    }
+    .profile-menu-item.danger:hover {
+      background: #FEE2E2; border-color: #dc2626;
+    }
+    .profile-menu-item.danger svg { color: #dc2626; }
+
+    .profile-separator {
+      height: 1px; background: #E5E7EB; margin: 4px 0;
+    }
+
+    /* Sous-sections dépliables dans le panel */
+    .profile-sub-section {
+      display: none; padding: 16px;
+      background: #f9fafb; border: 1.5px solid #E5E7EB;
+      border-radius: 10px; margin-top: -4px;
+    }
+    .profile-sub-section.show { display: block; }
+
+    .profile-sub-title {
+      font-size: 13px; font-weight: 700; color: #6B7280;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+
+    .profile-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #E5E7EB; border-radius: 8px;
+      font-size: 14px; font-family: inherit;
+      color: #1a1a1a; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+    }
+    .profile-input:focus {
+      border-color: #FF6B00;
+      box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+    }
+
+    .profile-btn-primary {
+      width: 100%; padding: 11px;
+      background: #FF6B00; color: white; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .profile-btn-primary:hover { background: #E56000; }
+    .profile-btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+    .profile-btn-danger {
+      width: 100%; padding: 11px;
+      background: #dc2626; color: white; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .profile-btn-danger:hover { background: #b91c1c; }
+
+    .profile-btn-cancel {
+      width: 100%; padding: 11px;
+      background: #f3f4f6; color: #374151; border: 1.5px solid #E5E7EB;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .profile-btn-cancel:hover { background: #e5e7eb; }
+
+    .profile-feedback {
+      font-size: 13px; padding: 10px; border-radius: 8px;
+      display: none; margin-top: 8px; font-weight: 600;
+    }
+    .profile-feedback.show { display: block; }
+    .profile-feedback.success { background: #ECFDF5; color: #047857; }
+    .profile-feedback.error { background: #FEF2F2; color: #991b1b; }
+
+    /* --- CONFETTI CANVAS --- */
+    #confetti-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* --- POPUP ÉVÉNEMENT --- */
+    .event-popup-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 8000;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .event-popup-overlay.show {
+      display: flex;
+      animation: popupFadeIn 0.3s ease;
+    }
+
+    @keyframes popupFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .event-popup {
+      background: white;
+      border-radius: 20px;
+      width: 100%; max-width: 360px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+      animation: popupSlideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes popupSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .event-popup-header {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+      padding: 28px 24px 24px;
+      text-align: center; color: white;
+    }
+
+    .event-popup-emoji {
+      font-size: 48px; margin-bottom: 12px;
+      animation: popupBounce 0.6s ease 0.3s both;
+    }
+
+    @keyframes popupBounce {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .event-popup-title {
+      font-size: 22px; font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .event-popup-countdown {
+      font-size: 13px; font-weight: 600; opacity: 0.85;
+    }
+
+    .event-popup-body {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .event-popup-desc {
+      font-size: 15px; color: #444;
+      line-height: 1.5; margin-bottom: 16px;
+    }
+
+    .event-popup-options {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 20px;
+    }
+
+    .event-popup-badge {
+      display: inline-block;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
+      background: #FFF4E5; color: #FF6B00;
+      border: 1.5px solid #FFD9A8;
+    }
+
+    .event-popup-close {
+      width: 100%; padding: 14px;
+      background: #FF6B00; color: white; border: none;
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .event-popup-close:hover { background: #E56000; }
+
+    /* ===== NEW DASHBOARD STYLES ===== */
+
+    #client-dashboard {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F7F5F2;
+      border-radius: 28px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+
+    .dash-top-section {
+      background: #FFFFFF;
+      padding: 28px 24px 20px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      position: relative;
+      z-index: 2;
+    }
+
+    .dash-greeting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .dash-greeting-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1C1917;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .dash-greeting-name {
+      color: #FF6B00;
+    }
+
+    .dash-wave {
+      display: inline-block;
+      animation: waveHand 1.8s ease-in-out 0.5s 2;
+      transform-origin: 70% 70%;
+    }
+
+    @keyframes waveHand {
+      0%   { transform: rotate(0deg); }
+      10%  { transform: rotate(14deg); }
+      20%  { transform: rotate(-8deg); }
+      30%  { transform: rotate(14deg); }
+      40%  { transform: rotate(-4deg); }
+      50%  { transform: rotate(10deg); }
+      60%  { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .dash-rank-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FFF3E6 0%, #FFE4CC 100%);
+      color: #C05600;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 6px;
+      border: 1.5px solid #FFD4A8;
+    }
+
+    .dash-card {
+      border: 2.5px solid #FF6B00;
+      border-radius: 18px;
+      padding: 22px;
+      background: linear-gradient(135deg, #FFFCF8 0%, #FFF8F0 100%);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dash-card:active {
+      transform: scale(0.97);
+    }
+
+    .dash-card:hover {
+      box-shadow: 0 6px 24px rgba(255,107,0,0.14);
+    }
+
+    .dash-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255,107,0,0.04) 45%,
+        rgba(255,107,0,0.08) 50%,
+        rgba(255,107,0,0.04) 55%,
+        transparent 60%
+      );
+      animation: cardShimmer 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes cardShimmer {
+      0%   { transform: translateX(-100%) rotate(25deg); }
+      100% { transform: translateX(100%) rotate(25deg); }
+    }
+
+    .dash-card-points {
+      font-size: 54px;
+      font-weight: 800;
+      color: #1C1917;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .dash-card-points-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #A39E97;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .dash-progress-section {
+      margin-top: 20px;
+      padding: 0 14px;
+    }
+
+    .dash-next-tier-text {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #78716C;
+      text-align: center;
+    }
+
+    /* ===== QR OVERLAY ===== */
+    .qr-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 8500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .qr-overlay.show {
+      display: flex;
+      animation: qrOverlayIn 0.3s ease;
+    }
+
+    @keyframes qrOverlayIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .qr-overlay-card {
+      background: white;
+      border-radius: 24px;
+      padding: 36px 32px 32px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      animation: qrCardIn 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes qrCardIn {
+      from { transform: scale(0.9) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .qr-overlay-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #F5F3F0;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #78716C;
+      transition: all 0.15s;
+    }
+
+    .qr-overlay-close:hover {
+      background: #EDE9E3;
+      color: #1C1917;
+    }
+
+    .qr-overlay-label {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #A39E97;
+      margin-bottom: 24px;
+    }
+
+    .qr-overlay-qr {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #FAFAF9;
+      border-radius: 16px;
+      border: 2px solid #F0ECE6;
+    }
+
+    .qr-overlay-code {
+      font-family: 'Plus Jakarta Sans', monospace;
+      font-size: 32px;
+      font-weight: 900;
+      color: #1C1917;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .qr-overlay-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      color: #A39E97;
+      margin-top: 4px;
+    }
+
+    .dash-card-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .dash-card-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dash-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dash-qr-wrapper {
+      background: white;
+      padding: 6px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .dash-card-code {
+      font-family: 'Plus Jakarta Sans', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      color: #44403C;
+      letter-spacing: 1.5px;
+    }
+
+    /* ===== PALIER CARD STYLE ===== */
+    .palier-card {
+      border-radius: 16px;
+      overflow: hidden;
+      padding: 14px 16px 12px;
+      transition: transform 0.15s ease;
+    }
+
+    .palier-unlocked {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 0 0 1px rgba(255,107,0,0.12);
+    }
+
+    .palier-locked {
+      background: rgba(255,255,255,0.5);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.05);
+    }
+
+    .palier-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .palier-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .palier-icon-unlocked {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF8C33 100%);
+      box-shadow: 0 3px 10px rgba(255,107,0,0.25);
+    }
+
+    .palier-icon-locked {
+      background: #F0ECE6;
+      color: #A39E97;
+    }
+
+    .palier-icon-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(255,107,0,0.2);
+      border: 2px solid #FF6B00;
+    }
+
+    .palier-icon-img-locked {
+      filter: grayscale(1) opacity(0.5);
+      box-shadow: none;
+      border-color: #D6D3D1;
+    }
+
+    .palier-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .palier-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1C1917;
+      line-height: 1.3;
+    }
+
+    .palier-title-locked {
+      color: #78716C;
+    }
+
+    .palier-desc {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #A39E97;
+      margin-top: 1px;
+    }
+
+    .palier-badge-unlocked {
+      font-size: 11px;
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(135deg, #FF6B00 0%, #FF8C33 100%);
+      padding: 5px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(255,107,0,0.2);
+    }
+
+    .palier-pts-right {
+      font-size: 12px;
+      font-weight: 800;
+      color: #A39E97;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .palier-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .palier-bar {
+      flex: 1;
+      height: 6px;
+      background: #F0ECE6;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .palier-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #FFD4A8 0%, #FFA94D 100%);
+      transition: width 0.8s ease-out;
+    }
+
+    .palier-bar-full {
+      background: linear-gradient(90deg, #FF8C33 0%, #FF6B00 100%);
+    }
+
+    .palier-pts-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #A39E97;
+      white-space: nowrap;
+      min-width: 52px;
+      text-align: right;
+    }
+
+    /* ===== COUPON CARD STYLE ===== */
+    .coupon-ticket {
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      border: none;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    .coupon-ticket:active {
+      transform: scale(0.98);
+    }
+
+    .coupon-ticket-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 16px 12px;
+    }
+
+    .coupon-ticket-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #FFF0E0 0%, #FFE0BF 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .coupon-ticket-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .coupon-ticket-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1C1917;
+      line-height: 1.3;
+    }
+
+    .coupon-ticket-desc {
+      font-size: 12px;
+      font-weight: 500;
+      color: #78716C;
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+
+    .coupon-ticket-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 14px;
+      margin: 0 12px;
+      border-top: 1.5px dashed #E7E5E4;
+    }
+
+    .coupon-ticket-expiry {
+      font-size: 11px;
+      font-weight: 600;
+      color: #A39E97;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .coupon-ticket-badge {
+      font-size: 12px;
+      font-weight: 800;
+      color: #FF6B00;
+      background: #FFF4E8;
+      padding: 6px 16px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border: 1.5px solid #FFD9A8;
+      transition: all 0.2s ease;
+    }
+
+    .coupon-ticket:hover .coupon-ticket-badge {
+      background: #FF6B00;
+      color: white;
+      border-color: #FF6B00;
+      box-shadow: 0 3px 10px rgba(255,107,0,0.25);
+    }
+
+    /* ===== BOTTOM TABS SECTION ===== */
+    .dash-bottom-section {
+      padding: 0 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dash-tabs {
+      display: flex;
+      gap: 0;
+      padding: 16px 20px 0;
+    }
+
+    .dash-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 13px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border-radius: 14px 14px 0 0;
+      background: #EDE9E3;
+      color: #A39E97;
+    }
+
+    .dash-tab svg {
+      opacity: 0.5;
+      transition: opacity 0.25s;
+    }
+
+    .dash-tab.active {
+      background: #F7F5F2;
+      color: #1C1917;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+      position: relative;
+      z-index: 2;
+    }
+
+    .dash-tab.active svg {
+      opacity: 1;
+      color: #FF6B00;
+    }
+
+    .dash-tab:not(.active):hover {
+      background: #F0ECE6;
+      color: #78716C;
+    }
+
+    .dash-tab-content {
+      padding: 16px 20px 8px;
+      text-align: left;
+      min-height: 160px;
+      animation: tabFadeIn 0.3s ease;
+    }
+
+    .dash-tab-content.active {
+      display: block;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body class="bg-stone-100 min-h-screen flex items-center justify-center p-4 relative">
+
+<!-- CONFETTI -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- POPUP ÉVÉNEMENT -->
+<div class="event-popup-overlay" id="event-popup-overlay" onclick="closeEventPopup(event)">
+  <div class="event-popup">
+    <div class="event-popup-header">
+      <div class="event-popup-emoji">🎉</div>
+      <div class="event-popup-title" id="popup-event-title">—</div>
+      <div class="event-popup-countdown" id="popup-event-countdown"></div>
+    </div>
+    <div class="event-popup-body">
+      <p class="event-popup-desc" id="popup-event-desc"></p>
+      <div class="event-popup-options" id="popup-event-options"></div>
+      <button class="event-popup-close" onclick="closeEventPopup()">C'est parti ! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<div id="auth" class="login-container">
+  <div class="login-card">
+    <div class="brand-name">Rylia.</div>
+    <p class="login-subtitle" id="auth-title">Connectez-vous à votre espace</p>
+
+    <div id="firstname-field" class="login-form-group" style="display:none;">
+      <label for="firstname">Prénom</label>
+      <input id="firstname" type="text" placeholder="Votre prénom" class="login-form-input">
+    </div>
+
+    <div class="login-form-group">
+      <label for="email">Adresse Email</label>
+      <input id="email" type="email" placeholder="exemple@email.com" class="login-form-input">
+    </div>
+
+    <div id="phone-field" class="login-form-group" style="display:none;">
+      <label for="phone">Numéro de téléphone</label>
+      <input id="phone" type="tel" placeholder="06 12 34 56 78" maxlength="14" class="login-form-input">
+    </div>
+
+    <div class="login-form-group">
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" placeholder="Votre mot de passe" class="login-form-input">
+    </div>
+
+    <div id="confirm-password-field" class="login-form-group" style="display:none;">
+      <label for="confirm-password">Confirmer le mot de passe</label>
+      <input id="confirm-password" type="password" placeholder="Confirmez votre mot de passe" class="login-form-input">
+    </div>
+
+    <div id="forgot-password-container" style="text-align:right; margin-bottom:10px;">
+      <button onclick="resetPassword()" class="login-forgot-link">Mot de passe oublié ?</button>
+    </div>
+
+    <button onclick="handleAuth()" id="auth-btn" class="login-btn-submit">Se connecter</button>
+
+    <button onclick="toggleMode()" id="toggle-btn" class="login-toggle-link">Créer un compte</button>
+
+    <div id="auth-msg" class="login-error-msg"></div>
+  </div>
+</div>
+
+  <div id="client-dashboard" class="hidden w-full max-w-md text-center overflow-hidden" style="position:relative;">
+
+    <!-- BOUTON PROFIL (icône personne) -->
+    <button class="profile-icon-btn" onclick="openProfilePanel()" aria-label="Mon compte">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </button>
+
+  <!-- OVERLAY -->
+  <div class="profile-overlay" id="profile-overlay" onclick="closeProfilePanel()"></div>
+
+  <!-- PANNEAU PROFIL -->
+  <div class="profile-panel" id="profile-panel">
+
+    <div class="profile-panel-header">
+      <h3>Mon compte</h3>
+      <button class="profile-panel-close" onclick="closeProfilePanel()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="profile-panel-body">
+
+      <!-- Carte utilisateur -->
+      <div class="profile-user-card">
+        <div class="profile-user-avatar" id="profile-avatar">?</div>
+        <div class="profile-user-name" id="profile-name">—</div>
+        <div class="profile-user-email" id="profile-email">—</div>
+      </div>
+
+      <!-- Menu items -->
+      <button class="profile-menu-item" onclick="closeProfilePanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Retour à la page principale
+      </button>
+
+      <button class="profile-menu-item" onclick="toggleChangePassword()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Changer le mot de passe
+      </button>
+
+      <!-- Sous-section : Changer mot de passe -->
+      <div class="profile-sub-section" id="change-password-section">
+        <div class="profile-sub-title">Nouveau mot de passe</div>
+        <input type="password" class="profile-input" id="profile-current-pw" placeholder="Mot de passe actuel">
+        <input type="password" class="profile-input" id="profile-new-pw" placeholder="Nouveau mot de passe">
+        <input type="password" class="profile-input" id="profile-confirm-pw" placeholder="Confirmer le nouveau mot de passe">
+        <button class="profile-btn-primary" onclick="handleChangePassword()">Valider</button>
+        <button class="profile-btn-cancel" style="margin-top:6px;" onclick="toggleChangePassword()">Annuler</button>
+        <div class="profile-feedback" id="pw-feedback"></div>
+      </div>
+
+      <button class="profile-menu-item" onclick="toggleHistoryPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Mon historique
+      </button>
+
+      <!-- Sous-section : Historique -->
+      <div class="profile-sub-section" id="history-panel-section">
+        <div class="profile-sub-title">Transactions récentes</div>
+        <ul id="profile-history-list" class="space-y-2" style="max-height:280px; overflow-y:auto;">
+          <li style="font-size:13px; color:#9CA3AF; text-align:center; padding:8px;">Chargement…</li>
+        </ul>
+      </div>
+
+      <button class="profile-menu-item" onclick="openLegalPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Mentions légales &amp; CGU
+      </button>
+
+      <div class="profile-separator"></div>
+
+      <button class="profile-menu-item" onclick="handleProfileLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Déconnexion
+      </button>
+
+      <button class="profile-menu-item danger" onclick="toggleDeleteAccount()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Supprimer mon compte
+      </button>
+
+      <!-- Sous-section : Supprimer le compte -->
+      <div class="profile-sub-section" id="delete-account-section">
+        <div class="profile-sub-title" style="color:#dc2626;">Confirmation de suppression</div>
+        <p style="font-size:13px; color:#6B7280; margin-bottom:12px;">
+          Cette action est irréversible. Saisissez vos identifiants pour confirmer.
+        </p>
+        <input type="email" class="profile-input" id="profile-delete-email" placeholder="Votre email">
+        <input type="password" class="profile-input" id="profile-delete-pw" placeholder="Votre mot de passe">
+        <button class="profile-btn-danger" onclick="handleProfileDeleteAccount()">Supprimer définitivement</button>
+        <button class="profile-btn-cancel" style="margin-top:6px;" onclick="toggleDeleteAccount()">Annuler</button>
+        <div class="profile-feedback" id="delete-feedback"></div>
+      </div>
+
+    </div>
+  </div>
+
+    <!-- ===== SECTION HAUTE : BLANC ===== -->
+    <div class="dash-top-section">
+
+      <!-- BANDEROLE ÉVÉNEMENT -->
+      <div id="event-banner" class="hidden relative w-full text-white overflow-hidden" style="background: linear-gradient(135deg, #FF6B00 0%, #E53935 100%); border-radius: 16px; margin-bottom: 16px;">
+        <div class="absolute inset-0 opacity-20">
+          <img id="event-banner-bg" src="" alt="" class="w-full h-full object-cover">
+        </div>
+        <div class="relative p-5 z-10">
+          <h3 id="event-name" class="text-lg font-black mb-1"></h3>
+          <p id="countdown-label" class="text-xs font-semibold uppercase tracking-widest opacity-75 mb-2"></p>
+          <div id="countdown" class="flex gap-3 mb-3 justify-center">
+            <div id="cd-days-wrap" class="flex flex-col items-center">
+              <span id="days" class="text-2xl font-mono font-black leading-none">00</span>
+              <span class="text-[10px] font-bold opacity-70 mt-1">JOURS</span>
+            </div>
+            <span class="text-2xl font-black opacity-60 leading-none">:</span>
+            <div class="flex flex-col items-center">
+              <span id="hours" class="text-2xl font-mono font-black leading-none">00</span>
+              <span class="text-[10px] font-bold opacity-70 mt-1">HEURES</span>
+            </div>
+            <span class="text-2xl font-black opacity-60 leading-none">:</span>
+            <div class="flex flex-col items-center">
+              <span id="minutes" class="text-2xl font-mono font-black leading-none">00</span>
+              <span class="text-[10px] font-bold opacity-70 mt-1">MIN</span>
+            </div>
+            <span class="text-2xl font-black opacity-60 leading-none">:</span>
+            <div class="flex flex-col items-center">
+              <span id="seconds" class="text-2xl font-mono font-black leading-none">00</span>
+              <span class="text-[10px] font-bold opacity-70 mt-1">SEC</span>
+            </div>
+          </div>
+          <div id="event-options" class="flex flex-wrap gap-2 justify-center"></div>
+        </div>
+      </div>
+
+      <!-- GREETING -->
+      <div class="dash-greeting">
+        <div>
+          <h2 class="dash-greeting-title">
+            Bonjour <span id="client-name" class="dash-greeting-name"></span> <span class="dash-wave">👋</span>
+          </h2>
+          <div id="client-rank" class="dash-rank-badge">
+            Chargement du rang...
+          </div>
+        </div>
+      </div>
+
+      <!-- CARTE FIDÉLITÉ -->
+      <div class="dash-card" onclick="openQrOverlay()">
+        <div class="dash-card-inner">
+          <div class="dash-card-left">
+            <span class="dash-card-points" id="client-points">0</span>
+            <span class="dash-card-points-label">points disponibles</span>
+          </div>
+          <div class="dash-card-right">
+            <div id="qrcode" class="dash-qr-wrapper"></div>
+            <p id="client-code" class="dash-card-code"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar DETACHED -->
+      <div class="dash-progress-section">
+        <div id="timeline-container" class="relative w-full h-16"></div>
+        <p id="next-tier-text" class="dash-next-tier-text"></p>
+      </div>
+    </div>
+
+    <!-- ===== QR OVERLAY FULLSCREEN ===== -->
+    <div class="qr-overlay" id="qr-overlay" onclick="closeQrOverlay(event)">
+      <div class="qr-overlay-card">
+        <button class="qr-overlay-close" onclick="closeQrOverlay()" aria-label="Fermer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="qr-overlay-label">Votre carte fidélité</div>
+        <div id="qrcode-large" class="qr-overlay-qr"></div>
+        <p id="client-code-large" class="qr-overlay-code"></p>
+        <div class="qr-overlay-subtitle">Présentez ce code en caisse</div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION BASSE : TABS ===== -->
+    <div class="dash-bottom-section">
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchDashTab('paliers', this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Vos Paliers
+        </button>
+        <button class="dash-tab" onclick="switchDashTab('coupons', this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+          Mes Coupons
+        </button>
+      </div>
+
+      <div id="tab-paliers" class="dash-tab-content active">
+        <ul id="client-rewards" class="space-y-3">
+        </ul>
+      </div>
+
+      <div id="tab-coupons" class="dash-tab-content" style="display:none;">
+        <ul id="client-coupons" class="space-y-3">
+          <li class="text-sm text-stone-400 text-center py-2">Chargement…</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ================= FIREBASE CONFIG =================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDf8Oh-d4baOxu3XoPV2rnLeLJZQ5tZDYY",
+      authDomain: "rylia-fidelite-9a015.firebaseapp.com",
+      projectId: "rylia-fidelite-9a015"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ================= CLIENT CONFIG =================
+    // 👇 Modifier cette valeur pour chaque commerçant
+    const CLIENT_ID = "rylia";
+    // Raccourci vers la collection du client dans Firestore
+    // Structure : clients/{CLIENT_ID}/profiles/{uid}
+    const profiles = db.collection("clients").doc(CLIENT_ID).collection("profiles");
+    const events   = db.collection("clients").doc(CLIENT_ID).collection("events");
+    const coupons  = db.collection("clients").doc(CLIENT_ID).collection("coupons");
+    const rewardsCol = db.collection("clients").doc(CLIENT_ID).collection("rewards");
+
+    let signupMode = false;
+    let countdownInterval = null;
+
+    // ================= TRADUCTION DES ERREURS =================
+    function getErrorMessage(errorCode) {
+      switch (errorCode) {
+        case 'auth/invalid-email':
+          return "L'adresse e-mail n'est pas valide.";
+        case 'auth/user-disabled':
+          return "Ce compte a été désactivé par l'administrateur.";
+        case 'auth/user-not-found':
+        case 'auth/invalid-credential':
+        case 'auth/wrong-password':
+          return "L'adresse e-mail ou le mot de passe est incorrect.";
+        case 'auth/email-already-in-use':
+          return "Un compte existe déjà avec cette adresse e-mail.";
+        case 'auth/weak-password':
+          return "Votre mot de passe est trop faible (6 caractères minimum).";
+        case 'auth/network-request-failed':
+          return "Problème de connexion internet. Vérifiez votre réseau.";
+        case 'auth/requires-recent-login':
+          return "Sécurité : Veuillez vous déconnecter puis vous reconnecter pour faire cela.";
+        default:
+          return "Une erreur inattendue est survenue. Veuillez réessayer.";
+      }
+    }
+
+    // ================= FORMATAGE TÉLÉPHONE =================
+        document.addEventListener("DOMContentLoaded", () => {
+          const phoneInput = document.getElementById("phone");
+          
+          // Si l'élément existe bien
+          if(phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+              // 1. On supprime tout ce qui n'est pas un chiffre
+              let cleaned = e.target.value.replace(/\D/g, '');
+              
+              // 2. On limite à 10 chiffres
+              cleaned = cleaned.substring(0, 10);
+              
+              // 3. On groupe par 2 et on ajoute un espace entre chaque groupe
+              let formatted = cleaned.match(/.{1,2}/g)?.join(' ') || '';
+              
+              // 4. On met à jour l'affichage
+              e.target.value = formatted;
+            });
+          }
+        });
+
+
+    // ================= PALIERS DE RÉCOMPENSES =================
+    let REWARD_TIERS = [
+      { points: 40, title: "Gain 1", desc: "(ex: Boisson offerte)", imageUrl: "" },
+      { points: 80, title: "Gain 2", desc: "(ex: Dessert offert)", imageUrl: "" },
+      { points: 150, title: "Gain 3", desc: "(ex: Plat au choix)", imageUrl: "" },
+      { points: 200, title: "Gain 4", desc: "(ex: Menu complet)", imageUrl: "" },
+      { points: 260, title: "Gain 5", desc: "(ex: Repas pour 2)", imageUrl: "" }
+    ];
+
+    // Charger les récompenses depuis Firestore (remplace les valeurs par défaut)
+    async function loadRewardsFromFirestore() {
+      try {
+        const snapshot = await rewardsCol.orderBy("points", "asc").get();
+        if (!snapshot.empty) {
+          REWARD_TIERS = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        }
+      } catch (err) {
+        console.error("Erreur chargement récompenses:", err);
+      }
+    }
+
+    // ================= TOGGLE =================
+     function toggleMode(){
+      signupMode = !signupMode;
+      document.getElementById("firstname-field").style.display = signupMode ? "block" : "none";
+      document.getElementById("phone-field").style.display = signupMode ? "block" : "none";
+      document.getElementById("confirm-password-field").style.display = signupMode ? "block" : "none";
+      
+      // NOUVEAU : Cacher le bouton "Mot de passe oublié" en mode inscription
+      document.getElementById("forgot-password-container").style.display = signupMode ? "none" : "block";
+      
+      document.getElementById("auth-title").innerText = signupMode ? "Créez votre compte fidélité" : "Connectez-vous à votre espace";
+      document.getElementById("auth-btn").innerText = signupMode ? "S'inscrire" : "Se connecter";
+      document.getElementById("toggle-btn").innerText = signupMode ? "Déjà membre ? Se connecter" : "Créer un compte";
+    }
+
+    // ================= AUTH =================
+async function handleAuth(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const firstname = document.getElementById("firstname").value.trim();
+  
+  // Cacher le message d'erreur précédent
+  document.getElementById("auth-msg").classList.remove("show");
+  
+  // Nouveau champ téléphone au lieu de confirm-email
+  const phone = document.getElementById("phone").value.trim();
+  const confirmPassword = document.getElementById("confirm-password").value.trim();
+
+  if(!email || !password){
+    showAuthMsg("Email et mot de passe requis");
+    return;
+  }
+
+  try{
+    if(signupMode){
+      // --- VERIFICATIONS ---
+      // phone //
+      const phoneClean = phone.replace(/\s/g, ''); // On retire les espaces pour compter les chiffres
+
+      if(!phoneClean) {
+        showAuthMsg("Le numéro de téléphone est requis");
+        return;
+      }
+      if(phoneClean.length !== 10) {
+        showAuthMsg("Le numéro de téléphone doit contenir exactement 10 chiffres");
+        return;
+      }
+
+      // password //
+      if(password !== confirmPassword) {
+        showAuthMsg("Les mots de passe ne correspondent pas");
+        return;
+      }
+      if(password.length < 6) {
+        showAuthMsg("Le mot de passe doit faire au moins 6 caractères");
+        return;
+      }
+      // ---------------------
+
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
+
+      await profiles.doc(res.user.uid).set({
+        first_name: firstname || "Client",
+        email: email,
+        phone: phone,
+        points: 0,
+        short_code: shortCode,
+        role: "membre",
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+    }
+    } catch (err) {
+          // On utilise notre nouvelle fonction avec err.code
+          showAuthMsg(getErrorMessage(err.code)); 
+    }
+}
+
+    function showAuthMsg(msg){
+      const m = document.getElementById("auth-msg");
+      m.innerText = msg;
+      m.classList.add("show");
+    }
+
+    // ================= ROLE DETECTION =================
+    auth.onAuthStateChanged(async user => {
+      if(!user){
+        showAuth();
+        return;
+      }
+
+      const doc = await profiles.doc(user.uid).get();
+      if(!doc.exists){
+        logout();
+        return;
+      }
+
+      const data = doc.data();
+      if(data.role === "admin"){
+        window.location.href = "admin.html";
+      } else {
+        showClient(data, user.uid);
+      }
+    });
+
+    // ================= SHOW CLIENT =================
+    async function showClient(data, uid){
+      document.getElementById("auth").style.display = "none";
+      document.getElementById("client-dashboard").classList.remove("hidden");
+      qrLargeGenerated = false; // reset for new session
+
+      // Charger les récompenses depuis Firestore avant tout
+      await loadRewardsFromFirestore();
+
+      document.getElementById("client-name").innerText = data.first_name;
+      document.getElementById("client-points").innerText = data.points;
+      document.getElementById("client-code").innerText = data.short_code;
+
+      // Remplir le panneau profil
+      const initial = (data.first_name || "?").charAt(0).toUpperCase();
+      document.getElementById("profile-avatar").textContent = initial;
+      document.getElementById("profile-name").textContent = data.first_name || "—";
+      document.getElementById("profile-email").textContent = data.email || auth.currentUser?.email || "—";
+
+      // Calcul du rang
+      calculateRank(data.points);
+
+      // Charger l'événement actif s'il existe
+      loadActiveEvent();
+
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML="";
+      new QRCode(qrContainer,{
+        text: data.short_code,
+        width: 120,
+        height: 120
+      });
+
+      // --- Chargement de la barre de progression ---
+      const timelineContainer = document.getElementById("timeline-container");
+      
+      const maxTierPoints = REWARD_TIERS.length > 0 ? REWARD_TIERS[REWARD_TIERS.length - 1].points : 260;
+      const currentPoints = Math.min(data.points, maxTierPoints); 
+
+      // Build VISUAL_STEPS dynamically from REWARD_TIERS
+      const VISUAL_STEPS = REWARD_TIERS.map((tier, i) => ({
+        points: tier.points,
+        visualPercent: REWARD_TIERS.length > 1 ? (i / (REWARD_TIERS.length - 1)) * 100 : 0
+      }));
+
+      let progressPercent = 0;
+      if (VISUAL_STEPS.length > 0 && currentPoints < VISUAL_STEPS[0].points) {
+        progressPercent = 0;
+      } else if (currentPoints >= maxTierPoints) {
+        progressPercent = 100;
+      } else {
+        for (let i = 0; i < VISUAL_STEPS.length - 1; i++) {
+          const start = VISUAL_STEPS[i];
+          const end = VISUAL_STEPS[i+1];
+          
+          if (currentPoints >= start.points && currentPoints < end.points) {
+            const rangePoints = end.points - start.points;
+            const rangeVisual = end.visualPercent - start.visualPercent;
+            const pointsInSegment = currentPoints - start.points;
+            
+            progressPercent = start.visualPercent + ((pointsInSegment / rangePoints) * rangeVisual);
+            break;
+          }
+        }
+      }
+
+      timelineContainer.innerHTML = `
+        <div class="absolute top-11 left-0 right-0 h-1.5 bg-stone-200 rounded-full -translate-y-1/2"></div>
+        <div class="absolute top-11 left-0 h-1.5 bg-orange-500 rounded-full -translate-y-1/2 transition-all duration-1000 ease-out" style="width: 0%" id="progress-line"></div>
+      `;
+
+      setTimeout(() => {
+        document.getElementById("progress-line").style.width = `${progressPercent}%`;
+      }, 100);
+
+      let nextTierPoints = null;
+      const stepSpacing = REWARD_TIERS.length > 1 ? 100 / (REWARD_TIERS.length - 1) : 0;
+
+      REWARD_TIERS.forEach((tier, index) => {
+        const isUnlocked = data.points >= tier.points;
+        if (!isUnlocked && nextTierPoints === null) {
+          nextTierPoints = tier.points;
+        }
+
+        const visualPosition = index * stepSpacing;
+
+        const nodeDiv = document.createElement("div");
+        nodeDiv.className = "absolute top-0 flex flex-col items-center w-12";
+        nodeDiv.style.left = `calc(${visualPosition}% - 24px)`;
+
+        const iconSvg = isUnlocked 
+          ? `<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z"></path></svg>`
+          : `<svg class="w-4 h-4 text-stone-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>`;
+
+        const circleColor = isUnlocked ? "bg-orange-500 border-2 border-orange-500 shadow-md" : "bg-white border-2 border-stone-200";
+        const textColor = isUnlocked ? "text-orange-600" : "text-stone-400";
+
+        nodeDiv.innerHTML = `
+          <span class="text-xs font-black mb-2 leading-none ${textColor}">${tier.points}</span>
+          <div class="w-10 h-10 ${circleColor} rounded-full flex items-center justify-center z-10 transition-colors duration-500">
+            ${iconSvg}
+          </div>
+        `;
+        timelineContainer.appendChild(nodeDiv);
+      });
+
+      const nextTierText = document.getElementById("next-tier-text");
+      if (nextTierPoints) {
+        const pointsNeeded = nextTierPoints - data.points;
+        nextTierText.innerText = `Plus que ${pointsNeeded} points pour déverrouiller le prochain palier.`;
+      } else {
+        nextTierText.innerText = "Félicitations, vous avez débloqué tous les paliers !";
+      }
+
+      // --- Chargement de la liste des récompenses (avec événement) ---
+      await renderClientRewards(data.points);
+
+      // --- Chargement des coupons client ---
+      await loadClientCoupons(uid);
+    }
+
+    // AJOUT : Fonction calcul rang client
+    async function calculateRank(points) {
+      const snap = await profiles
+        .where("role", "==", "membre")
+        .where("points", ">", points)
+        .get();
+      const rank = snap.size + 1;
+      document.getElementById("client-rank").innerText = `#${rank}${rank === 1 ? 'er' : 'ème'} des clients les plus fidèles`;
+    }
+
+    // ================= UTIL =================
+    function logout(){
+      auth.signOut();
+    }
+
+    function showAuth(){
+      document.getElementById("auth").style.display = "";
+      document.getElementById("client-dashboard").classList.add("hidden");
+    }
+
+    // ================= TAB SWITCHING =================
+    function switchDashTab(tabName, btn) {
+      // Deactivate all tabs
+      document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.dash-tab-content').forEach(c => { c.style.display = 'none'; c.classList.remove('active'); });
+      // Activate chosen
+      btn.classList.add('active');
+      const target = document.getElementById('tab-' + tabName);
+      if (target) { target.style.display = 'block'; target.classList.add('active'); }
+    }
+
+    // ================= QR OVERLAY =================
+    let qrLargeGenerated = false;
+
+    function openQrOverlay() {
+      const overlay = document.getElementById('qr-overlay');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+
+      // Generate large QR only once
+      if (!qrLargeGenerated) {
+        const code = document.getElementById('client-code').textContent;
+        const qrLargeContainer = document.getElementById('qrcode-large');
+        qrLargeContainer.innerHTML = '';
+        new QRCode(qrLargeContainer, {
+          text: code,
+          width: 220,
+          height: 220,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        document.getElementById('client-code-large').textContent = code;
+        qrLargeGenerated = true;
+      }
+    }
+
+    function closeQrOverlay(e) {
+      // Close when clicking backdrop or close button
+      if (e && e.target && e.target.closest('.qr-overlay-card') && !e.target.closest('.qr-overlay-close')) return;
+      document.getElementById('qr-overlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // ================= COUPONS CLIENT =================
+    let currentUserUid = null;
+
+    async function loadClientCoupons(uid) {
+      currentUserUid = uid;
+      const container = document.getElementById("client-coupons");
+      container.innerHTML = '';
+      try {
+        const now = new Date();
+        const snapshot = await coupons.where("active", "==", true).get();
+        const available = [];
+        snapshot.forEach(doc => {
+          const c = doc.data();
+          const expired  = c.expiresAt && c.expiresAt.toDate() < now;
+          const used     = c.usedBy && c.usedBy.includes(uid);
+          const assigned = c.assignedTo === "all" || c.assignedTo === uid;
+          if (!expired && !used && assigned) available.push({ id: doc.id, ...c });
+        });
+
+        if (available.length === 0) {
+          container.innerHTML = '<li class="text-sm text-stone-400 text-center py-2">Aucun coupon disponible pour le moment.</li>';
+          return;
+        }
+
+        available.forEach(c => {
+          const expiryStr = c.expiresAt
+            ? `Valable jusqu'au ${c.expiresAt.toDate().toLocaleDateString("fr-FR", { day:"numeric", month:"long", year:"numeric" })} à ${c.expiresAt.toDate().toLocaleTimeString("fr-FR", { hour:"2-digit", minute:"2-digit" })}`
+            : "Sans expiration";
+
+          const li = document.createElement("li");
+          li.className = "coupon-ticket";
+          li.innerHTML = `
+            <div class="coupon-ticket-top">
+              <div class="coupon-ticket-icon">🎟️</div>
+              <div class="coupon-ticket-info">
+                <span class="coupon-ticket-title">${c.title}</span>
+                ${c.description ? `<span class="coupon-ticket-desc">${c.description}</span>` : ''}
+              </div>
+            </div>
+            <div class="coupon-ticket-bottom">
+              <span class="coupon-ticket-expiry">⏰ ${expiryStr}</span>
+              <span class="coupon-ticket-badge">À utiliser</span>
+            </div>
+          `;
+          container.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Erreur coupons:", err);
+        container.innerHTML = '<li class="text-sm text-red-400 text-center py-2">Erreur de chargement.</li>';
+      }
+    }
+
+    // ================= HISTORIQUE DANS LE PANNEAU =================
+    async function toggleHistoryPanel() {
+      const section = document.getElementById("history-panel-section");
+      const isOpen = section.classList.contains("show");
+
+      // Fermer les autres sous-sections
+      document.getElementById("change-password-section").classList.remove("show");
+      document.getElementById("delete-account-section").classList.remove("show");
+
+      if (isOpen) {
+        section.classList.remove("show");
+        return;
+      }
+
+      section.classList.add("show");
+
+      const list = document.getElementById("profile-history-list");
+      list.innerHTML = '<li style="font-size:13px; color:#9CA3AF; text-align:center; padding:8px;">Chargement…</li>';
+
+      try {
+        const uid = auth.currentUser?.uid;
+        if (!uid) return;
+
+        const snapshot = await profiles.doc(uid).collection("transactions")
+          .orderBy("date", "desc")
+          .limit(15)
+          .get();
+
+        list.innerHTML = "";
+
+        if (snapshot.empty) {
+          list.innerHTML = '<li style="font-size:13px; color:#9CA3AF; text-align:center; padding:8px;">Aucune transaction pour le moment.</li>';
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const tx = doc.data();
+          const dateObj = tx.date ? tx.date.toDate() : new Date();
+          const dateStr = dateObj.toLocaleDateString("fr-FR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+          const isPositive = tx.points_added > 0;
+          const pointColor = isPositive ? "#EA580C" : "#78716C";
+          const pointSign  = isPositive ? "+" : "";
+          const libelle = tx.description || (isPositive ? `Commande de ${tx.amount_euros}€` : "Récompense utilisée");
+
+          const li = document.createElement("li");
+          li.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#F9FAFB; padding:10px 12px; border-radius:10px; margin-bottom:6px;";
+          li.innerHTML = `
+            <div style="display:flex; flex-direction:column; text-align:left;">
+              <span style="font-size:13px; font-weight:700; color:#1C1917;">${libelle}</span>
+              <span style="font-size:11px; color:#A8A29E; margin-top:2px;">${dateStr}</span>
+            </div>
+            <span style="font-size:13px; font-weight:800; color:${pointColor}; white-space:nowrap; margin-left:8px;">${pointSign}${tx.points_added} pts</span>
+          `;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = '<li style="font-size:13px; color:#EF4444; text-align:center; padding:8px;">Erreur de chargement.</li>';
+      }
+    }
+
+    // ================= PANNEAU PROFIL =================
+    function openProfilePanel() {
+      document.getElementById("profile-overlay").classList.add("show");
+      document.getElementById("profile-panel").classList.add("show");
+      // Réinitialiser les sous-sections
+      document.getElementById("change-password-section").classList.remove("show");
+      document.getElementById("delete-account-section").classList.remove("show");
+      document.getElementById("history-panel-section").classList.remove("show");
+      clearProfileFeedback();
+    }
+
+    function closeProfilePanel() {
+      document.getElementById("profile-overlay").classList.remove("show");
+      document.getElementById("profile-panel").classList.remove("show");
+    }
+
+    function toggleChangePassword() {
+      const section = document.getElementById("change-password-section");
+      section.classList.toggle("show");
+      if (!section.classList.contains("show")) {
+        document.getElementById("profile-current-pw").value = "";
+        document.getElementById("profile-new-pw").value = "";
+        document.getElementById("profile-confirm-pw").value = "";
+        clearProfileFeedback();
+      }
+      // Fermer l'autre section si ouverte
+      document.getElementById("delete-account-section").classList.remove("show");
+      document.getElementById("history-panel-section").classList.remove("show");
+    }
+
+    function toggleDeleteAccount() {
+      const section = document.getElementById("delete-account-section");
+      section.classList.toggle("show");
+      if (!section.classList.contains("show")) {
+        document.getElementById("profile-delete-email").value = "";
+        document.getElementById("profile-delete-pw").value = "";
+        clearProfileFeedback();
+      }
+      // Fermer l'autre section si ouverte
+      document.getElementById("change-password-section").classList.remove("show");
+      document.getElementById("history-panel-section").classList.remove("show");
+    }
+
+    function showProfileFeedback(elementId, msg, type) {
+      const el = document.getElementById(elementId);
+      el.textContent = msg;
+      el.className = `profile-feedback show ${type}`;
+    }
+
+    function clearProfileFeedback() {
+      document.getElementById("pw-feedback").className = "profile-feedback";
+      document.getElementById("delete-feedback").className = "profile-feedback";
+    }
+
+    // --- Changer le mot de passe ---
+    async function handleChangePassword() {
+      const currentPw = document.getElementById("profile-current-pw").value;
+      const newPw = document.getElementById("profile-new-pw").value;
+      const confirmPw = document.getElementById("profile-confirm-pw").value;
+
+      if (!currentPw || !newPw || !confirmPw) {
+        showProfileFeedback("pw-feedback", "Veuillez remplir tous les champs.", "error");
+        return;
+      }
+
+      if (newPw.length < 6) {
+        showProfileFeedback("pw-feedback", "Le nouveau mot de passe doit faire au moins 6 caractères.", "error");
+        return;
+      }
+
+      if (newPw !== confirmPw) {
+        showProfileFeedback("pw-feedback", "Les nouveaux mots de passe ne correspondent pas.", "error");
+        return;
+      }
+
+      try {
+        const user = auth.currentUser;
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPw);
+        
+        // Ré-authentification
+        await user.reauthenticateWithCredential(credential);
+        
+        // Mise à jour du mot de passe
+        await user.updatePassword(newPw);
+
+        showProfileFeedback("pw-feedback", "✓ Mot de passe modifié avec succès !", "success");
+        document.getElementById("profile-current-pw").value = "";
+        document.getElementById("profile-new-pw").value = "";
+        document.getElementById("profile-confirm-pw").value = "";
+
+        // Fermer la section après 2 secondes
+        setTimeout(() => { toggleChangePassword(); }, 2000);
+
+      } catch (error) {
+        console.error("Erreur changement mdp:", error);
+        if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+          showProfileFeedback("pw-feedback", "Le mot de passe actuel est incorrect.", "error");
+        } else {
+          showProfileFeedback("pw-feedback", getErrorMessage(error.code), "error");
+        }
+      }
+    }
+
+    // --- Supprimer le compte depuis le panneau ---
+    async function handleProfileDeleteAccount() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const email = document.getElementById("profile-delete-email").value.trim();
+      const password = document.getElementById("profile-delete-pw").value.trim();
+
+      if (!email || !password) {
+        showProfileFeedback("delete-feedback", "Veuillez remplir votre email et mot de passe.", "error");
+        return;
+      }
+
+      const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+
+      try {
+        await user.reauthenticateWithCredential(credential);
+        await profiles.doc(user.uid).delete();
+        await user.delete();
+        
+        closeProfilePanel();
+        alert("Votre compte a été supprimé avec succès.");
+
+      } catch (error) {
+        console.error("Erreur suppression:", error);
+        showProfileFeedback("delete-feedback", getErrorMessage(error.code), "error");
+      }
+    }
+
+    // --- Déconnexion depuis le panneau ---
+    function handleProfileLogout() {
+      closeProfilePanel();
+      auth.signOut();
+    }
+
+
+    // ======== RESET MOT DE PASSE ========= //
+    async function resetPassword() {
+  const email = document.getElementById("email").value.trim();
+  
+  // On vérifie que l'utilisateur a bien tapé un email
+  if (!email) {
+    showAuthMsg("Veuillez saisir votre email dans le champ ci-dessus, puis cliquez sur 'Mot de passe oublié ?'");
+    return;
+  }
+
+  try {
+    // Demande à Firebase d'envoyer l'email
+    await auth.sendPasswordResetEmail(email);
+    // On réutilise ta fonction d'erreur pour afficher un message de succès (tu peux changer la couleur si besoin)
+    showAuthMsg("Un lien de réinitialisation a été envoyé à " + email); 
+  } catch (err) {
+    // Si l'email n'existe pas ou s'il y a une erreur
+    showAuthMsg("Erreur : " + err.message);
+  }
+}
+
+// ================= SUPPRESSION DE COMPTE =================
+    
+    // 1. Affiche le formulaire de suppression
+    function showDeleteSection() {
+      document.getElementById("show-delete-btn").classList.add("hidden");
+      document.getElementById("delete-confirm-section").classList.remove("hidden");
+    }
+
+    // 2. Annule et cache le formulaire
+    function cancelDelete() {
+      document.getElementById("delete-confirm-section").classList.add("hidden");
+      document.getElementById("show-delete-btn").classList.remove("hidden");
+      document.getElementById("delete-email").value = "";
+      document.getElementById("delete-password").value = "";
+    }
+
+    // 3. Valide les identifiants et supprime le compte
+    async function confirmDeleteAccount() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const email = document.getElementById("delete-email").value.trim();
+      const password = document.getElementById("delete-password").value.trim();
+
+      if (!email || !password) {
+        alert("Veuillez remplir votre email et votre mot de passe.");
+        return;
+      }
+
+      // On prépare les identifiants pour Firebase
+      const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+
+      try {
+        // Étape A : On ré-authentifie l'utilisateur pour des raisons de sécurité
+        await user.reauthenticateWithCredential(credential);
+        
+        // Étape B : Si le mot de passe est bon, on supprime ses données Firestore
+        await profiles.doc(user.uid).delete();
+        
+        // Étape C : On supprime son compte de connexion
+        await user.delete();
+        
+        alert("Votre compte a été supprimé avec succès.");
+        // Le système détectera la déconnexion et renverra vers l'accueil tout seul !
+        
+      } catch (error) {
+        console.error("Erreur de suppression :", error);
+        alert(getErrorMessage(error.code)); 
+      }
+    }
+
+    // ================= RENDER RÉCOMPENSES AVEC ÉVÉNEMENT =================
+    async function renderClientRewards(points) {
+      const rewardsContainer = document.getElementById("client-rewards");
+      rewardsContainer.innerHTML = "";
+
+      // Récupérer les paliers standards
+      let allTiers = [...REWARD_TIERS];
+
+      // Vérifier s'il y a une récompense spéciale d'événement
+      try {
+        const now = new Date();
+        const snapshot = await events.where("active", "==", true).get();
+
+        if (!snapshot.empty) {
+          snapshot.forEach(doc => {
+            const event = doc.data();
+            const deadline = event.deadline.toDate();
+            
+            // Si événement actif, commencé et a une récompense spéciale
+            const startDate = event.startDate ? event.startDate.toDate() : null;
+            const hasStarted = !startDate || startDate <= now;
+            if (deadline > now && hasStarted && event.options && event.options.specialReward) {
+              allTiers.push({
+                points: event.options.rewardPoints,
+                title: `🎁 ${event.options.rewardName}`,
+                desc: `Offre spéciale - ${event.title}`,
+                isSpecial: true
+              });
+            }
+          });
+        }
+
+        // Trier par points
+        allTiers.sort((a, b) => a.points - b.points);
+
+      } catch (err) {
+        console.error("Erreur chargement récompenses:", err);
+      }
+
+      // Afficher toutes les récompenses
+      allTiers.forEach((tier, index) => {
+        const isUnlocked = points >= tier.points;
+        const li = document.createElement("li");
+        
+        // Calculate progress percentage toward this tier
+        const prevPoints = index > 0 ? allTiers[index - 1].points : 0;
+        const segmentTotal = tier.points - prevPoints;
+        const segmentCurrent = Math.max(0, Math.min(points - prevPoints, segmentTotal));
+        const progressPct = isUnlocked ? 100 : Math.round((segmentCurrent / segmentTotal) * 100);
+
+        // Icon: image from Firestore or default star/lock
+        const iconUnlocked = tier.imageUrl
+          ? `<img src="${tier.imageUrl}" class="palier-icon palier-icon-img" onerror="this.outerHTML='<div class=\\'palier-icon palier-icon-unlocked\\'><svg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 24 24\\' fill=\\'white\\' stroke=\\'none\\'><path d=\\'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\\'/></svg></div>'">`
+          : `<div class="palier-icon palier-icon-unlocked"><svg width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`;
+
+        const iconLocked = tier.imageUrl
+          ? `<img src="${tier.imageUrl}" class="palier-icon palier-icon-img palier-icon-img-locked" onerror="this.outerHTML='<div class=\\'palier-icon palier-icon-locked\\'><svg width=\\'18\\' height=\\'18\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2.5\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><rect x=\\'3\\' y=\\'11\\' width=\\'18\\' height=\\'11\\' rx=\\'2\\' ry=\\'2\\'/><path d=\\'M7 11V7a5 5 0 0 1 10 0v4\\'/></svg></div>'">`
+          : `<div class="palier-icon palier-icon-locked"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>`;
+        
+        if (isUnlocked) {
+          li.className = "palier-card palier-unlocked";
+          li.innerHTML = `
+            <div class="palier-card-top">
+              ${iconUnlocked}
+              <div class="palier-info">
+                <span class="palier-title">${tier.title}</span>
+                <span class="palier-desc">${tier.desc}</span>
+              </div>
+              <div class="palier-badge-unlocked">${tier.isSpecial ? '⭐ Dispo' : '✓'}</div>
+            </div>
+            <div class="palier-bar-wrap">
+              <div class="palier-bar"><div class="palier-bar-fill palier-bar-full" style="width:100%"></div></div>
+              <span class="palier-pts-label">${tier.points} pts</span>
+            </div>
+          `;
+        } else {
+          li.className = "palier-card palier-locked";
+          li.innerHTML = `
+            <div class="palier-card-top">
+              ${iconLocked}
+              <div class="palier-info">
+                <span class="palier-title palier-title-locked">${tier.title}</span>
+                <span class="palier-desc">${tier.desc}</span>
+              </div>
+              <div class="palier-pts-right">${points}/${tier.points}</div>
+            </div>
+            <div class="palier-bar-wrap">
+              <div class="palier-bar"><div class="palier-bar-fill" style="width:${progressPct}%"></div></div>
+              <span class="palier-pts-label">${tier.points - points > 0 ? `encore ${tier.points - points} pts` : ''}</span>
+            </div>
+          `;
+        }
+        rewardsContainer.appendChild(li);
+      });
+    }
+
+    // ================= ÉVÉNEMENTS =================
+    
+    // Charger l'événement actif le plus proche
+    async function loadActiveEvent() {
+      try {
+        const now = new Date();
+        
+        const snapshot = await events
+          .where("active", "==", true)
+          .get();
+
+        if (snapshot.empty) return;
+
+        // On prend les événements dont la deadline n'est pas passée
+        const upcomingEvents = [];
+        snapshot.forEach(doc => {
+          const event = doc.data();
+          const deadline = event.deadline.toDate();
+          if (deadline > now) {
+            upcomingEvents.push({ ...event, id: doc.id, deadlineDate: deadline });
+          }
+        });
+
+        // Trier par date de début (le plus proche en premier)
+        upcomingEvents.sort((a, b) => {
+          const aStart = a.startDate ? a.startDate.toDate() : a.deadlineDate;
+          const bStart = b.startDate ? b.startDate.toDate() : b.deadlineDate;
+          return aStart - bStart;
+        });
+
+        if (upcomingEvents.length > 0) {
+          displayEventBanner(upcomingEvents[0]);
+          // N'afficher le popup que si l'événement est déjà commencé
+          const evt = upcomingEvents[0];
+          const startDate = evt.startDate ? evt.startDate.toDate() : null;
+          if (!startDate || startDate <= now) {
+            showEventPopup(evt);
+          }
+        }
+        
+      } catch (err) {
+        console.error("Erreur chargement événement:", err);
+      }
+    }
+
+    // Afficher la banderole avec l'événement
+    function displayEventBanner(event) {
+      const banner = document.getElementById("event-banner");
+      const nameEl = document.getElementById("event-name");
+      const bgImg  = document.getElementById("event-banner-bg");
+      const optionsEl = document.getElementById("event-options");
+      const labelEl = document.getElementById("countdown-label");
+
+      nameEl.textContent = event.title;
+      
+      if (event.imageUrl) bgImg.src = event.imageUrl;
+
+      const now = new Date();
+      const startDate = event.startDate ? event.startDate.toDate() : null;
+      const hasStarted = !startDate || startDate <= now;
+
+      if (hasStarted) {
+        // Mode actif : compte à rebours jusqu'à la FIN
+        labelEl.textContent = "⏳ Se termine dans";
+        optionsEl.innerHTML = '';
+        if (event.options) {
+          if (event.options.doublePoints) {
+            optionsEl.innerHTML += '<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎯 Points x2 sur vos achats</span>';
+          }
+          if (event.options.specialReward) {
+            optionsEl.innerHTML += `<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎁 ${event.options.rewardName}</span>`;
+          }
+        }
+        startCountdown(event.deadlineDate || event.deadline.toDate(), "deadline");
+      } else {
+        // Mode "bientôt" : compte à rebours jusqu'au DÉBUT
+        labelEl.textContent = "🔜 Disponible dans";
+        optionsEl.innerHTML = '<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">À venir</span>';
+        startCountdown(startDate, "startdate");
+      }
+
+      banner.classList.remove("hidden");
+    }
+
+    // Compte à rebours en temps réel — JJ:HH:MM:SS, mise à jour chaque seconde
+    function startCountdown(targetDate, mode) {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      const daysWrap = document.getElementById("cd-days-wrap");
+      const labelEl  = document.getElementById("countdown-label");
+
+      function updateCountdown() {
+        const now  = new Date();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          clearInterval(countdownInterval);
+
+          if (mode === "startdate") {
+            // L'événement vient de commencer — on recharge la page
+            window.location.reload();
+          } else {
+            document.getElementById("event-banner").classList.add("hidden");
+          }
+          return;
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const d  = Math.floor(totalSeconds / 86400);
+        const h  = Math.floor((totalSeconds % 86400) / 3600);
+        const m  = Math.floor((totalSeconds % 3600) / 60);
+        const s  = totalSeconds % 60;
+
+        // Masquer le bloc jours si on est à moins d'1 jour
+        if (daysWrap) daysWrap.style.display = d > 0 ? "flex" : "none";
+
+        document.getElementById("days").textContent    = String(d).padStart(2, '0');
+        document.getElementById("hours").textContent   = String(h).padStart(2, '0');
+        document.getElementById("minutes").textContent = String(m).padStart(2, '0');
+        document.getElementById("seconds").textContent = String(s).padStart(2, '0');
+      }
+
+      updateCountdown();
+      countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    // ================= CONFETTI + POPUP ÉVÉNEMENT =================
+    let eventPopupShown = false;
+
+    function showEventPopup(event) {
+      // Ne montrer qu'une seule fois par session
+      if (eventPopupShown) return;
+      eventPopupShown = true;
+
+      // Remplir le popup
+      document.getElementById("popup-event-title").textContent = event.title;
+      document.getElementById("popup-event-desc").textContent = event.description || "Un événement spécial est en cours !";
+
+      // Countdown
+      const deadline = event.deadlineDate || event.deadline.toDate();
+      const diff = deadline - new Date();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let countdownText = "";
+      if (days > 0) countdownText = `⏰ Plus que ${days}j ${hours}h`;
+      else if (hours > 0) countdownText = `⏰ Plus que ${hours}h`;
+      else countdownText = "⏰ Dernières heures !";
+      document.getElementById("popup-event-countdown").textContent = countdownText;
+
+      // Options badges
+      const optionsEl = document.getElementById("popup-event-options");
+      optionsEl.innerHTML = "";
+      if (event.options) {
+        if (event.options.doublePoints) {
+          optionsEl.innerHTML += '<span class="event-popup-badge">🎯 Points x2</span>';
+        }
+        if (event.options.specialReward) {
+          optionsEl.innerHTML += `<span class="event-popup-badge">🎁 ${event.options.rewardName}</span>`;
+        }
+      }
+
+      // Afficher popup avec léger délai
+      setTimeout(() => {
+        document.getElementById("event-popup-overlay").classList.add("show");
+        launchConfetti();
+      }, 400);
+    }
+
+    function closeEventPopup(e) {
+      if (e && e.target !== document.getElementById("event-popup-overlay")) return;
+      document.getElementById("event-popup-overlay").classList.remove("show");
+    }
+
+    // --- CONFETTI ANIMATION (canvas) ---
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#FF6B00", "#FF8C00", "#FFB347", "#FFD700", "#FF4500", "#FF6347", "#FFA500", "#FFEC8B"];
+      const confettiCount = 120;
+      const pieces = [];
+
+      for (let i = 0; i < confettiCount; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          w: Math.random() * 10 + 5,
+          h: Math.random() * 6 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 8,
+          speedX: (Math.random() - 0.5) * 3,
+          speedY: Math.random() * 3 + 2,
+          opacity: 1
+        });
+      }
+
+      let frame = 0;
+      const maxFrames = 180; // ~3 secondes
+
+      function animate() {
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Fade out dans les dernières frames
+        const fadeStart = maxFrames - 40;
+
+        pieces.forEach(p => {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.rotation += p.rotSpeed;
+          p.speedY += 0.04; // gravité
+
+          if (frame > fadeStart) {
+            p.opacity = Math.max(0, 1 - (frame - fadeStart) / 40);
+          }
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+
+        if (frame < maxFrames) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animate();
+    }
+
+    // FONCTION PAGE LÉGALE
+      function openLegalPage() {
+          const legalWindow = window.open("", "_blank");
+          legalWindow.document.write(`
+              <html>
+              <head>
+                  <title>CGU & Mentions Légales</title>
+                  <style>
+                      body { 
+                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+                          line-height: 1.6; 
+                          padding: 50px; 
+                          color: #2d2d2d; 
+                          max-width: 750px; 
+                          margin: auto; 
+                      }
+                      h1 { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                      h2 { font-size: 1.2rem; font-weight: 700; margin-top: 30px; }
+                      h3 { font-size: 1rem; font-weight: 700; color: #555; }
+                      p, li { font-size: 0.95rem; color: #444; }
+                      ul { padding-left: 20px; }
+                      hr { border: 0; border-top: 1px solid #eee; margin: 40px 0; }
+                  </style>
+              </head>
+              <body>
+                  <h1>Mentions Légales & CGU</h1>
+
+                  <section>
+                      <h2>I. ÉDITION ET HÉBERGEMENT</h2>
+                      <p><strong>Éditeur :</strong> Ce site est édité par l'établissement <strong>[NOM DU RESTAURANT]</strong>, [FORME JURIDIQUE] au capital de [MONTANT] €, situé à [ADRESSE COMPLÈTE]. SIRET : [NUMÉRO].</p>
+                      <p><strong>Hébergement :</strong> Plateforme GitHub Pages (GitHub Inc.). Données de fidélité stockées sur Google Firebase (Google Cloud Platform).</p>
+                      <p><strong>Conception technique :</strong> Rylia | contact@rylia.fr
+                  </section>
+
+                  <section>
+                      <h2>II. CONDITIONS GÉNÉRALES D'UTILISATION</h2>
+                      
+                      <h3>1. Objet du programme</h3>
+                      <p>Le service propose un programme de fidélité numérique permettant de cumuler des points lors de chaque achat pour obtenir des récompenses.</p>
+
+                      <h3>2. Barème de points</h3>
+                      <p>Le cumul des points est défini comme suit : <strong>1€ dépensé = 2 points de fidélité</strong>. Les points sont crédités manuellement par l'établissement lors de la transaction.</p>
+
+                      <h3>3. Paliers de récompenses</h3>
+                      <p>Les points cumulés donnent accès à des avantages selon les paliers suivants : 40, 80, 150, 200 et 260 points. L'utilisation d'une récompense déduit automatiquement les points correspondants. Les points ne sont ni remboursables, ni échangeables contre de l'argent liquide.</p>
+
+                      <h3>4. Fraude et Inactivité</h3>
+                      <p>L'établissement se réserve le droit de suspendre un compte en cas de fraude ou après une période d'inactivité prolongée (24 mois).</p>
+                  </section>
+
+                  <section>
+                      <h2>III. PROTECTION DES DONNÉES (RGPD)</h2>
+                      <p>Nous collectons uniquement les données nécessaires à la gestion de votre fidélité :</p>
+                      <ul>
+                          <li>Prénom et adresse e-mail (identifiant).</li>
+                          <li>Historique des points et des passages.</li>
+                      </ul>
+                      <p>Vos données sont conservées tant que votre compte est actif. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données en contactant : [E-MAIL DU RESTAURANT].</p>
+                  </section>
+
+                  <section>
+                      <h2>IV. MÉDIATION DE LA CONSOMMATION</h2>
+                      <p>Conformément aux articles L.616-1 et R.616-1 du code de la consommation, en cas de litige non résolu directement avec l'établissement, le client peut recourir gratuitement au médiateur de la consommation saisi par le restaurant :</p>
+                      <p>[NOM DU MÉDIATEUR DE L'ÉTABLISSEMENT]<br>Adresse : [ADRESSE DU MÉDIATEUR]<br>Site internet : [SITE DU MÉDIATEUR]</p>
+                  </section>
+
+                  <hr>
+                  <p style="font-size: 0.8rem; color: #999;">Dernière mise à jour : 24/02/2026</p>
+              </body>
+              </html>
+          `);
+      }
+  </script>
+
+<footer class="absolute bottom-4 w-full text-center">
+  <button onclick="openLegalPage()" class="text-xs text-stone-400 underline decoration-stone-300 hover:text-stone-800 transition-colors">
+      Mentions Légales, CGU & RGPD
+  </button>
+</footer>
+
+</body>
+</html>
     /* --- STYLES LOGIN RYLIA (identique à login.html) --- */
     .login-container { width: 100%; max-width: 400px; padding: 20px; }
 
