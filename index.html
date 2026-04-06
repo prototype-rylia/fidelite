@@ -44,18 +44,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <style>
-    /* --- STYLES LOGIN RYLIA (identique à login.html) --- */
-    .login-container { width: 100%; max-width: 400px; padding: 20px; }
-
-    .login-card {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border-top: 4px solid #FF6B00;
-      text-align: center;
-    }
-
+    /* --- Brand name (used in dashboard too) --- */
     .brand-name {
       font-weight: 800;
       font-size: 2.2rem;
@@ -64,148 +53,7 @@
       margin-bottom: 10px;
     }
 
-    .login-subtitle {
-      color: #444;
-      font-size: 0.95rem;
-      margin-bottom: 30px;
-    }
 
-    .login-form-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    .login-form-group label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-      color: #1a1a1a;
-    }
-
-    .login-form-input {
-      width: 100%;
-      padding: 14px;
-      border: 1.5px solid #e0e0e0;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: white;
-      color: #1a1a1a;
-      box-sizing: border-box;
-      outline: none;
-    }
-
-    .login-form-input:focus {
-      border-color: #FF6B00;
-      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
-    }
-
-    .login-form-input::placeholder { color: #C4C9D4; }
-
-    .input-wrapper { position: relative; }
-
-    .toggle-password {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      color: #444;
-      display: flex;
-      align-items: center;
-      transition: color 0.2s;
-    }
-    .toggle-password:hover { color: #1a1a1a; }
-
-    .login-btn-submit {
-      width: 100%;
-      background-color: #FF6B00;
-      color: white;
-      border: none;
-      padding: 14px;
-      font-size: 1.05rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s;
-      margin-top: 10px;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .login-btn-submit:hover:not(:disabled) {
-      background-color: #E56000;
-      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3);
-    }
-    .login-btn-submit:active:not(:disabled) { transform: scale(0.98); }
-    .login-btn-submit:disabled { opacity: 0.75; cursor: not-allowed; }
-
-    .login-spinner {
-      display: none;
-      width: 18px; height: 18px;
-      border: 2.5px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .login-forgot-link {
-      display: block;
-      text-align: right;
-      font-size: 0.85rem;
-      color: #444;
-      text-decoration: none;
-      margin-top: 6px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: color 0.3s;
-      background: none;
-      border: none;
-      font-family: inherit;
-      padding: 0;
-      margin-left: auto;
-    }
-
-    .login-forgot-link:hover { color: #FF6B00; }
-
-    .login-toggle-link {
-      display: inline-block;
-      margin-top: 20px;
-      color: #444;
-      text-decoration: none;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: color 0.3s;
-      background: none;
-      border: none;
-      font-family: inherit;
-    }
-
-    .login-toggle-link:hover { color: #FF6B00; }
-
-    .login-error-msg {
-      color: #dc3545;
-      font-size: 0.9rem;
-      margin-top: 15px;
-      font-weight: 600;
-      display: none;
-      background: #ffe6e6;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    .login-error-msg.show { display: block; }
 
     /* --- MENU PROFIL (panneau latéral mobile) --- */
     .profile-icon-btn {
@@ -1079,61 +927,6 @@
   </div>
 </div>
 
-<div id="auth" class="login-container">
-  <div class="login-card">
-    <div class="brand-name">Rylia.</div>
-    <p class="login-subtitle" id="auth-title">Connectez-vous à votre espace</p>
-
-    <div id="firstname-field" class="login-form-group" style="display:none;">
-      <label for="firstname">Prénom</label>
-      <input id="firstname" type="text" placeholder="Votre prénom" class="login-form-input">
-    </div>
-
-    <div class="login-form-group">
-      <label for="email">Adresse Email</label>
-      <input id="email" type="email" placeholder="exemple@email.com" class="login-form-input">
-    </div>
-
-    <div id="phone-field" class="login-form-group" style="display:none;">
-      <label for="phone">Numéro de téléphone</label>
-      <input id="phone" type="tel" placeholder="06 12 34 56 78" maxlength="14" class="login-form-input">
-    </div>
-
-    <div class="login-form-group">
-      <label for="password">Mot de passe</label>
-      <div class="input-wrapper">
-        <input id="password" type="password" placeholder="Votre mot de passe" class="login-form-input" style="padding-right:46px;">
-        <button type="button" class="toggle-password" onclick="togglePwd('password')" aria-label="Afficher le mot de passe">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div id="confirm-password-field" class="login-form-group" style="display:none;">
-      <label for="confirm-password">Confirmer le mot de passe</label>
-      <div class="input-wrapper">
-        <input id="confirm-password" type="password" placeholder="Confirmez votre mot de passe" class="login-form-input" style="padding-right:46px;">
-        <button type="button" class="toggle-password" onclick="togglePwd('confirm-password')" aria-label="Afficher le mot de passe">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div id="forgot-password-container" style="text-align:right; margin-bottom:10px;">
-      <button onclick="resetPassword()" class="login-forgot-link">Mot de passe oublié ?</button>
-    </div>
-
-    <button onclick="handleAuth()" id="auth-btn" class="login-btn-submit">
-      <span class="login-spinner" id="auth-spinner"></span>
-      <span id="auth-btn-label">Se connecter</span>
-    </button>
-
-    <button onclick="toggleMode()" id="toggle-btn" class="login-toggle-link">Créer un compte</button>
-
-    <div id="auth-msg" class="login-error-msg"></div>
-  </div>
-</div>
-
   <div id="client-dashboard" class="hidden w-full max-w-md text-center overflow-hidden" style="position:relative;">
 
     <!-- BOUTON PROFIL (icône personne) -->
@@ -1377,7 +1170,7 @@
     const coupons  = db.collection("clients").doc(CLIENT_ID).collection("coupons");
     const rewardsCol = db.collection("clients").doc(CLIENT_ID).collection("rewards");
 
-    let signupMode = false;
+
     let countdownInterval = null;
 
     // ================= TRADUCTION DES ERREURS =================
@@ -1404,27 +1197,7 @@
       }
     }
 
-    // ================= FORMATAGE TÉLÉPHONE =================
-        document.addEventListener("DOMContentLoaded", () => {
-          const phoneInput = document.getElementById("phone");
-          
-          // Si l'élément existe bien
-          if(phoneInput) {
-            phoneInput.addEventListener('input', function (e) {
-              // 1. On supprime tout ce qui n'est pas un chiffre
-              let cleaned = e.target.value.replace(/\D/g, '');
-              
-              // 2. On limite à 10 chiffres
-              cleaned = cleaned.substring(0, 10);
-              
-              // 3. On groupe par 2 et on ajoute un espace entre chaque groupe
-              let formatted = cleaned.match(/.{1,2}/g)?.join(' ') || '';
-              
-              // 4. On met à jour l'affichage
-              e.target.value = formatted;
-            });
-          }
-        });
+
 
 
     // ================= PALIERS DE RÉCOMPENSES =================
@@ -1448,104 +1221,6 @@
       }
     }
 
-    function togglePwd(id) {
-      const input = document.getElementById(id);
-      input.type = input.type === "password" ? "text" : "password";
-    }
-
-    function setAuthLoading(on) {
-      document.getElementById('auth-btn').disabled = on;
-      document.getElementById('auth-spinner').style.display = on ? "block" : "none";
-      document.getElementById('auth-btn-label').textContent = on ? (signupMode ? "Inscription…" : "Connexion…") : (signupMode ? "S'inscrire" : "Se connecter");
-    }
-
-    // ================= TOGGLE =================
-     function toggleMode(){
-      signupMode = !signupMode;
-      document.getElementById("firstname-field").style.display = signupMode ? "block" : "none";
-      document.getElementById("phone-field").style.display = signupMode ? "block" : "none";
-      document.getElementById("confirm-password-field").style.display = signupMode ? "block" : "none";
-      
-      // NOUVEAU : Cacher le bouton "Mot de passe oublié" en mode inscription
-      document.getElementById("forgot-password-container").style.display = signupMode ? "none" : "block";
-      
-      document.getElementById("auth-title").innerText = signupMode ? "Créez votre compte fidélité" : "Connectez-vous à votre espace";
-      document.getElementById("auth-btn-label").innerText = signupMode ? "S'inscrire" : "Se connecter";
-      document.getElementById("toggle-btn").innerText = signupMode ? "Déjà membre ? Se connecter" : "Créer un compte";
-    }
-
-    // ================= AUTH =================
-async function handleAuth(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const firstname = document.getElementById("firstname").value.trim();
-  
-  // Cacher le message d'erreur précédent
-  document.getElementById("auth-msg").classList.remove("show");
-  
-  // Nouveau champ téléphone au lieu de confirm-email
-  const phone = document.getElementById("phone").value.trim();
-  const confirmPassword = document.getElementById("confirm-password").value.trim();
-
-  if(!email || !password){
-    showAuthMsg("Email et mot de passe requis");
-    return;
-  }
-
-  setAuthLoading(true);
-
-  try{
-    if(signupMode){
-      // --- VERIFICATIONS ---
-      // phone //
-      const phoneClean = phone.replace(/\s/g, ''); // On retire les espaces pour compter les chiffres
-
-      if(!phoneClean) {
-        showAuthMsg("Le numéro de téléphone est requis");
-        return;
-      }
-      if(phoneClean.length !== 10) {
-        showAuthMsg("Le numéro de téléphone doit contenir exactement 10 chiffres");
-        return;
-      }
-
-      // password //
-      if(password !== confirmPassword) {
-        showAuthMsg("Les mots de passe ne correspondent pas");
-        return;
-      }
-      if(password.length < 6) {
-        showAuthMsg("Le mot de passe doit faire au moins 6 caractères");
-        return;
-      }
-      // ---------------------
-
-      const res = await auth.createUserWithEmailAndPassword(email, password);
-      const shortCode = Math.random().toString(36).substring(2,8).toUpperCase();
-
-      await profiles.doc(res.user.uid).set({
-        first_name: firstname || "Client",
-        email: email,
-        phone: phone,
-        points: 0,
-        short_code: shortCode,
-        role: "membre",
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    } else {
-      await auth.signInWithEmailAndPassword(email, password);
-    }
-    } catch (err) {
-          setAuthLoading(false);
-          showAuthMsg(getErrorMessage(err.code)); 
-    }
-}
-
-    function showAuthMsg(msg){
-      const m = document.getElementById("auth-msg");
-      m.innerText = msg;
-      m.classList.add("show");
-    }
 
     // ================= ROLE DETECTION =================
     auth.onAuthStateChanged(async user => {
@@ -1570,7 +1245,6 @@ async function handleAuth(){
 
     // ================= SHOW CLIENT =================
     async function showClient(data, uid){
-      document.getElementById("auth").style.display = "none";
       document.getElementById("client-dashboard").classList.remove("hidden");
       qrLargeGenerated = false; // reset for new session
 
@@ -1701,12 +1375,11 @@ async function handleAuth(){
 
     // ================= UTIL =================
     function logout(){
-      auth.signOut();
+      auth.signOut().then(() => { window.location.href = "login.html"; });
     }
 
     function showAuth(){
-      document.getElementById("auth").style.display = "";
-      document.getElementById("client-dashboard").classList.add("hidden");
+      window.location.href = "login.html";
     }
 
     // ================= TAB SWITCHING =================
@@ -1999,30 +1672,10 @@ async function handleAuth(){
     // --- Déconnexion depuis le panneau ---
     function handleProfileLogout() {
       closeProfilePanel();
-      auth.signOut();
+      auth.signOut().then(() => { window.location.href = "login.html"; });
     }
 
 
-    // ======== RESET MOT DE PASSE ========= //
-    async function resetPassword() {
-  const email = document.getElementById("email").value.trim();
-  
-  // On vérifie que l'utilisateur a bien tapé un email
-  if (!email) {
-    showAuthMsg("Veuillez saisir votre email dans le champ ci-dessus, puis cliquez sur 'Mot de passe oublié ?'");
-    return;
-  }
-
-  try {
-    // Demande à Firebase d'envoyer l'email
-    await auth.sendPasswordResetEmail(email);
-    // On réutilise ta fonction d'erreur pour afficher un message de succès (tu peux changer la couleur si besoin)
-    showAuthMsg("Un lien de réinitialisation a été envoyé à " + email); 
-  } catch (err) {
-    // Si l'email n'existe pas ou s'il y a une erreur
-    showAuthMsg("Erreur : " + err.message);
-  }
-}
 
 // ================= SUPPRESSION DE COMPTE =================
     
