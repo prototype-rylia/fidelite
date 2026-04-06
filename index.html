@@ -6,6 +6,13 @@
   <title>Restaurant Fidélité</title>
 
   <style>
+    /* Tailwind Preflight base reset */
+    *,*::before,*::after{box-sizing:border-box;border-width:0;border-style:solid}
+    html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif}
+    body{margin:0;line-height:inherit}
+    img,svg,video,canvas{display:block;max-width:100%}
+    button,input,select,textarea{font-family:inherit;font-size:100%;line-height:inherit;color:inherit;margin:0;padding:0}
+    button{cursor:pointer;background-color:transparent;background-image:none}
     /* Tailwind utilities used in this page */
     .absolute{position:absolute}.relative{position:relative}.fixed{position:fixed}
     .inset-0{top:0;right:0;bottom:0;left:0}.top-11{top:2.75rem}.bottom-4{bottom:1rem}.left-0{left:0}.right-0{right:0}
@@ -2413,11 +2420,6 @@ async function handleAuth(){
       }
   </script>
 
-<footer class="absolute bottom-4 w-full text-center">
-  <button onclick="openLegalPage()" class="text-xs text-stone-400 underline decoration-stone-300 hover:text-stone-800 transition-colors">
-      Mentions Légales, CGU & RGPD
-  </button>
-</footer>
 
 </body>
 </html>
