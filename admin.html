@@ -993,6 +993,83 @@
       .report-kpi-value { font-size: 22px; }
       .tab-btn { padding: 10px 14px; font-size: 13px; }
     }
+    /* --- MODAL CONFIRMATION MDP --- */
+    .pwd-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .pwd-modal-overlay.show { display: flex; }
+    .pwd-modal {
+      background: white;
+      border-radius: 14px;
+      padding: 30px 28px;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    .pwd-modal h3 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+      color: var(--dark);
+    }
+    .pwd-modal p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 18px;
+    }
+    .pwd-modal input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 10px;
+    }
+    .pwd-modal input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,0,0.1); }
+    .pwd-modal-error {
+      color: var(--danger);
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+      margin-bottom: 10px;
+    }
+    .pwd-modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .pwd-modal-actions button {
+      flex: 1;
+      padding: 11px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: all 0.2s;
+    }
+    .pwd-modal-cancel {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+    .pwd-modal-cancel:hover { background: #e5e7eb; }
+    .pwd-modal-confirm {
+      background: var(--primary);
+      color: white;
+    }
+    .pwd-modal-confirm:hover { background: var(--primary-hover); }
+    .pwd-modal-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
+
   </style>
 </head>
 <body>
@@ -1199,14 +1276,6 @@
       });
     </script>
 
-    <!-- Liste des événements -->
-    <h2 class="events-list-title">📋 Tous les événements</h2>
-    <div id="events-list">
-      <div class="events-empty">
-        <p>Chargement...</p>
-      </div>
-    </div>
-
   </div>
   <!-- FIN CONTENU ÉVÉNEMENTS -->
 
@@ -1343,10 +1412,12 @@
       </button>
     </div>
 
-    <!-- Liste des coupons -->
-    <div class="coupon-section-title">📋 Tous les coupons</div>
-    <div id="coupons-list">
-      <div class="events-empty"><p>Chargement…</p></div>
+    <!-- Panel coupons actifs -->
+    <div class="active-events-panel">
+      <div class="active-events-title">📋 Coupons actifs</div>
+      <div id="active-coupons-list">
+        <div class="events-empty"><p>Chargement…</p></div>
+      </div>
     </div>
 
   </div>
@@ -1523,6 +1594,52 @@
   const events   = db.collection("clients").doc(CLIENT_ID).collection("events");
   const coupons  = db.collection("clients").doc(CLIENT_ID).collection("coupons");
   const rewards  = db.collection("clients").doc(CLIENT_ID).collection("rewards");
+
+  // ================= MODAL CONFIRMATION MDP =================
+  let pwdResolve = null;
+
+  function requirePassword(msg) {
+    return new Promise((resolve) => {
+      pwdResolve = resolve;
+      document.getElementById("pwd-modal-msg").textContent = msg || "Entrez votre mot de passe pour confirmer.";
+      document.getElementById("pwd-modal-input").value = "";
+      document.getElementById("pwd-modal-error").style.display = "none";
+      document.getElementById("pwd-modal-overlay").classList.add("show");
+      setTimeout(() => document.getElementById("pwd-modal-input").focus(), 100);
+    });
+  }
+
+  function closePwdModal() {
+    document.getElementById("pwd-modal-overlay").classList.remove("show");
+    if (pwdResolve) { pwdResolve(false); pwdResolve = null; }
+  }
+
+  async function confirmPwdModal() {
+    const pwd = document.getElementById("pwd-modal-input").value;
+    const errEl = document.getElementById("pwd-modal-error");
+    const btn = document.getElementById("pwd-modal-confirm");
+    if (!pwd) { errEl.textContent = "Veuillez entrer votre mot de passe."; errEl.style.display = "block"; return; }
+    btn.disabled = true; btn.textContent = "Vérification…";
+    try {
+      const user = auth.currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, pwd);
+      await user.reauthenticateWithCredential(credential);
+      document.getElementById("pwd-modal-overlay").classList.remove("show");
+      if (pwdResolve) { pwdResolve(true); pwdResolve = null; }
+    } catch (e) {
+      errEl.textContent = "Mot de passe incorrect.";
+      errEl.style.display = "block";
+    } finally {
+      btn.disabled = false; btn.textContent = "Confirmer";
+    }
+  }
+
+  // Entrée pour confirmer dans le modal
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("pwd-modal-input").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") confirmPwdModal();
+    });
+  });
 
   // ================= PALIERS =================
   // Valeurs par défaut — seront écrasées par Firestore
@@ -1939,7 +2056,7 @@
       document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
       document.getElementById('tab-events').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des événements';
-      loadEventsList();
+
     } else if (tabName === 'history') {
       document.getElementById('tab-btn-history').classList.add('active');
       document.getElementById('tab-history').classList.add('active');
@@ -1950,7 +2067,8 @@
       document.getElementById('tab-coupons').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des coupons';
       populateCouponMemberSelect();
-      loadCouponsList();
+      loadActiveCouponsList();
+
     } else if (tabName === 'rewards') {
       document.getElementById('tab-btn-rewards').classList.add('active');
       document.getElementById('tab-rewards').classList.add('active');
@@ -1961,6 +2079,9 @@
 
   // ================= CRÉER UN ÉVÉNEMENT =================
   async function createNewEvent() {
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour créer un événement.");
+    if (!confirmed) return;
+
     const title = document.getElementById("event-title").value.trim();
     const description = document.getElementById("event-description").value.trim();
     const deadline = document.getElementById("event-deadline").value;
@@ -2033,7 +2154,7 @@
       document.getElementById("reward-details-container").style.display = "none";
 
       showToast(`✅ Événement "${title}" créé !`);
-      loadEventsList();
+
       refreshHistoryBadge();
 
     } catch (err) {
@@ -2042,152 +2163,6 @@
     } finally {
       btn.disabled = false;
       btn.textContent = "🚀 Publier l'événement";
-    }
-  }
-
-  // ================= CHARGER LA LISTE DES ÉVÉNEMENTS =================
-  async function loadEventsList() {
-    try {
-      // Récupérer tous les événements (sans orderBy pour éviter l'index)
-      const snapshot = await events.get();
-      const listContainer = document.getElementById("events-list");
-      
-      if (snapshot.empty) {
-        listContainer.innerHTML = `
-          <div class="events-empty">
-            <p>Aucun événement pour le moment</p>
-            <p style="font-size: 12px; margin-top: 8px; color: #9CA3AF;">
-              Créez votre premier événement ci-dessus
-            </p>
-          </div>
-        `;
-        return;
-      }
-
-      // Récupérer et trier les événements côté client
-      const allEvents = [];
-      snapshot.forEach((doc) => {
-        const event = doc.data();
-        allEvents.push({
-          id: doc.id,
-          ...event,
-          deadlineDate: event.deadline.toDate()
-        });
-      });
-
-      // Trier par date (plus récent en premier)
-      allEvents.sort((a, b) => b.deadlineDate - a.deadlineDate);
-
-      listContainer.innerHTML = "";
-
-      allEvents.forEach((event) => {
-        const eventId = event.id;
-        const deadline = event.deadlineDate;
-        const now = new Date();
-        const isExpired = deadline < now;
-
-        // Calcul du temps restant
-        let timeLeft = "";
-        if (!isExpired) {
-          const diff = deadline - now;
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          
-          if (days > 0) {
-            timeLeft = `⏰ ${days}j ${hours}h restantes`;
-          } else if (hours > 0) {
-            timeLeft = `⏰ ${hours}h restantes`;
-          } else {
-            timeLeft = `⏰ Moins d'1h`;
-          }
-        }
-
-        const card = document.createElement("div");
-        card.className = `event-card ${isExpired ? 'expired' : ''}`;
-
-        // Calcul date de début
-        const startDate = event.startDate ? event.startDate.toDate() : null;
-        const hasStarted = !startDate || startDate <= now;
-        const startStr = startDate
-          ? `🟢 Début : ${startDate.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })} à ${startDate.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`
-          : null;
-        
-        // Générer les badges d'options
-        let optionsBadges = '';
-        if (event.options) {
-          if (event.options.doublePoints) {
-            optionsBadges += '<span style="display: inline-block; background: #10B981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎯 Points x2</span>';
-          }
-          if (event.options.specialReward) {
-            optionsBadges += `<span style="display: inline-block; background: #8B5CF6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; margin-top: 4px;">🎁 ${escHtml(event.options.rewardName)}</span>`;
-          }
-        }
-        
-        card.innerHTML = `
-          ${event.imageUrl ? `
-            <img src="${event.imageUrl}" class="event-image" alt="${escHtml(event.title)}">
-          ` : `
-            <div class="event-image-placeholder">📅</div>
-          `}
-          
-          <div class="event-info">
-            <h3 class="event-title ${isExpired ? 'expired' : ''}">${escHtml(event.title)}</h3>
-            ${event.description ? `<p style="font-size: 13px; color: var(--gray); margin-top: 2px; line-height: 1.4;">${escHtml(event.description)}</p>` : ''}
-            
-            <div class="event-date">
-              ${startStr ? `<div style="margin-bottom:4px;">${startStr}</div>` : ''}
-              📆 Fin le ${deadline.toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })} à ${deadline.toLocaleTimeString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </div>
-            
-            ${!isExpired ? `<div class="event-countdown">${timeLeft}</div>` : ''}
-            
-            ${optionsBadges ? `<div style="margin-top: 8px;">${optionsBadges}</div>` : ''}
-            
-            <div style="margin-top: auto; display: flex; align-items: center; gap: 8px;">
-              <span class="event-status ${isExpired ? 'expired' : 'active'}">
-                ${isExpired ? '❌ Expiré' : '✅ Actif'}
-              </span>
-              <button class="btn-delete-event" onclick="deleteEventItem('${eventId}')">
-                🗑️ Supprimer
-              </button>
-            </div>
-          </div>
-        `;
-        
-        listContainer.appendChild(card);
-      });
-
-    } catch (err) {
-      console.error(err);
-      document.getElementById("events-list").innerHTML = `
-        <div class="events-empty">
-          <p>❌ Erreur de chargement</p>
-        </div>
-      `;
-    }
-  }
-
-  // ================= SUPPRIMER UN ÉVÉNEMENT =================
-  async function deleteEventItem(eventId) {
-    if (!confirm("⚠️ Voulez-vous vraiment supprimer cet événement ?\n\nCette action est irréversible.")) {
-      return;
-    }
-
-    try {
-      await events.doc(eventId).delete();
-      showToast("✅ Événement supprimé");
-      loadEventsList();
-      refreshHistoryBadge();
-    } catch (err) {
-      console.error(err);
-      alert("❌ Erreur lors de la suppression : " + err.message);
     }
   }
 
@@ -2624,6 +2599,9 @@
 
   // Créer un coupon
   async function createCoupon() {
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour envoyer un coupon.");
+    if (!confirmed) return;
+
     const title   = document.getElementById("coupon-title").value.trim();
     const desc    = document.getElementById("coupon-desc").value.trim();
     const assign  = document.getElementById("coupon-assign").value;
@@ -2661,7 +2639,8 @@
       toggleCouponMemberSelect();
 
       showToast(`✅ Coupon "${title}" créé !`);
-      loadCouponsList();
+      loadActiveCouponsList();
+
     } catch (err) {
       console.error(err);
       alert("❌ Erreur : " + err.message);
@@ -2670,75 +2649,80 @@
     }
   }
 
-  // Charger la liste des coupons dans l'onglet
-  async function loadCouponsList() {
-    const container = document.getElementById("coupons-list");
+  // ================= PANEL COUPONS ACTIFS =================
+
+  async function loadActiveCouponsList() {
+    const container = document.getElementById("active-coupons-list");
     container.innerHTML = '<div class="events-empty"><p>Chargement…</p></div>';
     try {
-      const snapshot = await coupons.orderBy("createdAt", "desc").get().catch(() => coupons.get());
-      if (snapshot.empty) {
-        container.innerHTML = '<div class="events-empty"><p>Aucun coupon créé pour le moment.</p></div>';
+      const now = new Date();
+      const snapshot = await coupons.get();
+      const activeCpns = [];
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        const expired = c.expiresAt && c.expiresAt.toDate() < now;
+        if (c.active && !expired) activeCpns.push({ id: doc.id, ...c });
+      });
+
+      // Trier par date de création (plus récent en premier)
+      activeCpns.sort((a, b) => {
+        const da = a.createdAt ? a.createdAt.toDate() : new Date(0);
+        const db2 = b.createdAt ? b.createdAt.toDate() : new Date(0);
+        return db2 - da;
+      });
+
+      if (activeCpns.length === 0) {
+        container.innerHTML = '<div class="events-empty"><p>Aucun coupon actif</p></div>';
         return;
       }
 
-      const now = new Date();
-      const allCoupons = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      container.innerHTML = '<div class="coupon-grid" id="coupon-grid-inner"></div>';
-      const grid = document.getElementById("coupon-grid-inner");
-
-      allCoupons.forEach(c => {
-        const expired  = c.expiresAt && c.expiresAt.toDate() < now;
+      container.innerHTML = '';
+      activeCpns.forEach(c => {
         const usedCount = c.usedBy ? c.usedBy.length : 0;
         const totalTarget = c.assignedTo === "all" ? allMembers.length : 1;
-        const usedPct = totalTarget > 0 ? Math.round((usedCount / totalTarget) * 100) : 0;
-
         const expiryStr = c.expiresAt
-          ? c.expiresAt.toDate().toLocaleDateString("fr-FR", { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" })
-          : "Sans expiration";
+          ? c.expiresAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : 'Sans expiration';
 
-        const card = document.createElement("div");
-        card.className = `coupon-card${expired ? ' used-all' : ''}`;
+        const card = document.createElement('div');
+        card.className = 'active-event-card';
         card.innerHTML = `
-          <div class="coupon-card-header">
-            <div class="coupon-title">🎟️ ${escHtml(c.title)}</div>
-            <span class="coupon-badge-assign ${c.assignedTo === 'all' ? 'all' : 'personal'}">
-              ${c.assignedTo === 'all' ? '👥 Tous' : `👤 ${escHtml(c.assignedToName || '—')}`}
-            </span>
-          </div>
-          ${c.description ? `<div class="coupon-desc">${escHtml(c.description)}</div>` : ''}
-          <div class="coupon-meta">
-            <span class="coupon-meta-item">⏰ ${expired ? '<span style="color:var(--danger);">Expiré</span>' : escHtml(expiryStr)}</span>
-            <span class="coupon-meta-item">✅ Utilisé ${usedCount}× ${c.assignedTo === 'all' ? `/ ${totalTarget}` : ''}</span>
-          </div>
-          ${c.assignedTo === 'all' && totalTarget > 0 ? `
-            <div class="coupon-usage-bar">
-              <div class="coupon-usage-fill" style="width:${usedPct}%"></div>
+          <div class="ae-header">
+            <div>
+              <div class="ae-title">🎟️ ${escHtml(c.title)}</div>
+              <div class="ae-badges">
+                <span class="ae-badge ${c.assignedTo === 'all' ? 'started' : 'reward'}">
+                  ${c.assignedTo === 'all' ? '👥 Tous' : '👤 ' + escHtml(c.assignedToName || '—')}
+                </span>
+              </div>
             </div>
-            <div style="font-size:11px; color:var(--gray); text-align:right;">${usedPct}% utilisé</div>
-          ` : ''}
-          <div class="coupon-actions">
-            <button class="btn-coupon-delete" onclick="deleteCoupon('${c.id}', '${escHtml(c.title)}')">
-              🗑️ Supprimer
-            </button>
+          </div>
+          ${c.description ? `<div class="ae-dates">${escHtml(c.description)}</div>` : ''}
+          <div class="ae-dates">
+            ⏰ ${expiryStr} · ✅ Utilisé ${usedCount}/${totalTarget}
+          </div>
+          <div class="ae-actions">
+            <button class="ae-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">🗑️ Supprimer</button>
           </div>
         `;
-        grid.appendChild(card);
+        container.appendChild(card);
       });
     } catch (err) {
-      console.error(err);
+      console.error("Erreur chargement coupons actifs:", err);
       container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
     }
   }
 
-  // Supprimer un coupon
-  async function deleteCoupon(couponId, title) {
+  async function deleteActiveCoupon(couponId, title) {
     if (!confirm(`Supprimer le coupon "${title}" ?\n\nCette action est irréversible.`)) return;
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour supprimer ce coupon.");
+    if (!confirmed) return;
     try {
       await coupons.doc(couponId).delete();
       showToast("✅ Coupon supprimé");
-      loadCouponsList();
+      loadActiveCouponsList();
     } catch (err) {
+      console.error(err);
       alert("❌ Erreur : " + err.message);
     }
   }
@@ -2827,6 +2811,9 @@
 
   // Créer une récompense
   async function createReward() {
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour modifier les récompenses.");
+    if (!confirmed) return;
+
     const title    = document.getElementById("reward-title-input").value.trim();
     const desc     = document.getElementById("reward-desc-input").value.trim();
     const points   = parseInt(document.getElementById("reward-points-input").value);
@@ -2937,5 +2924,19 @@
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 </script>
+<!-- MODAL CONFIRMATION MDP -->
+<div class="pwd-modal-overlay" id="pwd-modal-overlay">
+  <div class="pwd-modal">
+    <h3>🔒 Confirmation requise</h3>
+    <p id="pwd-modal-msg">Entrez votre mot de passe pour confirmer cette action.</p>
+    <input type="password" id="pwd-modal-input" placeholder="Votre mot de passe" autocomplete="current-password">
+    <div class="pwd-modal-error" id="pwd-modal-error"></div>
+    <div class="pwd-modal-actions">
+      <button class="pwd-modal-cancel" onclick="closePwdModal()">Annuler</button>
+      <button class="pwd-modal-confirm" id="pwd-modal-confirm" onclick="confirmPwdModal()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
