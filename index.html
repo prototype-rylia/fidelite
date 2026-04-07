@@ -1974,7 +1974,8 @@
 
       // Remplir le popup
       document.getElementById("popup-event-title").textContent = event.title;
-      document.getElementById("popup-event-desc").textContent = event.description || "Un événement spécial est en cours !";
+      const rawDesc = event.description || "Un événement spécial est en cours !";
+      document.getElementById("popup-event-desc").innerHTML = rawDesc;
 
       // Countdown
       const deadline = event.deadlineDate || event.deadline.toDate();
