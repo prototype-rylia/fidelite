@@ -980,18 +980,190 @@
     .btn-reward-delete:hover { background: #FEE2E2; }
 
     /* ---- Responsive ---- */
-    @media (max-width: 600px) {
-      .topbar { padding: 0 16px; }
-      .page   { padding: 20px 16px; }
+    @media (max-width: 768px) {
+      .topbar { padding: 0 12px; height: 54px; }
+      .topbar-name { font-size: 14px; }
+      .topbar-logo { width: 30px; height: 30px; border-radius: 8px; }
+      .page   { padding: 16px 12px; }
       .page-title { font-size: 18px; }
+      .page-subtitle { font-size: 12px; }
       .user-badge { display: none; }
-      .modal-header { flex-wrap: wrap; }
-      .event-card { flex-direction: column; }
-      .event-image, .event-image-placeholder { width: 100%; height: 160px; }
-      .report-box { max-width: 100%; }
+      .btn-logout { font-size: 12px; padding: 5px 10px; }
+
+      /* Tabs scrollable */
+      .tabs-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; flex-wrap: nowrap; }
+      .tab-btn { padding: 10px 14px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+
+      /* KPI grid 2 cols */
+      .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+      .kpi-card { padding: 14px 16px; }
+      .kpi-value { font-size: 24px; }
+      .kpi-label { font-size: 11px; }
+
+      /* Toolbar stack */
+      .toolbar { flex-direction: column; gap: 8px; }
+      .search-wrap { min-width: 100%; }
+      .filter-select { width: 100%; }
+
+      /* Table mobile: hide some columns */
+      th:nth-child(5), td:nth-child(5),
+      th:nth-child(6), td:nth-child(6) { display: none; }
+      th { font-size: 10px; padding: 10px 8px; }
+      td { padding: 10px 8px; font-size: 13px; }
+      .cell-person strong { font-size: 13px; }
+      .cell-person span { font-size: 11px; }
+      .code { font-size: 11px; padding: 2px 6px; }
+      .rank-badge { width: 24px; height: 24px; font-size: 11px; }
+      .btn-manage { padding: 6px 10px; font-size: 11px; }
+
+      /* Modals full-screen on mobile */
+      .modal-backdrop { padding: 0; align-items: flex-end; }
+      .modal-box {
+        max-width: 100%; border-radius: 20px 20px 0 0;
+        max-height: 92vh; overflow-y: auto;
+        animation: modalSlideUp 0.3s ease;
+      }
+      @keyframes modalSlideUp {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+      }
+      .modal-header { flex-wrap: wrap; padding: 16px 18px 12px; gap: 8px; }
+      .modal-points-pill { font-size: 18px; padding: 5px 12px; }
+      .modal-body { padding: 16px 18px; gap: 12px; }
+      .modal-section { padding: 14px; }
+      .modal-section-title { font-size: 11px; margin-bottom: 10px; }
+      .points-input-row { flex-direction: column; gap: 8px; }
+      .btn-add-points { width: 100%; text-align: center; }
+      .modal-footer { padding: 12px 18px 16px; }
+
+      /* Report modal mobile */
+      .report-backdrop { padding: 0; align-items: flex-end; }
+      .report-box {
+        max-width: 100%; border-radius: 20px 20px 0 0;
+        max-height: 92vh; animation: modalSlideUp 0.3s ease;
+      }
+      .report-header { padding: 18px 20px 14px; }
+      .report-title { font-size: 17px; }
+      .report-body { padding: 18px 20px; }
       .report-kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .report-kpi-value { font-size: 22px; }
-      .tab-btn { padding: 10px 14px; font-size: 13px; }
+      .report-kpi { padding: 12px; }
+      .report-kpi-value { font-size: 20px; }
+
+      /* Event form mobile */
+      .event-form-card { padding: 18px; }
+      .event-form-title { font-size: 16px; }
+      div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Event cards */
+      .event-card { flex-direction: column; }
+      .event-image, .event-image-placeholder { width: 100%; height: 140px; }
+
+      /* Active cards */
+      .active-card { padding: 14px; }
+      .ac-btn { padding: 8px 14px; font-size: 12px; }
+      .ac-actions { flex-wrap: wrap; }
+
+      /* Reward grid */
+      .reward-grid, .coupon-grid { grid-template-columns: 1fr; }
+
+      /* Collapsible */
+      .collapsible-toggle { padding: 12px 14px; font-size: 13px; }
+
+      /* History table mobile */
+      #collapsible-events-history th:nth-child(3),
+      #collapsible-events-history td:nth-child(3),
+      #collapsible-events-history th:nth-child(4),
+      #collapsible-events-history td:nth-child(4),
+      #collapsible-events-history th:nth-child(5),
+      #collapsible-events-history td:nth-child(5) { display: none; }
+    }
+
+    /* ---- FAB Scanner QR (mobile only) ---- */
+    .fab-scan {
+      display: none;
+      position: fixed;
+      bottom: 24px; right: 20px;
+      width: 60px; height: 60px;
+      background: var(--primary);
+      color: white;
+      border: none; border-radius: 50%;
+      box-shadow: 0 4px 20px rgba(255,140,0,0.4);
+      cursor: pointer;
+      z-index: 200;
+      align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fab-scan:active { transform: scale(0.92); }
+    .fab-scan svg { width: 28px; height: 28px; }
+
+    @media (max-width: 768px) {
+      .fab-scan { display: flex; }
+    }
+
+    /* ---- QR Scanner Modal ---- */
+    .qr-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 600; align-items: center; justify-content: center;
+      flex-direction: column; padding: 20px;
+    }
+    .qr-modal-overlay.show { display: flex; }
+
+    .qr-modal-box {
+      background: var(--white); border-radius: 20px;
+      width: 100%; max-width: 380px;
+      overflow: hidden; animation: modalIn 0.25s ease;
+    }
+
+    .qr-modal-header {
+      padding: 18px 20px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .qr-modal-header h3 {
+      font-size: 16px; font-weight: 700; color: var(--dark);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    #qr-reader {
+      width: 100%;
+      background: #000;
+    }
+    #qr-reader video { border-radius: 0 !important; }
+
+    .qr-modal-footer {
+      padding: 14px 20px 18px;
+      text-align: center;
+    }
+
+    .qr-status {
+      font-size: 13px; color: var(--gray);
+      padding: 10px 16px;
+      text-align: center;
+    }
+    .qr-status.found {
+      color: var(--success); font-weight: 600;
+      background: var(--success-soft);
+    }
+    .qr-status.error {
+      color: var(--danger); font-weight: 600;
+      background: var(--danger-soft);
+    }
+
+    .btn-qr-close {
+      padding: 10px 24px; background: none;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: var(--gray);
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* Force 1-col grid on mobile for inline-styled grids */
+    @media (max-width: 768px) {
+      .grid-2col { grid-template-columns: 1fr !important; }
     }
     /* --- MODAL CONFIRMATION MDP --- */
     .pwd-modal-overlay {
@@ -3152,5 +3324,116 @@
   </div>
 </div>
 
+<!-- FAB Scanner QR -->
+<button class="fab-scan" id="fab-scan" onclick="openQrScanner()" title="Scanner un QR code">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    <line x1="12" y1="2" x2="12" y2="6"/><line x1="2" y1="12" x2="6" y2="12"/>
+    <line x1="18" y1="12" x2="22" y2="12"/><line x1="12" y1="18" x2="12" y2="22"/>
+  </svg>
+</button>
+
+<!-- QR Scanner Modal -->
+<div class="qr-modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQrScanner()">
+  <div class="qr-modal-box">
+    <div class="qr-modal-header">
+      <h3>📷 Scanner un QR code</h3>
+      <button class="modal-close" onclick="closeQrScanner()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="qr-reader"></div>
+    <div class="qr-status" id="qr-status">Pointez la caméra vers le QR code du client</div>
+    <div class="qr-modal-footer">
+      <button class="btn-qr-close" onclick="closeQrScanner()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+  let html5QrCode = null;
+  let qrScannerOpen = false;
+
+  function openQrScanner() {
+    const modal = document.getElementById('qr-modal');
+    const statusEl = document.getElementById('qr-status');
+    statusEl.textContent = 'Démarrage de la caméra…';
+    statusEl.className = 'qr-status';
+    modal.classList.add('show');
+    qrScannerOpen = true;
+
+    html5QrCode = new Html5Qrcode("qr-reader");
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      onQrCodeSuccess,
+      () => {} // ignore scan failures
+    ).then(() => {
+      statusEl.textContent = 'Pointez la caméra vers le QR code du client';
+    }).catch(err => {
+      console.error('QR camera error:', err);
+      statusEl.textContent = '❌ Impossible d\'accéder à la caméra';
+      statusEl.className = 'qr-status error';
+    });
+  }
+
+  function onQrCodeSuccess(decodedText) {
+    if (!qrScannerOpen) return;
+    const statusEl = document.getElementById('qr-status');
+
+    // Chercher le membre par short_code ou email
+    const code = decodedText.trim();
+    const member = allMembers.find(m =>
+      (m.short_code && m.short_code.toLowerCase() === code.toLowerCase()) ||
+      (m.email && m.email.toLowerCase() === code.toLowerCase()) ||
+      (m.id === code)
+    );
+
+    if (member) {
+      statusEl.textContent = `✅ ${member.first_name} trouvé !`;
+      statusEl.className = 'qr-status found';
+
+      // Vibrer si possible
+      if (navigator.vibrate) navigator.vibrate(100);
+
+      // Fermer le scanner et ouvrir la modale client après un court délai
+      setTimeout(() => {
+        closeQrScanner();
+        openModal(member.id);
+      }, 600);
+    } else {
+      statusEl.textContent = `❌ Aucun membre trouvé pour "${code}"`;
+      statusEl.className = 'qr-status error';
+
+      // Reset après 2s pour re-scanner
+      setTimeout(() => {
+        if (qrScannerOpen) {
+          statusEl.textContent = 'Pointez la caméra vers le QR code du client';
+          statusEl.className = 'qr-status';
+        }
+      }, 2000);
+    }
+  }
+
+  function closeQrScanner() {
+    qrScannerOpen = false;
+    const modal = document.getElementById('qr-modal');
+    modal.classList.remove('show');
+
+    if (html5QrCode) {
+      html5QrCode.stop().then(() => {
+        html5QrCode.clear();
+        html5QrCode = null;
+      }).catch(() => {
+        html5QrCode = null;
+      });
+    }
+  }
+</script>
+
 </body>
 </html>
+²
