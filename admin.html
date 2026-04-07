@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Rylia — Dashboard Fidélité</title>
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -11,6 +11,10 @@
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Prevent iOS zoom on input focus */
+    input, select, textarea { font-size: 16px !important; }
+    @media (min-width: 769px) { input, select, textarea { font-size: inherit !important; } }
 
     :root {
       --primary:      #FF8C00;
