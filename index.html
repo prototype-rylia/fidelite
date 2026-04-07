@@ -57,9 +57,8 @@
 
     /* --- MENU PROFIL (panneau latéral mobile) --- */
     .profile-icon-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
+      position: relative;
+      flex-shrink: 0;
       width: 42px; height: 42px;
       border-radius: 50%;
       background: #FFF4E5;
@@ -841,6 +840,7 @@
       display: flex;
       gap: 0;
       padding: 16px 20px 0;
+      justify-content: center;
     }
 
     .dash-tab {
@@ -849,9 +849,9 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      padding: 13px 12px;
+      padding: 13px 16px;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       border: none;
       cursor: pointer;
@@ -885,10 +885,16 @@
     }
 
     .dash-tab-content {
-      padding: 16px 20px 8px;
-      text-align: left;
+      padding: 16px 16px 8px;
       min-height: 160px;
       animation: tabFadeIn 0.3s ease;
+    }
+
+    .dash-tab-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 100%;
     }
 
     .dash-tab-content.active {
@@ -928,14 +934,6 @@
 </div>
 
   <div id="client-dashboard" class="hidden w-full max-w-md text-center overflow-hidden" style="position:relative;">
-
-    <!-- BOUTON PROFIL (icône personne) -->
-    <button class="profile-icon-btn" onclick="openProfilePanel()" aria-label="Mon compte">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-    </button>
 
   <!-- OVERLAY -->
   <div class="profile-overlay" id="profile-overlay" onclick="closeProfilePanel()"></div>
@@ -1043,41 +1041,41 @@
     <div class="dash-top-section">
 
       <!-- BANDEROLE ÉVÉNEMENT -->
-      <div id="event-banner" class="hidden relative w-full text-white overflow-hidden" style="background: linear-gradient(135deg, #FF6B00 0%, #E53935 100%); border-radius: 16px; margin-bottom: 16px;">
-        <div class="absolute inset-0 opacity-20">
-          <img id="event-banner-bg" src="" alt="" class="w-full h-full object-cover">
+      <div id="event-banner" class="hidden" style="position:relative; width:100%; overflow:hidden; background-color:#FF6B00; background-image:linear-gradient(135deg, #FF6B00 0%, #E53935 100%); border-radius:16px; margin-bottom:16px; color:white;">
+        <div style="position:absolute; top:0;left:0;right:0;bottom:0; opacity:0.2;">
+          <img id="event-banner-bg" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
         </div>
-        <div class="relative p-5 z-10">
-          <h3 id="event-name" class="text-lg font-black mb-1"></h3>
-          <p id="countdown-label" class="text-xs font-semibold uppercase tracking-widest opacity-75 mb-2"></p>
-          <div id="countdown" class="flex gap-3 mb-3 justify-center">
-            <div id="cd-days-wrap" class="flex flex-col items-center">
-              <span id="days" class="text-2xl font-mono font-black leading-none">00</span>
-              <span class="text-[10px] font-bold opacity-70 mt-1">JOURS</span>
+        <div style="position:relative; z-index:10; padding:14px 18px; color:white;">
+          <h3 id="event-name" style="font-size:15px; font-weight:900; margin-bottom:2px; color:white; text-align:center;"></h3>
+          <p id="countdown-label" style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; opacity:0.75; margin-bottom:6px; color:white; text-align:center;"></p>
+          <div id="countdown" style="display:flex; gap:12px; margin-bottom:8px; justify-content:center; color:white;">
+            <div id="cd-days-wrap" style="display:flex; flex-direction:column; align-items:center;">
+              <span id="days" style="font-size:20px; font-family:monospace; font-weight:900; line-height:1; color:white;">00</span>
+              <span style="font-size:9px; font-weight:700; opacity:0.7; margin-top:4px; color:white;">JOURS</span>
             </div>
-            <span class="text-2xl font-black opacity-60 leading-none">:</span>
-            <div class="flex flex-col items-center">
-              <span id="hours" class="text-2xl font-mono font-black leading-none">00</span>
-              <span class="text-[10px] font-bold opacity-70 mt-1">HEURES</span>
+            <span style="font-size:20px; font-weight:900; opacity:0.6; line-height:1; color:white;">:</span>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span id="hours" style="font-size:20px; font-family:monospace; font-weight:900; line-height:1; color:white;">00</span>
+              <span style="font-size:9px; font-weight:700; opacity:0.7; margin-top:4px; color:white;">HEURES</span>
             </div>
-            <span class="text-2xl font-black opacity-60 leading-none">:</span>
-            <div class="flex flex-col items-center">
-              <span id="minutes" class="text-2xl font-mono font-black leading-none">00</span>
-              <span class="text-[10px] font-bold opacity-70 mt-1">MIN</span>
+            <span style="font-size:20px; font-weight:900; opacity:0.6; line-height:1; color:white;">:</span>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span id="minutes" style="font-size:20px; font-family:monospace; font-weight:900; line-height:1; color:white;">00</span>
+              <span style="font-size:9px; font-weight:700; opacity:0.7; margin-top:4px; color:white;">MIN</span>
             </div>
-            <span class="text-2xl font-black opacity-60 leading-none">:</span>
-            <div class="flex flex-col items-center">
-              <span id="seconds" class="text-2xl font-mono font-black leading-none">00</span>
-              <span class="text-[10px] font-bold opacity-70 mt-1">SEC</span>
+            <span style="font-size:20px; font-weight:900; opacity:0.6; line-height:1; color:white;">:</span>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span id="seconds" style="font-size:20px; font-family:monospace; font-weight:900; line-height:1; color:white;">00</span>
+              <span style="font-size:9px; font-weight:700; opacity:0.7; margin-top:4px; color:white;">SEC</span>
             </div>
           </div>
-          <div id="event-options" class="flex flex-wrap gap-2 justify-center"></div>
+          <div id="event-options" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
         </div>
       </div>
 
       <!-- GREETING -->
-      <div class="dash-greeting">
-        <div>
+      <div class="dash-greeting" style="justify-content: space-between; align-items: center;">
+        <div style="flex:1; text-align:center;">
           <h2 class="dash-greeting-title">
             Bonjour <span id="client-name" class="dash-greeting-name"></span> <span class="dash-wave">👋</span>
           </h2>
@@ -1085,6 +1083,12 @@
             Chargement du rang...
           </div>
         </div>
+        <button class="profile-icon-btn" onclick="openProfilePanel()" aria-label="Mon compte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
       </div>
 
       <!-- CARTE FIDÉLITÉ -->
@@ -1249,7 +1253,7 @@
       qrLargeGenerated = false; // reset for new session
 
       // Charger les récompenses depuis Firestore avant tout
-      await loadRewardsFromFirestore();
+      try { await loadRewardsFromFirestore(); } catch(e) { console.error("[Rewards] Erreur chargement:", e); }
 
       document.getElementById("client-name").innerText = data.first_name;
       document.getElementById("client-points").innerText = data.points;
@@ -1357,10 +1361,10 @@
       }
 
       // --- Chargement de la liste des récompenses (avec événement) ---
-      await renderClientRewards(data.points);
+      try { await renderClientRewards(data.points); } catch(e) { console.error("[Rewards] Erreur render:", e); }
 
       // --- Chargement des coupons client ---
-      await loadClientCoupons(uid);
+      try { await loadClientCoupons(uid); } catch(e) { console.error("[Coupons] Erreur init:", e); }
     }
 
     // AJOUT : Fonction calcul rang client
@@ -1391,6 +1395,10 @@
       btn.classList.add('active');
       const target = document.getElementById('tab-' + tabName);
       if (target) { target.style.display = 'block'; target.classList.add('active'); }
+      // Recharger les coupons à chaque ouverture de l'onglet
+      if (tabName === 'coupons' && currentUserUid) {
+        loadClientCoupons(currentUserUid);
+      }
     }
 
     // ================= QR OVERLAY =================
@@ -1433,13 +1441,17 @@
       container.innerHTML = '';
       try {
         const now = new Date();
-        const snapshot = await coupons.where("active", "==", true).get();
+        console.log("[Coupons] Chargement pour uid:", uid);
+        const snapshot = await coupons.get();
+        console.log("[Coupons] Documents trouvés:", snapshot.size);
         const available = [];
         snapshot.forEach(doc => {
           const c = doc.data();
+          if (!c.active) return;
           const expired  = c.expiresAt && c.expiresAt.toDate() < now;
           const used     = c.usedBy && c.usedBy.includes(uid);
           const assigned = c.assignedTo === "all" || c.assignedTo === uid;
+          console.log("[Coupons]", doc.id, "| assignedTo:", c.assignedTo, "| active:", c.active, "| assigned:", assigned, "| expired:", expired, "| used:", used);
           if (!expired && !used && assigned) available.push({ id: doc.id, ...c });
         });
 
@@ -1849,6 +1861,8 @@
 
         // Trier par date de début (le plus proche en premier)
         upcomingEvents.sort((a, b) => {
+          const pa = a.priority || 0, pb = b.priority || 0;
+          if (pb !== pa) return pb - pa;
           const aStart = a.startDate ? a.startDate.toDate() : a.deadlineDate;
           const bStart = b.startDate ? b.startDate.toDate() : b.deadlineDate;
           return aStart - bStart;
@@ -1891,17 +1905,17 @@
         optionsEl.innerHTML = '';
         if (event.options) {
           if (event.options.doublePoints) {
-            optionsEl.innerHTML += '<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎯 Points x2 sur vos achats</span>';
+            optionsEl.innerHTML += '<span style="background:rgba(255,255,255,0.3); padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; color:white;">🎯 Points x2 sur vos achats</span>';
           }
           if (event.options.specialReward) {
-            optionsEl.innerHTML += `<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">🎁 ${event.options.rewardName}</span>`;
+            optionsEl.innerHTML += `<span style="background:rgba(255,255,255,0.3); padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; color:white;">🎁 ${event.options.rewardName}</span>`;
           }
         }
         startCountdown(event.deadlineDate || event.deadline.toDate(), "deadline");
       } else {
         // Mode "bientôt" : compte à rebours jusqu'au DÉBUT
         labelEl.textContent = "🔜 Disponible dans";
-        optionsEl.innerHTML = '<span class="bg-white bg-opacity-30 px-3 py-1.5 rounded-full text-sm font-bold">À venir</span>';
+        optionsEl.innerHTML = '<span style="background:rgba(255,255,255,0.3); padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; color:white;">À venir</span>';
         startCountdown(startDate, "startdate");
       }
 
