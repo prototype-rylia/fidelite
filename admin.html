@@ -1070,6 +1070,93 @@
     .pwd-modal-confirm:hover { background: var(--primary-hover); }
     .pwd-modal-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
 
+    /* --- PANEL GESTION ACTIFS --- */
+    .active-panel { margin-top: 24px; }
+    .active-panel-title {
+      font-size: 15px; font-weight: 700; color: var(--dark);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .active-card {
+      background: white; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 16px; margin-bottom: 10px; transition: box-shadow 0.2s;
+    }
+    .active-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .active-card.is-primary { border-color: var(--primary); background: #FFF9F2; }
+    .active-card .ac-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .active-card .ac-title { font-weight: 700; font-size: 14px; color: var(--dark); }
+    .active-card .ac-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+    .ac-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+    .ac-badge.primary { background: #FF6B00; color: white; }
+    .ac-badge.double { background: #D1FAE5; color: #065F46; }
+    .ac-badge.reward { background: #EDE9FE; color: #5B21B6; }
+    .ac-badge.started { background: #DBEAFE; color: #1E40AF; }
+    .ac-badge.waiting { background: #FEF3C7; color: #92400E; }
+    .ac-badge.all { background: #DBEAFE; color: #1E40AF; }
+    .ac-badge.personal { background: #EDE9FE; color: #5B21B6; }
+    .active-card .ac-meta { font-size: 12px; color: var(--gray); margin-bottom: 8px; line-height: 1.6; }
+    .active-card .ac-actions { display: flex; gap: 6px; }
+    .ac-btn {
+      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1.5px solid var(--border); background: white;
+      color: var(--dark); transition: all 0.2s; font-family: inherit;
+    }
+    .ac-btn:hover { background: var(--gray-light); }
+    .ac-btn.primary-btn { border-color: var(--primary); color: var(--primary); }
+    .ac-btn.primary-btn:hover { background: #FFF4E5; }
+    .ac-btn.delete-btn { border-color: var(--danger); color: var(--danger); }
+    .ac-btn.delete-btn:hover { background: #FEF2F2; }
+
+    /* --- BOUTON DÉROULANT HISTORIQUE --- */
+    .collapsible-toggle {
+      width: 100%; margin-top: 20px; padding: 14px 18px;
+      background: white; border: 1.5px solid var(--border); border-radius: 12px;
+      font-family: inherit; font-size: 14px; font-weight: 700; color: var(--dark);
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .collapsible-toggle:hover { background: var(--gray-light); border-color: #ccc; }
+    .collapsible-toggle .toggle-arrow { transition: transform 0.3s; font-size: 12px; }
+    .collapsible-toggle.open .toggle-arrow { transform: rotate(180deg); }
+    .collapsible-content {
+      display: none; margin-top: 12px; animation: tabFadeIn 0.3s ease;
+    }
+    .collapsible-content.open { display: block; }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- ÉDITEUR RICHE --- */
+    .rte-wrap {
+      border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .rte-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,0,0.08); }
+    .rte-toolbar {
+      display: flex; gap: 2px; padding: 6px 8px; background: var(--gray-light);
+      border-bottom: 1px solid var(--border);
+    }
+    .rte-btn {
+      width: 32px; height: 30px; border: none; border-radius: 6px; background: transparent;
+      cursor: pointer; font-size: 14px; font-weight: 700; color: var(--gray);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .rte-btn:hover { background: white; color: var(--dark); }
+    .rte-btn.active { background: var(--primary); color: white; }
+    .rte-editor {
+      min-height: 80px; max-height: 200px; overflow-y: auto;
+      padding: 12px 14px; font-size: 14px; line-height: 1.6;
+      color: var(--dark); outline: none; font-family: inherit;
+    }
+    .rte-editor:empty::before {
+      content: attr(data-placeholder); color: #aaa; pointer-events: none;
+    }
+    .rte-editor b, .rte-editor strong { font-weight: 700; }
+    .rte-editor i, .rte-editor em { font-style: italic; }
+    .rte-editor u { text-decoration: underline; }
+    .rte-editor ul, .rte-editor ol { padding-left: 20px; margin: 4px 0; }
+
   </style>
 </head>
 <body>
@@ -1101,9 +1188,6 @@
     </button>
     <button class="tab-btn" onclick="switchTab('events')">
       📅 Événements
-    </button>
-    <button class="tab-btn" onclick="switchTab('history')" id="tab-btn-history">
-      📜 Historique <span class="tab-badge" id="tab-history-badge"></span>
     </button>
     <button class="tab-btn" onclick="switchTab('coupons')" id="tab-btn-coupons">
       🎟️ Coupons
@@ -1207,9 +1291,16 @@
 
       <div class="form-group">
         <label class="form-label">Description de l'événement</label>
-        <textarea id="event-description" class="form-input" rows="3"
-          placeholder="Ex: Profitez de nos offres exceptionnelles pendant tout le week-end !"
-          style="resize: vertical; min-height: 70px;"></textarea>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button type="button" class="rte-btn" onclick="rteCmd('bold')" title="Gras"><b>G</b></button>
+            <button type="button" class="rte-btn" onclick="rteCmd('italic')" title="Italique"><i>I</i></button>
+            <button type="button" class="rte-btn" onclick="rteCmd('underline')" title="Souligné"><u>S</u></button>
+            <button type="button" class="rte-btn" onclick="rteCmd('insertUnorderedList')" title="Liste">☰</button>
+          </div>
+          <div id="event-description" class="rte-editor" contenteditable="true"
+            data-placeholder="Ex: Profitez de nos offres exceptionnelles pendant tout le week-end !"></div>
+        </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -1276,92 +1367,56 @@
       });
     </script>
 
+    <!-- Panel événements actifs -->
+    <div class="active-panel">
+      <div class="active-panel-title">📡 Événements en cours</div>
+      <div id="active-events-list">
+        <div class="events-empty"><p>Chargement…</p></div>
+      </div>
+    </div>
+
+    <!-- Historique événements (déroulant) -->
+    <button class="collapsible-toggle" onclick="toggleCollapsible('events-history', this)">
+      <span>📜 Historique des événements</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="collapsible-content" id="collapsible-events-history">
+      <div class="history-toolbar" style="margin-top:4px;">
+        <div class="search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="history-search" placeholder="Rechercher un événement…" oninput="filterHistory()">
+        </div>
+        <select class="history-filter-select" id="history-filter-status" onchange="filterHistory()">
+          <option value="">Tous les statuts</option>
+          <option value="active">En cours</option>
+          <option value="expired">Terminés</option>
+        </select>
+      </div>
+      <div class="table-card" style="margin-top:12px;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Événement</th>
+                <th>Statut</th>
+                <th>Participants</th>
+                <th>Commandes</th>
+                <th>Options</th>
+                <th>Date de fin</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr><td colspan="7"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="result-count" id="history-result-count" style="display:none"></div>
+      </div>
+    </div>
+
   </div>
   <!-- FIN CONTENU ÉVÉNEMENTS -->
-
-  <!-- CONTENU HISTORIQUE -->
-  <div class="tab-content" id="tab-history">
-
-    <!-- KPIs Historique -->
-    <div class="history-kpi-grid">
-      <div class="kpi-card accent">
-        <div class="kpi-label">Total événements</div>
-        <div class="kpi-value" id="hkpi-total">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Terminés</div>
-        <div class="kpi-value" id="hkpi-expired">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">En cours</div>
-        <div class="kpi-value" id="hkpi-active">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Total participants</div>
-        <div class="kpi-value" id="hkpi-participants">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Total commandes</div>
-        <div class="kpi-value" id="hkpi-orders">—</div>
-      </div>
-    </div>
-
-    <!-- Toolbar Historique -->
-    <div class="history-toolbar">
-      <div class="search-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" class="search-input" id="history-search"
-               placeholder="Rechercher un événement…"
-               oninput="filterHistory()">
-      </div>
-      <select class="history-filter-select" id="history-filter-status" onchange="filterHistory()">
-        <option value="">Tous les statuts</option>
-        <option value="active">En cours</option>
-        <option value="expired">Terminés</option>
-      </select>
-      <select class="history-filter-select" id="history-filter-read" onchange="filterHistory()">
-        <option value="">Tous</option>
-        <option value="unread">Non lus</option>
-        <option value="read">Lus</option>
-      </select>
-    </div>
-
-    <!-- Tableau Historique -->
-    <div class="table-card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:30px;"></th>
-              <th>Événement</th>
-              <th>Statut</th>
-              <th>Participants</th>
-              <th>Commandes</th>
-              <th>Options</th>
-              <th>Date de fin</th>
-              <th>Créé le</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="history-table-body">
-            <tr>
-              <td colspan="9">
-                <div class="table-state">
-                  <div class="loading-spinner"></div>
-                  <p>Chargement de l'historique…</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="result-count" id="history-result-count" style="display:none"></div>
-    </div>
-
-  </div>
-  <!-- FIN CONTENU HISTORIQUE -->
 
   <!-- CONTENU COUPONS -->
   <div class="tab-content" id="tab-coupons">
@@ -1412,11 +1467,63 @@
       </button>
     </div>
 
-    <!-- Panel coupons actifs -->
-    <div class="active-events-panel">
-      <div class="active-events-title">📋 Coupons actifs</div>
-      <div id="active-coupons-list">
+    <!-- Coupons actifs (déroulant) -->
+    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-active', this)">
+      <span>📋 Coupons actifs</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="collapsible-content" id="collapsible-coupons-active">
+      <div id="active-coupons-list" style="margin-top:8px;">
         <div class="events-empty"><p>Chargement…</p></div>
+      </div>
+    </div>
+
+    <!-- Historique coupons distribués (déroulant) -->
+    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-sent', this)">
+      <span>📤 Historique distribués</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="collapsible-content" id="collapsible-coupons-sent">
+      <div class="table-card" style="margin-top:8px;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Coupon</th>
+                <th>Attribué à</th>
+                <th>Expiration</th>
+                <th>Créé le</th>
+              </tr>
+            </thead>
+            <tbody id="coupon-sent-body">
+              <tr><td colspan="4"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historique coupons consommés (déroulant) -->
+    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-consumed', this)">
+      <span>✅ Historique consommés</span>
+      <span class="toggle-arrow">▼</span>
+    </button>
+    <div class="collapsible-content" id="collapsible-coupons-consumed">
+      <div class="table-card" style="margin-top:8px;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Membre</th>
+                <th>Coupon utilisé</th>
+                <th>Consommé le</th>
+              </tr>
+            </thead>
+            <tbody id="coupon-consumed-body">
+              <tr><td colspan="3"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -2056,19 +2163,12 @@
       document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
       document.getElementById('tab-events').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des événements';
-
-    } else if (tabName === 'history') {
-      document.getElementById('tab-btn-history').classList.add('active');
-      document.getElementById('tab-history').classList.add('active');
-      document.getElementById('page-subtitle').textContent = 'Historique & comptes rendus';
-      loadEventHistory();
+      loadActiveEventsList();
     } else if (tabName === 'coupons') {
       document.getElementById('tab-btn-coupons').classList.add('active');
       document.getElementById('tab-coupons').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des coupons';
       populateCouponMemberSelect();
-      loadActiveCouponsList();
-
     } else if (tabName === 'rewards') {
       document.getElementById('tab-btn-rewards').classList.add('active');
       document.getElementById('tab-rewards').classList.add('active');
@@ -2083,7 +2183,8 @@
     if (!confirmed) return;
 
     const title = document.getElementById("event-title").value.trim();
-    const description = document.getElementById("event-description").value.trim();
+    const description = document.getElementById("event-description").innerHTML.trim();
+    const descClean = description === '<br>' || description === '<div><br></div>' ? '' : description;
     const deadline = document.getElementById("event-deadline").value;
     const startDateVal = document.getElementById("event-startdate").value;
 
@@ -2133,18 +2234,19 @@
       // Créer l'événement dans Firestore avec les options
       await events.add({
         title,
-        description: description,
+        description: descClean,
         startDate: startDate,
         deadline: deadlineDate,
         imageUrl: "",
         active: true,
+        priority: 0,
         options: options,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       // Réinitialiser le formulaire
       document.getElementById("event-title").value = "";
-      document.getElementById("event-description").value = "";
+      document.getElementById("event-description").innerHTML = "";
       document.getElementById("event-startdate").value = "";
       document.getElementById("event-deadline").value = "";
       document.getElementById("option-double-points").checked = false;
@@ -2154,7 +2256,7 @@
       document.getElementById("reward-details-container").style.display = "none";
 
       showToast(`✅ Événement "${title}" créé !`);
-
+      loadActiveEventsList();
       refreshHistoryBadge();
 
     } catch (err) {
@@ -2163,6 +2265,235 @@
     } finally {
       btn.disabled = false;
       btn.textContent = "🚀 Publier l'événement";
+    }
+  }
+
+  // ================= COLLAPSIBLE TOGGLE =================
+  function toggleCollapsible(id, btn) {
+    const content = document.getElementById('collapsible-' + id);
+    const isOpen = content.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    if (isOpen && !content.dataset.loaded) {
+      content.dataset.loaded = '1';
+      if (id === 'events-history') loadEventHistory();
+      if (id === 'coupons-active') loadActiveCouponsList();
+      if (id === 'coupons-sent') loadCouponSentHistory();
+      if (id === 'coupons-consumed') loadCouponConsumedHistory();
+    }
+  }
+
+  // ================= GESTION ÉVÉNEMENTS ACTIFS =================
+  async function loadActiveEventsList() {
+    const container = document.getElementById("active-events-list");
+    container.innerHTML = '<div class="events-empty"><p>Chargement…</p></div>';
+    try {
+      const now = new Date();
+      const snapshot = await events.get();
+      const activeEvts = [];
+      snapshot.forEach(doc => {
+        const e = doc.data();
+        const deadline = e.deadline.toDate();
+        if (deadline > now) activeEvts.push({ id: doc.id, ...e, deadlineDate: deadline });
+      });
+      activeEvts.sort((a, b) => {
+        const pa = a.priority || 0, pb = b.priority || 0;
+        if (pb !== pa) return pb - pa;
+        const aStart = a.startDate ? a.startDate.toDate() : a.deadlineDate;
+        const bStart = b.startDate ? b.startDate.toDate() : b.deadlineDate;
+        return aStart - bStart;
+      });
+      if (activeEvts.length === 0) {
+        container.innerHTML = '<div class="events-empty"><p>Aucun événement en cours</p></div>';
+        return;
+      }
+      container.innerHTML = '';
+      activeEvts.forEach((e, idx) => {
+        const isPrimary = idx === 0;
+        const startDate = e.startDate ? e.startDate.toDate() : null;
+        const hasStarted = !startDate || startDate <= now;
+        const startStr = startDate ? startDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const endStr = e.deadlineDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        let badges = '';
+        if (isPrimary) badges += '<span class="ac-badge primary">⭐ Affiché en 1er</span>';
+        badges += hasStarted ? '<span class="ac-badge started">▶ Commencé</span>' : '<span class="ac-badge waiting">⏳ Pas encore commencé</span>';
+        if (e.options && e.options.doublePoints) badges += '<span class="ac-badge double">🎯 x2</span>';
+        if (e.options && e.options.specialReward) badges += `<span class="ac-badge reward">🎁 ${escHtml(e.options.rewardName || '')}</span>`;
+        const card = document.createElement('div');
+        card.className = `active-card${isPrimary ? ' is-primary' : ''}`;
+        card.innerHTML = `
+          <div class="ac-header"><div>
+            <div class="ac-title">${escHtml(e.title)}</div>
+            <div class="ac-badges">${badges}</div>
+          </div></div>
+          ${e.description ? `<div class="ac-meta">${sanitizeDesc(e.description)}</div>` : ''}
+          <div class="ac-meta">🟢 Début : ${startStr}<br>🔴 Fin : ${endStr}</div>
+          <div class="ac-actions">
+            ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">⭐ Mettre en 1er</button>` : ''}
+            <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title)}')">🗑️ Supprimer</button>
+          </div>`;
+        container.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Erreur chargement événements actifs:", err);
+      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
+    }
+  }
+
+  async function setEventPrimary(eventId) {
+    try {
+      const snapshot = await events.get();
+      const batch = db.batch();
+      snapshot.forEach(doc => { batch.update(events.doc(doc.id), { priority: 0 }); });
+      batch.update(events.doc(eventId), { priority: 10 });
+      await batch.commit();
+      showToast("⭐ Événement mis en priorité !");
+      loadActiveEventsList();
+    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+  }
+
+  async function deleteActiveEvent(eventId, title) {
+    if (!confirm(`Supprimer l'événement "${title}" ?\n\nCette action est irréversible.`)) return;
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour supprimer cet événement.");
+    if (!confirmed) return;
+    try {
+      await events.doc(eventId).delete();
+      showToast("✅ Événement supprimé");
+      loadActiveEventsList();
+    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+  }
+
+  // ================= GESTION COUPONS ACTIFS =================
+  async function loadActiveCouponsList() {
+    const container = document.getElementById("active-coupons-list");
+    container.innerHTML = '<div class="events-empty"><p>Chargement…</p></div>';
+    try {
+      const now = new Date();
+      const snapshot = await coupons.get();
+      const activeCpns = [];
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        const expired = c.expiresAt && c.expiresAt.toDate() < now;
+        if (c.active && !expired) activeCpns.push({ id: doc.id, ...c });
+      });
+      activeCpns.sort((a, b) => {
+        const da = a.createdAt ? a.createdAt.toDate() : new Date(0);
+        const db2 = b.createdAt ? b.createdAt.toDate() : new Date(0);
+        return db2 - da;
+      });
+      if (activeCpns.length === 0) {
+        container.innerHTML = '<div class="events-empty"><p>Aucun coupon actif</p></div>';
+        return;
+      }
+      container.innerHTML = '';
+      activeCpns.forEach(c => {
+        const usedCount = c.usedBy ? c.usedBy.length : 0;
+        const totalTarget = c.assignedTo === "all" ? allMembers.length : 1;
+        const expiryStr = c.expiresAt
+          ? c.expiresAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : 'Sans expiration';
+        const card = document.createElement('div');
+        card.className = 'active-card';
+        card.innerHTML = `
+          <div class="ac-header"><div>
+            <div class="ac-title">🎟️ ${escHtml(c.title)}</div>
+            <div class="ac-badges">
+              <span class="ac-badge ${c.assignedTo === 'all' ? 'all' : 'personal'}">
+                ${c.assignedTo === 'all' ? '👥 Tous' : '👤 ' + escHtml(c.assignedToName || '—')}
+              </span>
+            </div>
+          </div></div>
+          ${c.description ? `<div class="ac-meta">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}
+          <div class="ac-meta">⏰ ${expiryStr} · ✅ Utilisé ${usedCount}/${totalTarget}</div>
+          <div class="ac-actions">
+            <button class="ac-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">🗑️ Supprimer</button>
+          </div>`;
+        container.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Erreur chargement coupons actifs:", err);
+      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
+    }
+  }
+
+  async function deleteActiveCoupon(couponId, title) {
+    if (!confirm(`Supprimer le coupon "${title}" ?\n\nCette action est irréversible.`)) return;
+    const confirmed = await requirePassword("Confirmez votre mot de passe pour supprimer ce coupon.");
+    if (!confirmed) return;
+    try {
+      await coupons.doc(couponId).delete();
+      showToast("✅ Coupon supprimé");
+      loadActiveCouponsList();
+    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+  }
+
+  // ================= HISTORIQUE COUPONS =================
+  async function loadCouponSentHistory() {
+    const tbody = document.getElementById("coupon-sent-body");
+    tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><div class="loading-spinner"></div><p>Chargement…</p></div></td></tr>';
+    try {
+      const snapshot = await coupons.get();
+      if (snapshot.empty) {
+        tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><p>Aucun coupon envoyé</p></div></td></tr>';
+        return;
+      }
+      const allCpns = [];
+      snapshot.forEach(doc => { allCpns.push({ id: doc.id, ...doc.data() }); });
+      allCpns.sort((a, b) => {
+        const da = a.createdAt ? a.createdAt.toDate() : new Date(0);
+        const db2 = b.createdAt ? b.createdAt.toDate() : new Date(0);
+        return db2 - da;
+      });
+      const now = new Date();
+      tbody.innerHTML = allCpns.map(c => {
+        const expired = c.expiresAt && c.expiresAt.toDate() < now;
+        const expiryStr = c.expiresAt ? c.expiresAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : 'Sans expiration';
+        const createdStr = c.createdAt ? c.createdAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '—';
+        return `<tr>
+          <td><div class="cell-event-title">🎟️ ${escHtml(c.title)}</div>${c.description ? `<div class="cell-event-desc">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}</td>
+          <td style="font-size:12px;">${c.assignedTo === 'all' ? '👥 Tous les membres' : '👤 ' + escHtml(c.assignedToName || '—')}</td>
+          <td class="cell-date">${expired ? '<span style="color:var(--danger);">Expiré</span>' : expiryStr}</td>
+          <td class="cell-date">${createdStr}</td>
+        </tr>`;
+      }).join('');
+    } catch (err) {
+      console.error("Erreur chargement coupons envoyés:", err);
+      tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><p>❌ Erreur</p></div></td></tr>';
+    }
+  }
+
+  async function loadCouponConsumedHistory() {
+    const tbody = document.getElementById("coupon-consumed-body");
+    tbody.innerHTML = '<tr><td colspan="3"><div class="table-state"><div class="loading-spinner"></div><p>Chargement…</p></div></td></tr>';
+    try {
+      const snapshot = await coupons.get();
+      const allCpns = [];
+      snapshot.forEach(doc => { allCpns.push({ id: doc.id, ...doc.data() }); });
+
+      const consumedRows = [];
+      allCpns.forEach(c => {
+        if (!c.usedBy || c.usedBy.length === 0) return;
+        const dates = c.usedByDates || {};
+        c.usedBy.forEach(uid => {
+          const member = allMembers.find(m => m.id === uid);
+          const memberName = member ? (member.first_name || member.email || uid) : uid;
+          const ts = dates[uid];
+          const dateStr = ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+          consumedRows.push({ memberName, couponTitle: c.title, dateStr });
+        });
+      });
+
+      if (consumedRows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3"><div class="table-state"><p>Aucun coupon consommé</p></div></td></tr>';
+      } else {
+        tbody.innerHTML = consumedRows.map(r => `<tr>
+          <td style="font-size:13px; font-weight:600;">👤 ${escHtml(r.memberName)}</td>
+          <td><div class="cell-event-title">🎟️ ${escHtml(r.couponTitle)}</div></td>
+          <td class="cell-date">${r.dateStr}</td>
+        </tr>`).join('');
+      }
+    } catch (err) {
+      console.error("Erreur chargement coupons consommés:", err);
+      tbody.innerHTML = '<tr><td colspan="3"><div class="table-state"><p>❌ Erreur</p></div></td></tr>';
     }
   }
 
@@ -2287,7 +2618,6 @@
   function filterHistory() {
     const search = (document.getElementById("history-search").value || "").toLowerCase().trim();
     const statusFilter = document.getElementById("history-filter-status").value;
-    const readFilter = document.getElementById("history-filter-read").value;
     const now = new Date();
 
     const filtered = allHistoryEvents.filter(e => {
@@ -2296,11 +2626,7 @@
       const matchStatus = !statusFilter
         || (statusFilter === 'active' && !isExpired)
         || (statusFilter === 'expired' && isExpired);
-      const isRead = isReportRead(e.id);
-      const matchRead = !readFilter
-        || (readFilter === 'unread' && !isRead)
-        || (readFilter === 'read' && isRead);
-      return matchSearch && matchStatus && matchRead;
+      return matchSearch && matchStatus;
     });
 
     renderHistoryTable(filtered);
@@ -2311,29 +2637,15 @@
     const countEl = document.getElementById("history-result-count");
     const now = new Date();
 
-    // Update KPIs
-    let unreadCount = 0;
-    allHistoryEvents.forEach(e => { if (!isReportRead(e.id)) unreadCount++; });
     updateHistoryKPIs(allHistoryEvents, eventStatsCache);
 
-    // Tab badge
-    const badge = document.getElementById("tab-history-badge");
-    if (unreadCount > 0) {
-      badge.textContent = unreadCount;
-      badge.setAttribute("data-count", unreadCount);
-    } else {
-      badge.textContent = "";
-      badge.setAttribute("data-count", "0");
-    }
-
     if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9"><div class="table-state"><p>Aucun événement trouvé.</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7"><div class="table-state"><p>Aucun événement trouvé.</p></div></td></tr>`;
       countEl.style.display = "none";
       return;
     }
 
     tbody.innerHTML = rows.map((e) => {
-      const isRead = isReportRead(e.id);
       const isExpired = e.deadlineDate < now;
       const stats = getEventStats(e.id);
 
@@ -2341,11 +2653,6 @@
         day: 'numeric', month: 'short', year: 'numeric'
       });
 
-      const createdStr = e.createdDate
-        ? e.createdDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-        : '—';
-
-      // Options badges
       let optBadges = '';
       if (e.options) {
         if (e.options.doublePoints) optBadges += '<span class="badge-option double">🎯 x2</span>';
@@ -2353,42 +2660,30 @@
       }
       if (!optBadges) optBadges = '<span style="font-size:12px; color:var(--gray);">—</span>';
 
-      // Stats participants / commandes
       const participantsHtml = stats !== null
-        ? `<span>${stats.participants}</span><span class="stat-icon">👤 client${stats.participants > 1 ? 's' : ''}</span>`
+        ? `<span>${stats.participants}</span><span class="stat-icon">👤</span>`
         : '<span style="font-size:12px; color:var(--gray);">…</span>';
 
       const ordersHtml = stats !== null
-        ? `<span>${stats.orders}</span><span class="stat-icon">🧾 total</span>`
+        ? `<span>${stats.orders}</span><span class="stat-icon">🧾</span>`
         : '<span style="font-size:12px; color:var(--gray);">…</span>';
 
       return `
-        <tr class="${isRead ? '' : 'unread-row'}" onclick="openReportModal(${JSON.stringify(e.id).replace(/"/g, '&quot;')})">
-          <td style="text-align:center;">
-            ${isRead ? '<span class="read-dot"></span>' : '<span class="unread-dot"></span>'}
-          </td>
+        <tr style="cursor:pointer;" onclick="openReportModal('${e.id}')">
           <td>
             <div class="cell-event-title">${escHtml(e.title)}</div>
-            ${e.description ? `<div class="cell-event-desc">${escHtml(e.description)}</div>` : ''}
+            ${e.description ? `<div class="cell-event-desc">${sanitizeDesc(e.description)}</div>` : ''}
           </td>
-          <td>
-            <span class="badge-status ${isExpired ? 'expired' : 'active'}">
-              ${isExpired ? 'Terminé' : 'En cours'}
-            </span>
-          </td>
+          <td><span class="badge-status ${isExpired ? 'expired' : 'active'}">${isExpired ? 'Terminé' : 'En cours'}</span></td>
           <td class="cell-stat">${participantsHtml}</td>
           <td class="cell-stat">${ordersHtml}</td>
           <td>${optBadges}</td>
           <td class="cell-date">${deadlineStr}</td>
-          <td class="cell-date">${createdStr}</td>
           <td>
             <button class="btn-report" onclick="event.stopPropagation(); openReportModal('${e.id}')">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
               </svg>
               Voir
             </button>
@@ -2400,27 +2695,7 @@
     countEl.textContent = `${rows.length} événement${rows.length > 1 ? 's' : ''}`;
   }
 
-  function updateHistoryKPIs(allEvts, statsMap) {
-    const now = new Date();
-    const total = allEvts.length;
-    const expiredCount = allEvts.filter(e => e.deadlineDate < now).length;
-    const activeCount = total - expiredCount;
-
-    // Agréger participants et commandes sur tous les événements
-    let totalParticipants = 0;
-    let totalOrders = 0;
-    Object.values(statsMap).forEach(s => {
-      if (typeof s.participants === 'number') totalParticipants += s.participants;
-      else if (s.participants instanceof Set) totalParticipants += s.participants.size;
-      totalOrders += s.orders || 0;
-    });
-
-    document.getElementById("hkpi-total").textContent = total || '0';
-    document.getElementById("hkpi-expired").textContent = expiredCount;
-    document.getElementById("hkpi-active").textContent = activeCount;
-    document.getElementById("hkpi-participants").textContent = totalParticipants;
-    document.getElementById("hkpi-orders").textContent = totalOrders;
-  }
+  function updateHistoryKPIs() { /* KPIs removed */ }
 
   function openReportModalById(eventId) {
     const event = allHistoryEvents.find(e => e.id === eventId);
@@ -2482,13 +2757,17 @@
     const descContainer = document.getElementById("report-desc-container");
     if (event.description) {
       descContainer.style.display = "block";
-      document.getElementById("report-description").textContent = event.description;
+      document.getElementById("report-description").innerHTML = sanitizeDesc(event.description);
     } else {
       descContainer.style.display = "none";
     }
 
     // KPIs
-    const dateFin = event.deadlineDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    const startDateObj = event.startDate ? (event.startDate.toDate ? event.startDate.toDate() : new Date(event.startDate)) : null;
+    const dateDebut = startDateObj
+      ? startDateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '—';
+    const dateFin = event.deadlineDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const stats = getEventStats(event.id);
     const evtParticipants = stats ? stats.participants : '—';
     const evtOrders = stats ? stats.orders : '—';
@@ -2507,16 +2786,16 @@
         <div class="report-kpi-label">Durée</div>
       </div>
       <div class="report-kpi">
-        <div class="report-kpi-value">${dateFin}</div>
-        <div class="report-kpi-label">${isExpired ? 'Date de fin' : 'Fin prévue'}</div>
+        <div class="report-kpi-value" style="font-size:13px;">${dateDebut}</div>
+        <div class="report-kpi-label">🟢 Début</div>
+      </div>
+      <div class="report-kpi">
+        <div class="report-kpi-value" style="font-size:13px;">${dateFin}</div>
+        <div class="report-kpi-label">🔴 ${isExpired ? 'Fin' : 'Fin prévue'}</div>
       </div>
       <div class="report-kpi">
         <div class="report-kpi-value">${event.options && event.options.doublePoints ? 'x2' : 'x1'}</div>
         <div class="report-kpi-label">Multiplicateur pts</div>
-      </div>
-      <div class="report-kpi">
-        <div class="report-kpi-value">${event.options && event.options.specialReward ? '1' : '0'}</div>
-        <div class="report-kpi-label">Récompense spéciale</div>
       </div>
     `;
 
@@ -2562,18 +2841,7 @@
   }
 
   // Refresh uniquement le badge de l'onglet (léger, sans re-render)
-  async function refreshHistoryBadge() {
-    try {
-      const snapshot = await events.get();
-      let unread = 0;
-      snapshot.forEach(doc => {
-        if (!isReportRead(doc.id)) unread++;
-      });
-      const badge = document.getElementById("tab-history-badge");
-      badge.textContent = unread > 0 ? unread : '';
-      badge.setAttribute("data-count", unread);
-    } catch (e) { /* silent */ }
-  }
+  async function refreshHistoryBadge() { /* no-op: history tab removed */ }
 
   // ================= COUPONS =================
 
@@ -2649,84 +2917,6 @@
     }
   }
 
-  // ================= PANEL COUPONS ACTIFS =================
-
-  async function loadActiveCouponsList() {
-    const container = document.getElementById("active-coupons-list");
-    container.innerHTML = '<div class="events-empty"><p>Chargement…</p></div>';
-    try {
-      const now = new Date();
-      const snapshot = await coupons.get();
-      const activeCpns = [];
-      snapshot.forEach(doc => {
-        const c = doc.data();
-        const expired = c.expiresAt && c.expiresAt.toDate() < now;
-        if (c.active && !expired) activeCpns.push({ id: doc.id, ...c });
-      });
-
-      // Trier par date de création (plus récent en premier)
-      activeCpns.sort((a, b) => {
-        const da = a.createdAt ? a.createdAt.toDate() : new Date(0);
-        const db2 = b.createdAt ? b.createdAt.toDate() : new Date(0);
-        return db2 - da;
-      });
-
-      if (activeCpns.length === 0) {
-        container.innerHTML = '<div class="events-empty"><p>Aucun coupon actif</p></div>';
-        return;
-      }
-
-      container.innerHTML = '';
-      activeCpns.forEach(c => {
-        const usedCount = c.usedBy ? c.usedBy.length : 0;
-        const totalTarget = c.assignedTo === "all" ? allMembers.length : 1;
-        const expiryStr = c.expiresAt
-          ? c.expiresAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
-          : 'Sans expiration';
-
-        const card = document.createElement('div');
-        card.className = 'active-event-card';
-        card.innerHTML = `
-          <div class="ae-header">
-            <div>
-              <div class="ae-title">🎟️ ${escHtml(c.title)}</div>
-              <div class="ae-badges">
-                <span class="ae-badge ${c.assignedTo === 'all' ? 'started' : 'reward'}">
-                  ${c.assignedTo === 'all' ? '👥 Tous' : '👤 ' + escHtml(c.assignedToName || '—')}
-                </span>
-              </div>
-            </div>
-          </div>
-          ${c.description ? `<div class="ae-dates">${escHtml(c.description)}</div>` : ''}
-          <div class="ae-dates">
-            ⏰ ${expiryStr} · ✅ Utilisé ${usedCount}/${totalTarget}
-          </div>
-          <div class="ae-actions">
-            <button class="ae-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">🗑️ Supprimer</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    } catch (err) {
-      console.error("Erreur chargement coupons actifs:", err);
-      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
-    }
-  }
-
-  async function deleteActiveCoupon(couponId, title) {
-    if (!confirm(`Supprimer le coupon "${title}" ?\n\nCette action est irréversible.`)) return;
-    const confirmed = await requirePassword("Confirmez votre mot de passe pour supprimer ce coupon.");
-    if (!confirmed) return;
-    try {
-      await coupons.doc(couponId).delete();
-      showToast("✅ Coupon supprimé");
-      loadActiveCouponsList();
-    } catch (err) {
-      console.error(err);
-      alert("❌ Erreur : " + err.message);
-    }
-  }
-
   // ---- Coupons dans la modale client ----
 
   async function loadModalCoupons(clientId) {
@@ -2754,7 +2944,7 @@
         <button class="btn-coupon-use" onclick="useClientCoupon('${c.id}', '${escHtml(c.title)}')">
           <span>
             <strong>🎟️ ${escHtml(c.title)}</strong>
-            ${c.description ? `<span style="color:var(--gray); font-size:12px; margin-left:6px;">${escHtml(c.description)}</span>` : ''}
+            ${c.description ? `<span style="color:var(--gray); font-size:12px; margin-left:6px;">${escHtml(c.description).replace(/\n/g, '<br>')}</span>` : ''}
           </span>
           <span class="coupon-use-badge">Utiliser</span>
         </button>
@@ -2772,7 +2962,8 @@
     try {
       // Marquer comme utilisé par ce client
       await coupons.doc(couponId).update({
-        usedBy: firebase.firestore.FieldValue.arrayUnion(currentMember.id)
+        usedBy: firebase.firestore.FieldValue.arrayUnion(currentMember.id),
+        [`usedByDates.${currentMember.id}`]: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       // Ajouter une ligne dans l'historique du client
@@ -2922,6 +3113,29 @@
     return String(str)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // Éditeur riche - commande
+  function rteCmd(cmd) {
+    document.execCommand(cmd, false, null);
+    document.getElementById('event-description').focus();
+  }
+
+  // Sanitize HTML - n'autorise que les balises sûres
+  function sanitizeDesc(html) {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    // Supprimer les scripts et événements
+    tmp.querySelectorAll('script,style,iframe,object,embed').forEach(el => el.remove());
+    tmp.querySelectorAll('*').forEach(el => {
+      [...el.attributes].forEach(attr => {
+        if (attr.name.startsWith('on') || attr.name === 'style' && attr.value.includes('expression')) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return tmp.innerHTML;
   }
 </script>
 <!-- MODAL CONFIRMATION MDP -->
