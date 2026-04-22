@@ -1079,9 +1079,6 @@
           <h2 class="dash-greeting-title">
             Bonjour <span id="client-name" class="dash-greeting-name"></span> <span class="dash-wave">👋</span>
           </h2>
-          <div id="client-rank" class="dash-rank-badge">
-            Chargement du rang...
-          </div>
         </div>
         <button class="profile-icon-btn" onclick="openProfilePanel()" aria-label="Mon compte">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1291,9 +1288,6 @@
       document.getElementById("profile-name").textContent = data.first_name || "—";
       document.getElementById("profile-email").textContent = data.email || auth.currentUser?.email || "—";
 
-      // Calcul du rang
-      calculateRank(data.points);
-
       // Charger l'événement actif s'il existe
       loadActiveEvent();
 
@@ -1391,16 +1385,6 @@
 
       // --- Chargement des coupons client ---
       try { await loadClientCoupons(uid); } catch(e) { console.error("[Coupons] Erreur init:", e); }
-    }
-
-    // AJOUT : Fonction calcul rang client
-    async function calculateRank(points) {
-      const snap = await profiles
-        .where("role", "==", "membre")
-        .where("points", ">", points)
-        .get();
-      const rank = snap.size + 1;
-      document.getElementById("client-rank").innerText = `#${rank}${rank === 1 ? 'er' : 'ème'} des clients les plus fidèles`;
     }
 
     // ================= UTIL =================
