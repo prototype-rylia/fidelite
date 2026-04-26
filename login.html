@@ -297,10 +297,11 @@
     const profiles = db.collection("clients").doc(CLIENT_ID).collection("profiles");
 
     let signupMode = false;
+    let isSigningUp = false; // Empêche la redirection prématurée pendant l'inscription
 
     // Redirection si déjà connecté
     auth.onAuthStateChanged((user) => {
-        if (user) window.location.href = "index.html";
+        if (user && !isSigningUp) window.location.href = "index.html";
     });
 
     // ================= TOGGLE MODE =================
@@ -341,6 +342,8 @@
                 if (password !== confirmPassword) { setLoading(false); showError("Les mots de passe ne correspondent pas."); return; }
                 if (password.length < 6) { setLoading(false); showError("Le mot de passe doit faire au moins 6 caractères."); return; }
 
+                isSigningUp = true; // Bloque la redirection auto déclenchée par onAuthStateChanged
+
                 const res = await auth.createUserWithEmailAndPassword(email, password);
                 const shortCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -353,7 +356,9 @@
                     role: "membre",
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                // Redirection gérée par onAuthStateChanged
+
+                // Profil bien créé → on peut rediriger en toute sécurité
+                window.location.href = "index.html";
             } else {
                 await auth.signInWithEmailAndPassword(email, password);
             }
