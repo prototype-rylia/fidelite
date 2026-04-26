@@ -1256,10 +1256,21 @@
         return;
       }
 
-      const doc = await profiles.doc(user.uid).get();
+      let doc = await profiles.doc(user.uid).get();
+
+      // Récupération des comptes "orphelins" (créés sans profil à cause d'un ancien bug)
       if(!doc.exists){
-        logout();
-        return;
+        const shortCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        await profiles.doc(user.uid).set({
+          first_name: "Client",
+          email: user.email,
+          phone: "",
+          points: 0,
+          short_code: shortCode,
+          role: "membre",
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        doc = await profiles.doc(user.uid).get();
       }
 
       const data = doc.data();
