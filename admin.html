@@ -1347,7 +1347,19 @@
     .ac-btn.delete-btn { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
     .ac-btn.delete-btn:hover { background: var(--danger); color: white; }
 
-    /* --- BOUTON DÉROULANT HISTORIQUE --- */
+    /* --- SECTION BLOCK --- */
+    .section-block {
+      margin-top: 24px;
+    }
+    .section-block-header {
+      margin-bottom: 14px;
+    }
+    .section-block-title {
+      font-size: 14px; font-weight: 800; color: var(--dark);
+      letter-spacing: -0.2px;
+    }
+
+    /* --- BOUTON DÉROULANT HISTORIQUE (legacy) --- */
     .collapsible-toggle {
       width: 100%; margin-top: 20px; padding: 14px 18px;
       background: white; border: 1.5px solid var(--border); border-radius: var(--radius);
@@ -1426,18 +1438,10 @@
   <div class="tabs-nav-wrap">
     <button class="tabs-arrow tabs-arrow-left" id="tabs-arrow-left" onclick="scrollTabs(-1)">‹</button>
     <div class="tabs-nav" id="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('members')">
-        👥 Membres
-      </button>
-      <button class="tab-btn" onclick="switchTab('events')">
-        📅 Événements
-      </button>
-      <button class="tab-btn" onclick="switchTab('coupons')" id="tab-btn-coupons">
-        🎟️ Coupons
-      </button>
-      <button class="tab-btn" onclick="switchTab('rewards')" id="tab-btn-rewards">
-        ⭐ Récompenses
-      </button>
+      <button class="tab-btn active" onclick="switchTab('members')">Membres</button>
+      <button class="tab-btn" onclick="switchTab('events')">Événements</button>
+      <button class="tab-btn" onclick="switchTab('coupons')" id="tab-btn-coupons">Coupons</button>
+      <button class="tab-btn" onclick="switchTab('rewards')" id="tab-btn-rewards">Récompenses</button>
     </div>
     <button class="tabs-arrow tabs-arrow-right" id="tabs-arrow-right" onclick="scrollTabs(1)">›</button>
   </div>
@@ -1524,9 +1528,7 @@
     
     <!-- Formulaire création événement -->
     <div class="event-form-card">
-      <h2 class="event-form-title">
-        <span>➕</span> Créer un événement
-      </h2>
+      <h2 class="event-form-title">Nouvel événement</h2>
 
       <div class="form-group">
         <label class="form-label">Nom de l'événement</label>
@@ -1550,14 +1552,12 @@
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">🟢 Date et heure de début</label>
+          <label class="form-label">Date de début</label>
           <input type="datetime-local" id="event-startdate" class="form-input">
-          <p class="form-hint">Quand l'événement devient actif</p>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">🔴 Date et heure de fin</label>
+          <label class="form-label">Date de fin</label>
           <input type="datetime-local" id="event-deadline" class="form-input">
-          <p class="form-hint">Quand l'événement expire</p>
         </div>
       </div>
 
@@ -1569,11 +1569,11 @@
             <input type="checkbox" id="option-double-points" 
               style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
             <div>
-              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
-                🎯 Points x2 sur les commandes
+              <div style="font-weight: 600; color: var(--dark); font-size: 13px;">
+                Points x2 sur les commandes
               </div>
-              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
-                Les clients gagnent le double de points sur leurs achats pendant l'événement
+              <div style="font-size: 11px; color: var(--gray); margin-top: 2px;">
+                Les clients gagnent le double de points pendant l'événement
               </div>
             </div>
           </label>
@@ -1582,11 +1582,11 @@
             <input type="checkbox" id="option-special-reward" 
               style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
             <div>
-              <div style="font-weight: 600; color: var(--dark); font-size: 14px;">
-                🎁 Récompense spéciale temporaire
+              <div style="font-weight: 600; color: var(--dark); font-size: 13px;">
+                Récompense spéciale temporaire
               </div>
-              <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">
-                Ajoute une récompense exclusive disponible uniquement pendant l'événement
+              <div style="font-size: 11px; color: var(--gray); margin-top: 2px;">
+                Récompense exclusive disponible uniquement pendant l'événement
               </div>
               <div style="margin-top: 8px; display: none;" id="reward-details-container">
                 <input type="text" id="reward-name" placeholder="Nom de la récompense" 
@@ -1601,7 +1601,7 @@
       </div>
 
       <button class="btn-create-event" onclick="createNewEvent()">
-        🚀 Publier l'événement
+        Publier l'événement
       </button>
     </div>
 
@@ -1614,49 +1614,50 @@
 
     <!-- Panel événements actifs -->
     <div class="active-panel">
-      <div class="active-panel-title">📡 Événements en cours</div>
+      <div class="active-panel-title">Événements en cours</div>
       <div id="active-events-list">
         <div class="events-empty"><p>Chargement…</p></div>
       </div>
     </div>
 
-    <!-- Historique événements (déroulant) -->
-    <button class="collapsible-toggle" onclick="toggleCollapsible('events-history', this)">
-      <span>📜 Historique des événements</span>
-      <span class="toggle-arrow">▼</span>
-    </button>
-    <div class="collapsible-content" id="collapsible-events-history">
-      <div class="history-toolbar" style="margin-top:4px;">
-        <div class="search-wrap">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" class="search-input" id="history-search" placeholder="Rechercher un événement…" oninput="filterHistory()">
-        </div>
-        <select class="history-filter-select" id="history-filter-status" onchange="filterHistory()">
-          <option value="">Tous les statuts</option>
-          <option value="active">En cours</option>
-          <option value="expired">Terminés</option>
-        </select>
+    <!-- Historique événements -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <h3 class="section-block-title">Historique</h3>
       </div>
-      <div class="table-card" style="margin-top:12px;">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Événement</th>
-                <th>Statut</th>
-                <th>Participants</th>
-                <th>Commandes</th>
-                <th>Options</th>
-                <th>Date de fin</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="history-table-body">
-              <tr><td colspan="7"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
-            </tbody>
-          </table>
+      <div id="events-history-wrapper">
+        <div class="history-toolbar" style="margin-top:4px;">
+          <div class="search-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="history-search" placeholder="Rechercher un événement…" oninput="filterHistory()">
+          </div>
+          <select class="history-filter-select" id="history-filter-status" onchange="filterHistory()">
+            <option value="">Tous les statuts</option>
+            <option value="active">En cours</option>
+            <option value="expired">Terminés</option>
+          </select>
         </div>
-        <div class="result-count" id="history-result-count" style="display:none"></div>
+        <div class="table-card" style="margin-top:12px;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Événement</th>
+                  <th>Statut</th>
+                  <th>Participants</th>
+                  <th>Commandes</th>
+                  <th>Options</th>
+                  <th>Date de fin</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr><td colspan="7"><div class="table-state"><div class="loading-spinner"></div><p>Chargement…</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="result-count" id="history-result-count" style="display:none"></div>
+        </div>
       </div>
     </div>
 
@@ -1668,9 +1669,7 @@
 
     <!-- Formulaire création coupon -->
     <div class="event-form-card">
-      <h2 class="event-form-title">
-        <span>🎟️</span> Créer un coupon
-      </h2>
+      <h2 class="event-form-title">Nouveau coupon</h2>
 
       <div class="form-group">
         <label class="form-label">Nom du coupon</label>
@@ -1689,8 +1688,8 @@
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">Attribuer à</label>
           <select id="coupon-assign" class="form-input" onchange="toggleCouponMemberSelect()">
-            <option value="all">👥 Tous les membres</option>
-            <option value="specific">👤 Un membre spécifique</option>
+            <option value="all">Tous les membres</option>
+            <option value="specific">Un membre spécifique</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0;" id="coupon-member-wrap">
@@ -1708,28 +1707,16 @@
       </div>
 
       <button class="btn-create-event" onclick="createCoupon()" id="btn-create-coupon">
-        🎟️ Créer le coupon
+        Créer le coupon
       </button>
     </div>
 
-    <!-- Coupons actifs (déroulant) -->
-    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-active', this)">
-      <span>📋 Coupons actifs</span>
-      <span class="toggle-arrow">▼</span>
-    </button>
-    <div class="collapsible-content" id="collapsible-coupons-active">
-      <div id="active-coupons-list" style="margin-top:8px;">
-        <div class="events-empty"><p>Chargement…</p></div>
+    <!-- Historique coupons distribués -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <h3 class="section-block-title">Distribués</h3>
       </div>
-    </div>
-
-    <!-- Historique coupons distribués (déroulant) -->
-    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-sent', this)">
-      <span>📤 Historique distribués</span>
-      <span class="toggle-arrow">▼</span>
-    </button>
-    <div class="collapsible-content" id="collapsible-coupons-sent">
-      <div class="table-card" style="margin-top:8px;">
+      <div class="table-card">
         <div class="table-wrap">
           <table>
             <thead>
@@ -1741,20 +1728,19 @@
               </tr>
             </thead>
             <tbody id="coupon-sent-body">
-              <tr><td colspan="4"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
+              <tr><td colspan="4"><div class="table-state"><div class="loading-spinner"></div><p>Chargement…</p></div></td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Historique coupons consommés (déroulant) -->
-    <button class="collapsible-toggle" onclick="toggleCollapsible('coupons-consumed', this)">
-      <span>✅ Historique consommés</span>
-      <span class="toggle-arrow">▼</span>
-    </button>
-    <div class="collapsible-content" id="collapsible-coupons-consumed">
-      <div class="table-card" style="margin-top:8px;">
+    <!-- Historique coupons consommés -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <h3 class="section-block-title">Consommés</h3>
+      </div>
+      <div class="table-card">
         <div class="table-wrap">
           <table>
             <thead>
@@ -1765,10 +1751,20 @@
               </tr>
             </thead>
             <tbody id="coupon-consumed-body">
-              <tr><td colspan="3"><div class="table-state"><p>Cliquez pour charger…</p></div></td></tr>
+              <tr><td colspan="3"><div class="table-state"><div class="loading-spinner"></div><p>Chargement…</p></div></td></tr>
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- Coupons actifs -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <h3 class="section-block-title">Coupons actifs</h3>
+      </div>
+      <div id="active-coupons-list">
+        <div class="events-empty"><p>Chargement…</p></div>
       </div>
     </div>
 
@@ -1780,9 +1776,7 @@
 
     <!-- Formulaire création récompense -->
     <div class="event-form-card">
-      <h2 class="event-form-title">
-        <span>➕</span> Ajouter une récompense
-      </h2>
+      <h2 class="event-form-title">Nouvelle récompense</h2>
 
       <div class="form-group">
         <label class="form-label">Nom de la récompense</label>
@@ -1811,14 +1805,18 @@
       </div>
 
       <button class="btn-create-event" onclick="createReward()" id="btn-create-reward" style="margin-top:16px;">
-        ⭐ Ajouter la récompense
+        Ajouter la récompense
       </button>
     </div>
 
     <!-- Liste des récompenses -->
-    <div class="coupon-section-title">📋 Récompenses configurées</div>
+    <div class="section-block">
+      <div class="section-block-header">
+        <h3 class="section-block-title">Récompenses configurées</h3>
+      </div>
     <div id="rewards-list">
       <div class="events-empty"><p>Chargement…</p></div>
+    </div>
     </div>
 
   </div>
@@ -1905,7 +1903,7 @@
 
       <!-- Section coupons -->
       <div class="modal-section" id="modal-coupons-section">
-        <div class="modal-section-title">🎟️ Coupons disponibles</div>
+        <div class="modal-section-title">Coupons disponibles</div>
         <div class="rewards-grid" id="modal-coupons-list">
           <p class="no-rewards">Chargement des coupons…</p>
         </div>
@@ -2221,7 +2219,7 @@
     if (activeEvent && activeEvent.options && activeEvent.options.specialReward) {
       const specialReward = {
         points: activeEvent.options.rewardPoints,
-        title: `🎁 ${activeEvent.options.rewardName}`,
+        title: activeEvent.options.rewardName,
         desc: `Récompense spéciale - ${activeEvent.title}`,
         isSpecial: true
       };
@@ -2240,7 +2238,7 @@
     }
 
     container.innerHTML = available.map(tier => `
-      <button class="btn-reward ${tier.isSpecial ? 'special-reward' : ''}" onclick="deductReward(${tier.points}, '${tier.title.replace(/🎁 /, '')}')">
+      <button class="btn-reward ${tier.isSpecial ? 'special-reward' : ''}" onclick="deductReward(${tier.points}, '${escHtml(tier.title)}')">
         <span>
           <strong>${tier.title}</strong>
           <span style="color: var(--gray); font-size: 12px; margin-left: 6px;">${tier.desc}</span>
@@ -2349,7 +2347,7 @@
       document.getElementById("modal-amount").value = "";
       
       const successMsg = multiplier === 4 
-        ? `✓ +${pointsToAdd} points ajoutés (🎯 x2 actif !)` 
+        ? `+${pointsToAdd} points ajoutés (x2 actif)` 
         : `✓ +${pointsToAdd} points ajoutés`;
       
       showFeedback(successMsg, "success");
@@ -2443,11 +2441,15 @@
       document.getElementById('tab-events').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des événements';
       loadActiveEventsList();
+      loadEventHistory();
     } else if (tabName === 'coupons') {
       document.getElementById('tab-btn-coupons').classList.add('active');
       document.getElementById('tab-coupons').classList.add('active');
       document.getElementById('page-subtitle').textContent = 'Gestion des coupons';
       populateCouponMemberSelect();
+      loadCouponSentHistory();
+      loadCouponConsumedHistory();
+      loadActiveCouponsList();
     } else if (tabName === 'rewards') {
       document.getElementById('tab-btn-rewards').classList.add('active');
       document.getElementById('tab-rewards').classList.add('active');
@@ -2507,7 +2509,7 @@
 
     const btn = document.querySelector('.btn-create-event');
     btn.disabled = true;
-    btn.textContent = "⏳ Création en cours...";
+    btn.textContent = "Création en cours...";
 
     try {
       // Créer l'événement dans Firestore avec les options
@@ -2534,16 +2536,16 @@
       document.getElementById("reward-points").value = "";
       document.getElementById("reward-details-container").style.display = "none";
 
-      showToast(`✅ Événement "${title}" créé !`);
+      showToast(`Événement "${title}" créé`);
       loadActiveEventsList();
       refreshHistoryBadge();
 
     } catch (err) {
       console.error(err);
-      alert("❌ Erreur lors de la création de l'événement : " + err.message);
+      alert("Erreur lors de la création de l'événement : " + err.message);
     } finally {
       btn.disabled = false;
-      btn.textContent = "🚀 Publier l'événement";
+      btn.textContent = "Publier l'événement";
     }
   }
 
@@ -2593,10 +2595,10 @@
         const startStr = startDate ? startDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
         const endStr = e.deadlineDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
         let badges = '';
-        if (isPrimary) badges += '<span class="ac-badge primary">⭐ Affiché en 1er</span>';
-        badges += hasStarted ? '<span class="ac-badge started">▶ Commencé</span>' : '<span class="ac-badge waiting">⏳ Pas encore commencé</span>';
-        if (e.options && e.options.doublePoints) badges += '<span class="ac-badge double">🎯 x2</span>';
-        if (e.options && e.options.specialReward) badges += `<span class="ac-badge reward">🎁 ${escHtml(e.options.rewardName || '')}</span>`;
+        if (isPrimary) badges += '<span class="ac-badge primary">Prioritaire</span>';
+        badges += hasStarted ? '<span class="ac-badge started">Actif</span>' : '<span class="ac-badge waiting">Programmé</span>';
+        if (e.options && e.options.doublePoints) badges += '<span class="ac-badge double">x2</span>';
+        if (e.options && e.options.specialReward) badges += `<span class="ac-badge reward">${escHtml(e.options.rewardName || 'Récompense')}</span>`;
         const card = document.createElement('div');
         card.className = `active-card${isPrimary ? ' is-primary' : ''}`;
         card.innerHTML = `
@@ -2605,16 +2607,16 @@
             <div class="ac-badges">${badges}</div>
           </div></div>
           ${e.description ? `<div class="ac-meta">${sanitizeDesc(e.description)}</div>` : ''}
-          <div class="ac-meta">🟢 Début : ${startStr}<br>🔴 Fin : ${endStr}</div>
+          <div class="ac-meta">Début : ${startStr}<br>Fin : ${endStr}</div>
           <div class="ac-actions">
-            ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">⭐ Mettre en 1er</button>` : ''}
-            <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title)}')">🗑️ Supprimer</button>
+            ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">Mettre en priorité</button>` : ''}
+            <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title)}')">Supprimer</button>
           </div>`;
         container.appendChild(card);
       });
     } catch (err) {
       console.error("Erreur chargement événements actifs:", err);
-      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
+      container.innerHTML = '<div class="events-empty"><p>Erreur de chargement</p></div>';
     }
   }
 
@@ -2625,9 +2627,9 @@
       snapshot.forEach(doc => { batch.update(events.doc(doc.id), { priority: 0 }); });
       batch.update(events.doc(eventId), { priority: 10 });
       await batch.commit();
-      showToast("⭐ Événement mis en priorité !");
+      showToast("Événement mis en priorité");
       loadActiveEventsList();
-    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+    } catch (err) { console.error(err); alert("Erreur : " + err.message); }
   }
 
   async function deleteActiveEvent(eventId, title) {
@@ -2636,9 +2638,9 @@
     if (!confirmed) return;
     try {
       await events.doc(eventId).delete();
-      showToast("✅ Événement supprimé");
+      showToast("Événement supprimé");
       loadActiveEventsList();
-    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+    } catch (err) { console.error(err); alert("Erreur : " + err.message); }
   }
 
   // ================= GESTION COUPONS ACTIFS =================
@@ -2674,23 +2676,23 @@
         card.className = 'active-card';
         card.innerHTML = `
           <div class="ac-header"><div>
-            <div class="ac-title">🎟️ ${escHtml(c.title)}</div>
+            <div class="ac-title">${escHtml(c.title)}</div>
             <div class="ac-badges">
               <span class="ac-badge ${c.assignedTo === 'all' ? 'all' : 'personal'}">
-                ${c.assignedTo === 'all' ? '👥 Tous' : '👤 ' + escHtml(c.assignedToName || '—')}
+                ${c.assignedTo === 'all' ? 'Tous' : escHtml(c.assignedToName || '—')}
               </span>
             </div>
           </div></div>
           ${c.description ? `<div class="ac-meta">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}
-          <div class="ac-meta">⏰ ${expiryStr} · ✅ Utilisé ${usedCount}/${totalTarget}</div>
+          <div class="ac-meta">Expire : ${expiryStr}</div>
           <div class="ac-actions">
-            <button class="ac-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">🗑️ Supprimer</button>
+            <button class="ac-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">Supprimer</button>
           </div>`;
         container.appendChild(card);
       });
     } catch (err) {
       console.error("Erreur chargement coupons actifs:", err);
-      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
+      container.innerHTML = '<div class="events-empty"><p>Erreur de chargement</p></div>';
     }
   }
 
@@ -2700,9 +2702,9 @@
     if (!confirmed) return;
     try {
       await coupons.doc(couponId).delete();
-      showToast("✅ Coupon supprimé");
+      showToast("Coupon supprimé");
       loadActiveCouponsList();
-    } catch (err) { console.error(err); alert("❌ Erreur : " + err.message); }
+    } catch (err) { console.error(err); alert("Erreur : " + err.message); }
   }
 
   // ================= HISTORIQUE COUPONS =================
@@ -2728,7 +2730,7 @@
         const expiryStr = c.expiresAt ? c.expiresAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : 'Sans expiration';
         const createdStr = c.createdAt ? c.createdAt.toDate().toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '—';
         return `<tr>
-          <td><div class="cell-event-title">🎟️ ${escHtml(c.title)}</div>${c.description ? `<div class="cell-event-desc">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}</td>
+          <td><div class="cell-event-title">${escHtml(c.title)}</div>${c.description ? `<div class="cell-event-desc">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}</td>
           <td style="font-size:12px;">${c.assignedTo === 'all' ? '👥 Tous les membres' : '👤 ' + escHtml(c.assignedToName || '—')}</td>
           <td class="cell-date">${expired ? '<span style="color:var(--danger);">Expiré</span>' : expiryStr}</td>
           <td class="cell-date">${createdStr}</td>
@@ -2736,7 +2738,7 @@
       }).join('');
     } catch (err) {
       console.error("Erreur chargement coupons envoyés:", err);
-      tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><p>❌ Erreur</p></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><p>Erreur</p></div></td></tr>';
     }
   }
 
@@ -2766,13 +2768,13 @@
       } else {
         tbody.innerHTML = consumedRows.map(r => `<tr>
           <td style="font-size:13px; font-weight:600;">👤 ${escHtml(r.memberName)}</td>
-          <td><div class="cell-event-title">🎟️ ${escHtml(r.couponTitle)}</div></td>
+          <td><div class="cell-event-title">${escHtml(r.couponTitle)}</div></td>
           <td class="cell-date">${r.dateStr}</td>
         </tr>`).join('');
       }
     } catch (err) {
       console.error("Erreur chargement coupons consommés:", err);
-      tbody.innerHTML = '<tr><td colspan="3"><div class="table-state"><p>❌ Erreur</p></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3"><div class="table-state"><p>Erreur</p></div></td></tr>';
     }
   }
 
@@ -2837,7 +2839,7 @@
     } catch (err) {
       console.error("Erreur chargement historique:", err);
       document.getElementById("history-table-body").innerHTML =
-        `<tr><td colspan="9"><div class="table-state"><p>❌ Erreur de chargement</p></div></td></tr>`;
+        `<tr><td colspan="9"><div class="table-state"><p>Erreur de chargement</p></div></td></tr>`;
     }
   }
 
@@ -2934,8 +2936,8 @@
 
       let optBadges = '';
       if (e.options) {
-        if (e.options.doublePoints) optBadges += '<span class="badge-option double">🎯 x2</span>';
-        if (e.options.specialReward) optBadges += `<span class="badge-option reward">🎁 ${escHtml(e.options.rewardName || 'Récompense')}</span>`;
+        if (e.options.doublePoints) optBadges += '<span class="badge-option double">x2</span>';
+        if (e.options.specialReward) optBadges += `<span class="badge-option reward">${escHtml(e.options.rewardName || 'Récompense')}</span>`;
       }
       if (!optBadges) optBadges = '<span style="font-size:12px; color:var(--gray);">—</span>';
 
@@ -3066,11 +3068,11 @@
       </div>
       <div class="report-kpi">
         <div class="report-kpi-value" style="font-size:13px;">${dateDebut}</div>
-        <div class="report-kpi-label">🟢 Début</div>
+        <div class="report-kpi-label">Début</div>
       </div>
       <div class="report-kpi">
         <div class="report-kpi-value" style="font-size:13px;">${dateFin}</div>
-        <div class="report-kpi-label">🔴 ${isExpired ? 'Fin' : 'Fin prévue'}</div>
+        <div class="report-kpi-label">${isExpired ? 'Fin' : 'Fin prévue'}</div>
       </div>
       <div class="report-kpi">
         <div class="report-kpi-value">${event.options && event.options.doublePoints ? 'x2' : 'x1'}</div>
@@ -3086,7 +3088,7 @@
       <div class="report-option-row">
         <div class="report-option-check ${hasDouble ? 'on' : 'off'}">${hasDouble ? '✓' : '—'}</div>
         <div class="report-option-label">
-          🎯 Points x2 sur les commandes
+          Points x2 sur les commandes
           ${hasDouble ? '<span style="color: var(--success); font-weight: 600; margin-left: 6px;">Activé</span>' : '<span style="color: var(--gray);">Désactivé</span>'}
         </div>
       </div>
@@ -3097,7 +3099,7 @@
       <div class="report-option-row">
         <div class="report-option-check ${hasReward ? 'on' : 'off'}">${hasReward ? '✓' : '—'}</div>
         <div class="report-option-label">
-          🎁 Récompense spéciale
+          Récompense spéciale
           ${hasReward 
             ? `<span style="color: #8B5CF6; font-weight: 600; margin-left: 6px;">${escHtml(event.options.rewardName || '')} (${event.options.rewardPoints || 0} pts)</span>` 
             : '<span style="color: var(--gray);">Désactivé</span>'}
@@ -3163,7 +3165,7 @@
     const member = assign === "specific" ? allMembers.find(m => m.id === memberId) : null;
 
     const btn = document.getElementById("btn-create-coupon");
-    btn.disabled = true; btn.textContent = "⏳ Création…";
+    btn.disabled = true; btn.textContent = "Création…";
 
     try {
       await coupons.add({
@@ -3185,14 +3187,14 @@
       document.getElementById("coupon-member-select").value = "";
       toggleCouponMemberSelect();
 
-      showToast(`✅ Coupon "${title}" créé !`);
+      showToast(`Coupon "${title}" créé !`);
       loadActiveCouponsList();
 
     } catch (err) {
       console.error(err);
-      alert("❌ Erreur : " + err.message);
+      alert("Erreur : " + err.message);
     } finally {
-      btn.disabled = false; btn.textContent = "🎟️ Créer le coupon";
+      btn.disabled = false; btn.textContent = "Créer le coupon";
     }
   }
 
@@ -3223,7 +3225,7 @@
         return `
         <button class="btn-coupon-use" onclick="useClientCoupon('${c.id}', '${escHtml(c.title)}')">
           <span>
-            <strong>🎟️ ${escHtml(c.title)}</strong>
+            <strong>${escHtml(c.title)}</strong>
             ${c.description ? `<span style="color:var(--gray); font-size:12px; margin-left:6px;">${escHtml(c.description).replace(/\n/g, '<br>')}</span>` : ''}
           </span>
           <span class="coupon-use-badge">Utiliser</span>
@@ -3250,12 +3252,12 @@
       await profiles.doc(currentMember.id).collection("transactions").add({
         amount_euros: 0,
         points_added: 0,
-        description: `🎟️ Coupon utilisé : ${couponTitle}`,
+        description: `Coupon utilisé : ${couponTitle}`,
         date: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       showFeedback(`✓ Coupon "${couponTitle}" utilisé avec succès !`, "success");
-      showToast(`🎟️ Coupon — ${currentMember.first_name}`);
+      showToast(`Coupon utilisé — ${currentMember.first_name}`);
 
       // Recharger la liste des coupons de la modale
       loadModalCoupons(currentMember.id);
@@ -3296,7 +3298,7 @@
     }
 
     const btn = document.getElementById("btn-create-reward");
-    btn.disabled = true; btn.textContent = "⏳ Création…";
+    btn.disabled = true; btn.textContent = "Création…";
 
     try {
       await rewards.add({
@@ -3313,14 +3315,14 @@
       document.getElementById("reward-points-input").value = "";
       document.getElementById("reward-image-input").value = "";
 
-      showToast(`✅ Récompense "${title}" ajoutée !`);
+      showToast(`Récompense "${title}" ajoutée !`);
       await loadRewardsFromFirestore();
       loadRewardsList();
     } catch (err) {
       console.error(err);
-      alert("❌ Erreur : " + err.message);
+      alert("Erreur : " + err.message);
     } finally {
-      btn.disabled = false; btn.textContent = "⭐ Ajouter la récompense";
+      btn.disabled = false; btn.textContent = "Ajouter la récompense";
     }
   }
 
@@ -3346,8 +3348,8 @@
         card.innerHTML = `
           <div class="reward-card-header">
             ${r.imageUrl
-              ? `<img src="${escHtml(r.imageUrl)}" class="reward-card-img" onerror="this.outerHTML='<div class=\\'reward-card-icon\\'>⭐</div>'">`
-              : '<div class="reward-card-icon">⭐</div>'
+              ? `<img src="${escHtml(r.imageUrl)}" class="reward-card-img" onerror="this.outerHTML='<div class=\\'reward-card-icon\\'>&#9733;</div>'">`
+              : '<div class="reward-card-icon">&#9733;</div>'
             }
             <div class="reward-card-info">
               <div class="reward-card-title">${escHtml(r.title)}</div>
@@ -3356,14 +3358,14 @@
             <span class="reward-card-pts">${r.points} pts</span>
           </div>
           <div class="reward-card-actions">
-            ${r.id ? `<button class="btn-reward-delete" onclick="deleteReward('${r.id}', '${escHtml(r.title)}')">🗑️ Supprimer</button>` : '<span style="font-size:12px; color:var(--gray); font-style:italic;">Palier par défaut</span>'}
+            ${r.id ? `<button class="btn-reward-delete" onclick="deleteReward('${r.id}', '${escHtml(r.title)}')">Supprimer</button>` : '<span style="font-size:12px; color:var(--gray); font-style:italic;">Palier par défaut</span>'}
           </div>
         `;
         grid.appendChild(card);
       });
     } catch (err) {
       console.error(err);
-      container.innerHTML = '<div class="events-empty"><p>❌ Erreur de chargement</p></div>';
+      container.innerHTML = '<div class="events-empty"><p>Erreur de chargement</p></div>';
     }
   }
 
@@ -3372,11 +3374,11 @@
     if (!confirm(`Supprimer la récompense "${title}" ?\n\nCette action est irréversible.`)) return;
     try {
       await rewards.doc(rewardId).delete();
-      showToast("✅ Récompense supprimée");
+      showToast("Récompense supprimée");
       await loadRewardsFromFirestore();
       loadRewardsList();
     } catch (err) {
-      alert("❌ Erreur : " + err.message);
+      alert("Erreur : " + err.message);
     }
   }
 
@@ -3422,7 +3424,7 @@
 <!-- MODAL CONFIRMATION MDP -->
 <div class="pwd-modal-overlay" id="pwd-modal-overlay">
   <div class="pwd-modal">
-    <h3>🔒 Confirmation requise</h3>
+    <h3>Confirmation requise</h3>
     <p id="pwd-modal-msg">Entrez votre mot de passe pour confirmer cette action.</p>
     <input type="password" id="pwd-modal-input" placeholder="Votre mot de passe" autocomplete="current-password">
     <div class="pwd-modal-error" id="pwd-modal-error"></div>
@@ -3447,7 +3449,7 @@
 <div class="qr-modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQrScanner()">
   <div class="qr-modal-box">
     <div class="qr-modal-header">
-      <h3>📷 Scanner un QR code</h3>
+      <h3>Scanner un QR code</h3>
       <button class="modal-close" onclick="closeQrScanner()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -3484,7 +3486,7 @@
       statusEl.textContent = 'Pointez la caméra vers le QR code du client';
     }).catch(err => {
       console.error('QR camera error:', err);
-      statusEl.textContent = '❌ Impossible d\'accéder à la caméra';
+      statusEl.textContent = 'Impossible d\'accéder à la caméra';
       statusEl.className = 'qr-status error';
     });
   }
@@ -3502,7 +3504,7 @@
     );
 
     if (member) {
-      statusEl.textContent = `✅ ${member.first_name} trouvé !`;
+      statusEl.textContent = `${member.first_name} trouvé`;
       statusEl.className = 'qr-status found';
 
       // Vibrer si possible
@@ -3514,7 +3516,7 @@
         openModal(member.id);
       }, 600);
     } else {
-      statusEl.textContent = `❌ Aucun membre trouvé pour "${code}"`;
+      statusEl.textContent = `Aucun membre trouvé pour "${code}"`;
       statusEl.className = 'qr-status error';
 
       // Reset après 2s pour re-scanner
