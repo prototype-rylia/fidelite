@@ -2240,7 +2240,7 @@
     }
 
     container.innerHTML = available.map(tier => `
-      <button class="btn-reward ${tier.isSpecial ? 'special-reward' : ''}" onclick="deductReward(${tier.points}, '${tier.title.replace(/🎁 /, '').replace(/'/g, "&#39;")}')">
+      <button class="btn-reward ${tier.isSpecial ? 'special-reward' : ''}" onclick="deductReward(${tier.points}, '${tier.title.replace(/🎁 /, '')}')">
         <span>
           <strong>${tier.title}</strong>
           <span style="color: var(--gray); font-size: 12px; margin-left: 6px;">${tier.desc}</span>
@@ -2608,7 +2608,7 @@
           <div class="ac-meta">🟢 Début : ${startStr}<br>🔴 Fin : ${endStr}</div>
           <div class="ac-actions">
             ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">⭐ Mettre en 1er</button>` : ''}
-            <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title).replace(/'/g, "&#39;")}')">🗑️ Supprimer</button>
+            <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title)}')">🗑️ Supprimer</button>
           </div>`;
         container.appendChild(card);
       });
@@ -2684,7 +2684,7 @@
           ${c.description ? `<div class="ac-meta">${escHtml(c.description).replace(/\n/g, '<br>')}</div>` : ''}
           <div class="ac-meta">⏰ ${expiryStr} · ✅ Utilisé ${usedCount}/${totalTarget}</div>
           <div class="ac-actions">
-            <button class="ac-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title).replace(/'/g, "&#39;")}')">🗑️ Supprimer</button>
+            <button class="ac-btn delete-btn" onclick="deleteActiveCoupon('${c.id}', '${escHtml(c.title)}')">🗑️ Supprimer</button>
           </div>`;
         container.appendChild(card);
       });
@@ -3220,9 +3220,8 @@
       }
 
       container.innerHTML = available.map(c => {
-        const safeTitle = escHtml(c.title).replace(/'/g, '&#39;');
         return `
-        <button class="btn-coupon-use" onclick="useClientCoupon('${c.id}', '${safeTitle}')">
+        <button class="btn-coupon-use" onclick="useClientCoupon('${c.id}', '${escHtml(c.title)}')">
           <span>
             <strong>🎟️ ${escHtml(c.title)}</strong>
             ${c.description ? `<span style="color:var(--gray); font-size:12px; margin-left:6px;">${escHtml(c.description).replace(/\n/g, '<br>')}</span>` : ''}
@@ -3357,7 +3356,7 @@
             <span class="reward-card-pts">${r.points} pts</span>
           </div>
           <div class="reward-card-actions">
-            ${r.id ? `<button class="btn-reward-delete" onclick="deleteReward('${r.id}', '${escHtml(r.title).replace(/'/g, "&#39;")}')">🗑️ Supprimer</button>` : '<span style="font-size:12px; color:var(--gray); font-style:italic;">Palier par défaut</span>'}
+            ${r.id ? `<button class="btn-reward-delete" onclick="deleteReward('${r.id}', '${escHtml(r.title)}')">🗑️ Supprimer</button>` : '<span style="font-size:12px; color:var(--gray); font-style:italic;">Palier par défaut</span>'}
           </div>
         `;
         grid.appendChild(card);
@@ -3393,7 +3392,8 @@
   function escHtml(str) {
     return String(str)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   // Éditeur riche - commande
@@ -3545,4 +3545,3 @@
 
 </body>
 </html>
- 
