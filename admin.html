@@ -150,14 +150,61 @@
     }
     .search-input::placeholder { color: #94A3B8; }
 
-    .filter-select {
-      padding: 10px 16px; border: 1.5px solid var(--border);
-      border-radius: 99px; font-size: 13px;
-      color: var(--dark); background: var(--white);
-      outline: none; cursor: pointer; font-family: inherit;
-      transition: all 0.2s; box-shadow: var(--shadow-sm);
+    /* ---- Custom Select ---- */
+    .custom-select-wrap {
+      position: relative; display: inline-block;
     }
-    .filter-select:focus { border-color: var(--primary); }
+
+    .custom-select-trigger {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px 10px 16px;
+      border: 1.5px solid var(--border); border-radius: 99px;
+      font-size: 13px; font-family: inherit; font-weight: 500;
+      color: var(--dark); background: var(--white);
+      cursor: pointer; user-select: none;
+      transition: all 0.2s; box-shadow: var(--shadow-sm);
+      white-space: nowrap; min-width: 160px;
+    }
+    .custom-select-trigger:hover { border-color: #CBD5E1; box-shadow: var(--shadow-md); }
+    .custom-select-wrap.open .custom-select-trigger {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(232,89,12,0.08);
+      border-radius: 14px 14px 0 0;
+    }
+
+    .custom-select-trigger .cs-label { flex: 1; }
+    .custom-select-trigger .cs-arrow {
+      font-size: 10px; color: var(--gray);
+      transition: transform 0.2s;
+    }
+    .custom-select-wrap.open .cs-arrow { transform: rotate(180deg); }
+
+    .custom-select-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--white); border: 1.5px solid var(--primary);
+      border-top: none; border-radius: 0 0 14px 14px;
+      z-index: 200; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      animation: csDropIn 0.15s ease;
+    }
+    @keyframes csDropIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .custom-select-wrap.open .custom-select-dropdown { display: block; }
+
+    .cs-option {
+      padding: 10px 16px; font-size: 13px; font-family: inherit;
+      color: var(--dark); cursor: pointer; transition: background 0.1s;
+      font-weight: 500;
+    }
+    .cs-option:hover { background: var(--primary-soft); color: var(--primary); }
+    .cs-option.selected {
+      background: var(--primary); color: white; font-weight: 700;
+    }
+
+    /* Hidden native select (keeps JS compatibility) */
+    .cs-native { display: none; }
 
     /* ---- Table ---- */
     .table-card {
@@ -671,14 +718,44 @@
       flex-wrap: wrap; align-items: center;
     }
 
-    .history-filter-select {
-      padding: 10px 16px; border: 1.5px solid var(--border);
-      border-radius: 99px; font-size: 13px;
-      color: var(--dark); background: var(--white);
-      outline: none; cursor: pointer; font-family: inherit;
-      transition: all 0.2s;
+    /* history-filter-select uses same custom-select-wrap */
+
+    /* ---- Récompense spéciale ---- */
+    .reward-details-box {
+      margin-top: 12px; display: none;
+      background: var(--white); border: 1.5px solid #FDBA74;
+      border-radius: var(--radius); padding: 14px 16px;
+      display: none; flex-direction: column; gap: 10px;
     }
-    .history-filter-select:focus { border-color: var(--primary); }
+    .reward-details-box.visible { display: flex; }
+
+    .reward-details-box .rd-label {
+      font-size: 11px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 2px;
+    }
+
+    .reward-details-box .rd-field {
+      position: relative;
+    }
+
+    .reward-details-box .rd-icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 15px;
+      pointer-events: none;
+    }
+
+    .reward-details-box input {
+      width: 100%; padding: 10px 14px 10px 38px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-size: 13px; font-family: inherit; color: var(--dark);
+      background: var(--white); outline: none; transition: all 0.2s;
+    }
+    .reward-details-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(232,89,12,0.08);
+    }
+    .reward-details-box input::placeholder { color: #94A3B8; }
 
     .unread-dot {
       width: 8px; height: 8px;
@@ -1490,15 +1567,30 @@
              placeholder="Rechercher un prénom, email ou code…"
              oninput="applyFilters()">
     </div>
-    <select class="filter-select" id="filter-tier" onchange="applyFilters()">
-      <option value="">Tous les paliers</option>
-      <option value="0">Aucun palier</option>
-      <option value="40">Palier 1 (40+ pts)</option>
-      <option value="80">Palier 2 (80+ pts)</option>
-      <option value="150">Palier 3 (150+ pts)</option>
-      <option value="200">Palier 4 (200+ pts)</option>
-      <option value="260">Palier 5 (260+ pts)</option>
-    </select>
+    <div class="custom-select-wrap" id="cs-tier">
+      <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-tier')">
+        <span class="cs-label">Tous les paliers</span>
+        <span class="cs-arrow">▼</span>
+      </div>
+      <div class="custom-select-dropdown">
+        <div class="cs-option selected" data-value="" onclick="pickCustomSelect('cs-tier','','Tous les paliers')">Tous les paliers</div>
+        <div class="cs-option" data-value="0" onclick="pickCustomSelect('cs-tier','0','Aucun palier')">Aucun palier</div>
+        <div class="cs-option" data-value="40" onclick="pickCustomSelect('cs-tier','40','Palier 1 (40+ pts)')">Palier 1 (40+ pts)</div>
+        <div class="cs-option" data-value="80" onclick="pickCustomSelect('cs-tier','80','Palier 2 (80+ pts)')">Palier 2 (80+ pts)</div>
+        <div class="cs-option" data-value="150" onclick="pickCustomSelect('cs-tier','150','Palier 3 (150+ pts)')">Palier 3 (150+ pts)</div>
+        <div class="cs-option" data-value="200" onclick="pickCustomSelect('cs-tier','200','Palier 4 (200+ pts)')">Palier 4 (200+ pts)</div>
+        <div class="cs-option" data-value="260" onclick="pickCustomSelect('cs-tier','260','Palier 5 (260+ pts)')">Palier 5 (260+ pts)</div>
+      </div>
+      <select class="cs-native" id="filter-tier" onchange="applyFilters()">
+        <option value="">Tous les paliers</option>
+        <option value="0">Aucun palier</option>
+        <option value="40">Palier 1 (40+ pts)</option>
+        <option value="80">Palier 2 (80+ pts)</option>
+        <option value="150">Palier 3 (150+ pts)</option>
+        <option value="200">Palier 4 (200+ pts)</option>
+        <option value="260">Palier 5 (260+ pts)</option>
+      </select>
+    </div>
   </div>
 
   <!-- Tableau -->
@@ -1599,11 +1691,15 @@
               <div style="font-size: 11px; color: var(--gray); margin-top: 2px;">
                 Récompense exclusive disponible uniquement pendant l'événement
               </div>
-              <div style="margin-top: 8px; display: none;" id="reward-details-container">
-                <input type="text" id="reward-name" placeholder="Nom de la récompense" 
-                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; margin-bottom: 6px;">
-                <input type="number" id="reward-points" placeholder="Points nécessaires" 
-                  style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;">
+              <div class="reward-details-box" id="reward-details-container">
+                <div class="rd-field">
+                  <span class="rd-icon">🏷️</span>
+                  <input type="text" id="reward-name" placeholder="Nom de la récompense (ex: Boisson offerte)">
+                </div>
+                <div class="rd-field">
+                  <span class="rd-icon">⭐</span>
+                  <input type="number" id="reward-points" placeholder="Points nécessaires (ex: 50)" min="1">
+                </div>
               </div>
             </div>
           </label>
@@ -1619,7 +1715,8 @@
     <script>
       // Afficher/masquer les champs conditionnels
       document.getElementById('option-special-reward').addEventListener('change', function(e) {
-        document.getElementById('reward-details-container').style.display = e.target.checked ? 'block' : 'none';
+        const box = document.getElementById('reward-details-container');
+        box.classList.toggle('visible', e.target.checked);
       });
     </script>
 
@@ -1642,11 +1739,22 @@
             <span class="search-icon">🔍</span>
             <input type="text" class="search-input" id="history-search" placeholder="Rechercher un événement…" oninput="filterHistory()">
           </div>
-          <select class="history-filter-select" id="history-filter-status" onchange="filterHistory()">
-            <option value="">Tous les statuts</option>
-            <option value="active">En cours</option>
-            <option value="expired">Terminés</option>
-          </select>
+          <div class="custom-select-wrap" id="cs-status">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-status')">
+              <span class="cs-label">Tous les statuts</span>
+              <span class="cs-arrow">▼</span>
+            </div>
+            <div class="custom-select-dropdown">
+              <div class="cs-option selected" data-value="" onclick="pickCustomSelect('cs-status','','Tous les statuts')">Tous les statuts</div>
+              <div class="cs-option" data-value="active" onclick="pickCustomSelect('cs-status','active','En cours')">En cours</div>
+              <div class="cs-option" data-value="expired" onclick="pickCustomSelect('cs-status','expired','Terminés')">Terminés</div>
+            </div>
+            <select class="cs-native" id="history-filter-status" onchange="filterHistory()">
+              <option value="">Tous les statuts</option>
+              <option value="active">En cours</option>
+              <option value="expired">Terminés</option>
+            </select>
+          </div>
         </div>
         <div class="table-card" style="margin-top:12px;">
           <div class="table-wrap">
@@ -3572,6 +3680,41 @@
       });
     }
   }
+</script>
+
+<script>
+  // ===== CUSTOM SELECT =====
+  function toggleCustomSelect(id) {
+    const wrap = document.getElementById(id);
+    const isOpen = wrap.classList.contains('open');
+    // Fermer tous les autres
+    document.querySelectorAll('.custom-select-wrap.open').forEach(w => w.classList.remove('open'));
+    if (!isOpen) wrap.classList.add('open');
+  }
+
+  function pickCustomSelect(wrapId, value, label) {
+    const wrap = document.getElementById(wrapId);
+    // Mettre à jour le label
+    wrap.querySelector('.cs-label').textContent = label;
+    // Mettre à jour les classes selected
+    wrap.querySelectorAll('.cs-option').forEach(opt => {
+      opt.classList.toggle('selected', opt.dataset.value === value);
+    });
+    // Mettre à jour le select natif caché et déclencher l'event
+    const native = wrap.querySelector('.cs-native');
+    if (native) {
+      native.value = value;
+      native.dispatchEvent(new Event('change'));
+    }
+    wrap.classList.remove('open');
+  }
+
+  // Fermer en cliquant ailleurs
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-select-wrap')) {
+      document.querySelectorAll('.custom-select-wrap.open').forEach(w => w.classList.remove('open'));
+    }
+  });
 </script>
 
 </body>
