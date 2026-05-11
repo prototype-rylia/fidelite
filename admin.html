@@ -420,6 +420,19 @@
     }
     .btn-close-modal:hover { background: #E2E8F0; color: var(--dark); }
 
+    /* ---- Voir plus / Voir moins ---- */
+    .btn-show-more {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 10px; margin-top: 8px;
+      background: var(--gray-light); border: 1.5px dashed var(--border);
+      border-radius: var(--radius); color: var(--gray);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.2s;
+    }
+    .btn-show-more:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+    .btn-show-more svg { transition: transform 0.2s; }
+    .btn-show-more.expanded svg { transform: rotate(180deg); }
+
     /* ---- Toast ---- */
     .toast {
       position: fixed; bottom: 24px; left: 50%;
@@ -2614,6 +2627,7 @@
           </div>`;
         container.appendChild(card);
       });
+      applyCollapse(container, 'cards');
     } catch (err) {
       console.error("Erreur chargement événements actifs:", err);
       container.innerHTML = '<div class="events-empty"><p>Erreur de chargement</p></div>';
@@ -2690,6 +2704,7 @@
           </div>`;
         container.appendChild(card);
       });
+      applyCollapse(container, 'cards');
     } catch (err) {
       console.error("Erreur chargement coupons actifs:", err);
       container.innerHTML = '<div class="events-empty"><p>Erreur de chargement</p></div>';
@@ -2736,6 +2751,7 @@
           <td class="cell-date">${createdStr}</td>
         </tr>`;
       }).join('');
+      applyCollapse(tbody, 'rows');
     } catch (err) {
       console.error("Erreur chargement coupons envoyés:", err);
       tbody.innerHTML = '<tr><td colspan="4"><div class="table-state"><p>Erreur</p></div></td></tr>';
@@ -2771,6 +2787,7 @@
           <td><div class="cell-event-title">${escHtml(r.couponTitle)}</div></td>
           <td class="cell-date">${r.dateStr}</td>
         </tr>`).join('');
+        applyCollapse(tbody, 'rows');
       }
     } catch (err) {
       console.error("Erreur chargement coupons consommés:", err);
@@ -2971,6 +2988,10 @@
           </td>
         </tr>`;
     }).join("");
+
+    const wrapper = tbody.closest('.table-card') || tbody.closest('.section-block');
+    if (wrapper) { const old = wrapper.querySelector('.btn-show-more'); if (old) old.remove(); }
+    applyCollapse(tbody, 'rows');
 
     countEl.style.display = "block";
     countEl.textContent = `${rows.length} événement${rows.length > 1 ? 's' : ''}`;
@@ -3389,6 +3410,34 @@
     return d.toLocaleDateString("fr-FR", {
       day: "2-digit", month: "short", year: "numeric"
     });
+  }
+
+  const COLLAPSE_LIMIT = 3;
+  function applyCollapse(container, type) {
+    const items = type === 'cards'
+      ? Array.from(container.querySelectorAll(':scope > .active-card'))
+      : Array.from(container.querySelectorAll(':scope > tr'));
+    if (items.length <= COLLAPSE_LIMIT) return;
+    const hiddenCount = items.length - COLLAPSE_LIMIT;
+    items.forEach((el, i) => { if (i >= COLLAPSE_LIMIT) el.style.display = 'none'; });
+    const btn = document.createElement('button');
+    btn.className = 'btn-show-more';
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg> Voir plus (${hiddenCount})`;
+    let expanded = false;
+    btn.onclick = function() {
+      expanded = !expanded;
+      items.forEach((el, i) => { if (i >= COLLAPSE_LIMIT) el.style.display = expanded ? '' : 'none'; });
+      btn.classList.toggle('expanded', expanded);
+      btn.innerHTML = expanded
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg> Voir moins'
+        : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg> Voir plus (${hiddenCount})`;
+    };
+    if (type === 'cards') {
+      container.appendChild(btn);
+    } else {
+      const wrapper = container.closest('.table-card') || container.closest('.section-block');
+      if (wrapper) wrapper.appendChild(btn);
+    }
   }
 
   function escHtml(str) {
