@@ -1438,10 +1438,10 @@
   <div class="tabs-nav-wrap">
     <button class="tabs-arrow tabs-arrow-left" id="tabs-arrow-left" onclick="scrollTabs(-1)">‹</button>
     <div class="tabs-nav" id="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('members')">Membres</button>
-      <button class="tab-btn" onclick="switchTab('events')">Événements</button>
-      <button class="tab-btn" onclick="switchTab('coupons')" id="tab-btn-coupons">Coupons</button>
-      <button class="tab-btn" onclick="switchTab('rewards')" id="tab-btn-rewards">Récompenses</button>
+      <button class="tab-btn active" onclick="switchTab('members')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Membres</button>
+      <button class="tab-btn" onclick="switchTab('events')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</button>
+      <button class="tab-btn" onclick="switchTab('coupons')" id="tab-btn-coupons"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Coupons</button>
+      <button class="tab-btn" onclick="switchTab('rewards')" id="tab-btn-rewards"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Récompenses</button>
     </div>
     <button class="tabs-arrow tabs-arrow-right" id="tabs-arrow-right" onclick="scrollTabs(1)">›</button>
   </div>
@@ -1528,7 +1528,7 @@
     
     <!-- Formulaire création événement -->
     <div class="event-form-card">
-      <h2 class="event-form-title">Nouvel événement</h2>
+      <h2 class="event-form-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nouvel événement</h2>
 
       <div class="form-group">
         <label class="form-label">Nom de l'événement</label>
@@ -1570,7 +1570,7 @@
               style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
             <div>
               <div style="font-weight: 600; color: var(--dark); font-size: 13px;">
-                Points x2 sur les commandes
+                &#215;2 &nbsp;Points doublés sur les commandes
               </div>
               <div style="font-size: 11px; color: var(--gray); margin-top: 2px;">
                 Les clients gagnent le double de points pendant l'événement
@@ -1583,7 +1583,7 @@
               style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
             <div>
               <div style="font-weight: 600; color: var(--dark); font-size: 13px;">
-                Récompense spéciale temporaire
+                &#9733; &nbsp;Récompense spéciale temporaire
               </div>
               <div style="font-size: 11px; color: var(--gray); margin-top: 2px;">
                 Récompense exclusive disponible uniquement pendant l'événement
@@ -1601,7 +1601,7 @@
       </div>
 
       <button class="btn-create-event" onclick="createNewEvent()">
-        Publier l'événement
+        Publier l'événement &#8594;
       </button>
     </div>
 
@@ -1614,7 +1614,7 @@
 
     <!-- Panel événements actifs -->
     <div class="active-panel">
-      <div class="active-panel-title">Événements en cours</div>
+      <div class="active-panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Événements en cours</div>
       <div id="active-events-list">
         <div class="events-empty"><p>Chargement…</p></div>
       </div>
@@ -1623,7 +1623,7 @@
     <!-- Historique événements -->
     <div class="section-block">
       <div class="section-block-header">
-        <h3 class="section-block-title">Historique</h3>
+        <h3 class="section-block-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Historique</h3>
       </div>
       <div id="events-history-wrapper">
         <div class="history-toolbar" style="margin-top:4px;">
@@ -1669,7 +1669,7 @@
 
     <!-- Formulaire création coupon -->
     <div class="event-form-card">
-      <h2 class="event-form-title">Nouveau coupon</h2>
+      <h2 class="event-form-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nouveau coupon</h2>
 
       <div class="form-group">
         <label class="form-label">Nom du coupon</label>
@@ -1707,14 +1707,14 @@
       </div>
 
       <button class="btn-create-event" onclick="createCoupon()" id="btn-create-coupon">
-        Créer le coupon
+        Créer le coupon &#8594;
       </button>
     </div>
 
     <!-- Historique coupons distribués -->
     <div class="section-block">
       <div class="section-block-header">
-        <h3 class="section-block-title">Distribués</h3>
+        <h3 class="section-block-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Distribués</h3>
       </div>
       <div class="table-card">
         <div class="table-wrap">
@@ -1738,7 +1738,7 @@
     <!-- Historique coupons consommés -->
     <div class="section-block">
       <div class="section-block-header">
-        <h3 class="section-block-title">Consommés</h3>
+        <h3 class="section-block-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Consommés</h3>
       </div>
       <div class="table-card">
         <div class="table-wrap">
@@ -1761,7 +1761,7 @@
     <!-- Coupons actifs -->
     <div class="section-block">
       <div class="section-block-header">
-        <h3 class="section-block-title">Coupons actifs</h3>
+        <h3 class="section-block-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/></svg>Coupons actifs</h3>
       </div>
       <div id="active-coupons-list">
         <div class="events-empty"><p>Chargement…</p></div>
@@ -1776,7 +1776,7 @@
 
     <!-- Formulaire création récompense -->
     <div class="event-form-card">
-      <h2 class="event-form-title">Nouvelle récompense</h2>
+      <h2 class="event-form-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Nouvelle récompense</h2>
 
       <div class="form-group">
         <label class="form-label">Nom de la récompense</label>
@@ -1805,14 +1805,14 @@
       </div>
 
       <button class="btn-create-event" onclick="createReward()" id="btn-create-reward" style="margin-top:16px;">
-        Ajouter la récompense
+        Ajouter la récompense &#8594;
       </button>
     </div>
 
     <!-- Liste des récompenses -->
     <div class="section-block">
       <div class="section-block-header">
-        <h3 class="section-block-title">Récompenses configurées</h3>
+        <h3 class="section-block-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Récompenses configurées</h3>
       </div>
     <div id="rewards-list">
       <div class="events-empty"><p>Chargement…</p></div>
@@ -1885,7 +1885,7 @@
 
       <!-- Section ajout de points -->
       <div class="modal-section">
-        <div class="modal-section-title">Ajouter des points</div>
+        <div class="modal-section-title">&#43; Ajouter des points</div>
         <div class="points-input-row">
           <input type="number" class="points-input" id="modal-amount"
                  placeholder="Montant de l'addition (€)" min="0" step="0.01">
@@ -1895,7 +1895,7 @@
 
       <!-- Section récompenses -->
       <div class="modal-section">
-        <div class="modal-section-title">Utiliser une récompense</div>
+        <div class="modal-section-title">&#9733; Utiliser une récompense</div>
         <div class="rewards-grid" id="modal-rewards">
           <p class="no-rewards">Sélectionnez un client pour voir ses récompenses.</p>
         </div>
@@ -1903,7 +1903,7 @@
 
       <!-- Section coupons -->
       <div class="modal-section" id="modal-coupons-section">
-        <div class="modal-section-title">Coupons disponibles</div>
+        <div class="modal-section-title">&#9998; Coupons disponibles</div>
         <div class="rewards-grid" id="modal-coupons-list">
           <p class="no-rewards">Chargement des coupons…</p>
         </div>
@@ -2509,7 +2509,7 @@
 
     const btn = document.querySelector('.btn-create-event');
     btn.disabled = true;
-    btn.textContent = "Création en cours...";
+    btn.textContent = "Création en cours…";
 
     try {
       // Créer l'événement dans Firestore avec les options
@@ -2536,7 +2536,7 @@
       document.getElementById("reward-points").value = "";
       document.getElementById("reward-details-container").style.display = "none";
 
-      showToast(`Événement "${title}" créé`);
+      showToast(`Événement « ${title} » créé`);
       loadActiveEventsList();
       refreshHistoryBadge();
 
@@ -2595,9 +2595,9 @@
         const startStr = startDate ? startDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
         const endStr = e.deadlineDate.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
         let badges = '';
-        if (isPrimary) badges += '<span class="ac-badge primary">Prioritaire</span>';
-        badges += hasStarted ? '<span class="ac-badge started">Actif</span>' : '<span class="ac-badge waiting">Programmé</span>';
-        if (e.options && e.options.doublePoints) badges += '<span class="ac-badge double">x2</span>';
+        if (isPrimary) badges += '<span class="ac-badge primary">&#9733; Prioritaire</span>';
+        badges += hasStarted ? '<span class="ac-badge started">&#9654; Actif</span>' : '<span class="ac-badge waiting">&#9202; Programmé</span>';
+        if (e.options && e.options.doublePoints) badges += '<span class="ac-badge double">&#215;2</span>';
         if (e.options && e.options.specialReward) badges += `<span class="ac-badge reward">${escHtml(e.options.rewardName || 'Récompense')}</span>`;
         const card = document.createElement('div');
         card.className = `active-card${isPrimary ? ' is-primary' : ''}`;
@@ -2609,7 +2609,7 @@
           ${e.description ? `<div class="ac-meta">${sanitizeDesc(e.description)}</div>` : ''}
           <div class="ac-meta">Début : ${startStr}<br>Fin : ${endStr}</div>
           <div class="ac-actions">
-            ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">Mettre en priorité</button>` : ''}
+            ${!isPrimary ? `<button class="ac-btn primary-btn" onclick="setEventPrimary('${e.id}')">&#9733; Priorité</button>` : ''}
             <button class="ac-btn delete-btn" onclick="deleteActiveEvent('${e.id}', '${escHtml(e.title)}')">Supprimer</button>
           </div>`;
         container.appendChild(card);
@@ -2936,7 +2936,7 @@
 
       let optBadges = '';
       if (e.options) {
-        if (e.options.doublePoints) optBadges += '<span class="badge-option double">x2</span>';
+        if (e.options.doublePoints) optBadges += '<span class="badge-option double">&#215;2</span>';
         if (e.options.specialReward) optBadges += `<span class="badge-option reward">${escHtml(e.options.rewardName || 'Récompense')}</span>`;
       }
       if (!optBadges) optBadges = '<span style="font-size:12px; color:var(--gray);">—</span>';
@@ -3088,7 +3088,7 @@
       <div class="report-option-row">
         <div class="report-option-check ${hasDouble ? 'on' : 'off'}">${hasDouble ? '✓' : '—'}</div>
         <div class="report-option-label">
-          Points x2 sur les commandes
+          &#215;2 &nbsp;Points doublés sur les commandes
           ${hasDouble ? '<span style="color: var(--success); font-weight: 600; margin-left: 6px;">Activé</span>' : '<span style="color: var(--gray);">Désactivé</span>'}
         </div>
       </div>
@@ -3348,8 +3348,8 @@
         card.innerHTML = `
           <div class="reward-card-header">
             ${r.imageUrl
-              ? `<img src="${escHtml(r.imageUrl)}" class="reward-card-img" onerror="this.outerHTML='<div class=\\'reward-card-icon\\'>&#9733;</div>'">`
-              : '<div class="reward-card-icon">&#9733;</div>'
+              ? `<img src="${escHtml(r.imageUrl)}" class="reward-card-img" onerror="this.outerHTML='<div class=\\'reward-card-icon\\'>&#11088;</div>'">`
+              : '<div class="reward-card-icon">&#11088;</div>'
             }
             <div class="reward-card-info">
               <div class="reward-card-title">${escHtml(r.title)}</div>
@@ -3424,7 +3424,7 @@
 <!-- MODAL CONFIRMATION MDP -->
 <div class="pwd-modal-overlay" id="pwd-modal-overlay">
   <div class="pwd-modal">
-    <h3>Confirmation requise</h3>
+    <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Confirmation requise</h3>
     <p id="pwd-modal-msg">Entrez votre mot de passe pour confirmer cette action.</p>
     <input type="password" id="pwd-modal-input" placeholder="Votre mot de passe" autocomplete="current-password">
     <div class="pwd-modal-error" id="pwd-modal-error"></div>
@@ -3449,7 +3449,7 @@
 <div class="qr-modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQrScanner()">
   <div class="qr-modal-box">
     <div class="qr-modal-header">
-      <h3>Scanner un QR code</h3>
+      <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scanner un QR code</h3>
       <button class="modal-close" onclick="closeQrScanner()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
